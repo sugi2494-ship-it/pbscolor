@@ -6344,7 +6344,7 @@ if (document.readyState === 'loading') {
 const PBS_SUPABASE_URL = 'https://oqxlsnyuwtmjmbhgzjoz.supabase.co';
 // 공유 URL — Vercel·도메인 배포 후 여기에 정확한 URL 입력 (file:// 환경 대응)
 // 예: 'https://pbscolor.com' 또는 'https://pbs-color-xxxx.vercel.app'
-const PBS_PUBLIC_URL = 'https://pbscolor-4.vercel.app';
+const PBS_PUBLIC_URL = 'https://pbscolor-5.vercel.app';
 const PBS_SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9xeGxzbnl1d3Rtam1iaGd6am96Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY3NTc5NDksImV4cCI6MjA5MjMzMzk0OX0.C-PPch12eVru2xhuU80WPYdBj5CJb1Py8m1-OsaGZW8';
 
 // 이 파일의 진단 종류 (성인 진단 통합 파일)
@@ -6575,7 +6575,7 @@ window.PBS.syncRecordsToLocal = async function() {
       engineScores: r.scores || {},
       gearScores: r.scores || {},
       mainEngine: r.top_engine || 'RED',
-      topColor: (r.top_engine || '').toLowerCase(),
+      topColor: (r.top_engine || 'RED').toLowerCase(),
       secondColor: (r.second_engine || '').toLowerCase(),
       colorScores: r.scores || {},
       top1: { gear: r.top_gear || 'R1', name: '', percent: 0 },
@@ -8385,10 +8385,13 @@ const REVIEWS_PER_PAGE = 9;
 
 // ── Engine / Gear Meta ──
 const ENGINES = {
-  RED: {color:'#FF3366', name:'RED 추진', kr:'추진'},
+  RED:    {color:'#FF3366', name:'RED 추진', kr:'추진'},
   YELLOW: {color:'#F5A623', name:'YELLOW 관계', kr:'관계'},
-  GREEN: {color:'#00A878', name:'GREEN 조화', kr:'조화'},
-  BLUE: {color:'#0077B6', name:'BLUE 분석', kr:'분석'}
+  GREEN:  {color:'#00A878', name:'GREEN 조화', kr:'조화'},
+  BLUE:   {color:'#0077B6', name:'BLUE 분석', kr:'분석'},
+  PURPLE: {color:'#9B59B6', name:'PURPLE 예술', kr:'예술'},
+  // 알 수 없는 엔진 기본값 (안전장치)
+  UNKNOWN:{color:'#888888', name:'기타', kr:'기타'}
 };
 const GEARS = {
   R1:{name:'마젠타', engine:'RED'}, R2:{name:'레드', engine:'RED'}, R3:{name:'레드오렌지', engine:'RED'},
@@ -8570,6 +8573,22 @@ function loadData(){
   // 샘플 데이터 자동 생성 — 비활성화됨 (운영자 요청)
   // 매번 진입할 때마다 샘플 패턴 정리 (이전 데이터에 _isSample 플래그가 없을 수 있어 강제 적용)
   cleanAllSampleData();
+
+  // RECORDS 안의 잘못된 mainEngine 자동 보정 (renderDonut 에러 방지)
+  const validEngines = ['RED','YELLOW','GREEN','BLUE','PURPLE'];
+  let fixedCount = 0;
+  RECORDS.forEach(r => {
+    if (!r.mainEngine || !validEngines.includes(r.mainEngine)) {
+      r.mainEngine = 'RED';
+      fixedCount++;
+    }
+    if (!r.top1) r.top1 = { gear:'R1', name:'', percent:0 };
+    if (!r.top2) r.top2 = { gear:'R2', name:'', percent:0 };
+  });
+  if (fixedCount > 0) {
+    saveRecords();
+    console.log(`[PBS] RECORDS 보정: ${fixedCount}건의 mainEngine 기본값 적용`);
+  }
 
   // 기존 짧은 시드 후기를 풍성한 버전으로 마이그레이션 (이미 시드된 사용자 대응)
   // migrateOldShortReviews();   // 시드 후기 자체를 정리하므로 마이그레이션 불필요
@@ -9066,7 +9085,7 @@ function renderDonut(counts){
       <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="var(--bg-card-2)" stroke-width="22"/>
       ${segs.map(s => `
         <circle cx="${cx}" cy="${cy}" r="${r}" fill="none"
-          stroke="${ENGINES[s.key].color}" stroke-width="22"
+          stroke="${(ENGINES[s.key] || ENGINES.UNKNOWN).color}" stroke-width="22"
           stroke-dasharray="${s.len.toFixed(2)} ${(cf-s.len).toFixed(2)}"
           stroke-dashoffset="${-s.offset.toFixed(2)}"
           transform="rotate(-90 ${cx} ${cy})"
@@ -9078,13 +9097,15 @@ function renderDonut(counts){
   `;
   const legend = `
     <div class="donut-legend">
-      ${Object.entries(counts).map(([key, val]) => `
+      ${Object.entries(counts).map(([key, val]) => {
+        const eng = ENGINES[key] || ENGINES.UNKNOWN;
+        return `
         <div class="legend-item">
-          <span class="legend-color" style="background:${ENGINES[key].color}"></span>
-          <span class="legend-label">${ENGINES[key].name}</span>
+          <span class="legend-color" style="background:${eng.color}"></span>
+          <span class="legend-label">${eng.name}</span>
           <span class="legend-value">${val} · ${total>0?Math.round(val/total*100):0}%</span>
-        </div>
-      `).join('')}
+        </div>`;
+      }).join('')}
     </div>
   `;
   return `<div class="donut-wrap">${svg}${legend}</div>`;
