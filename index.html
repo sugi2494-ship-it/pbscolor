@@ -4187,6 +4187,25 @@ function saveRecordToAdmin(result) {
     localStorage.setItem('pbs-records', JSON.stringify(records));
     // 현재 record id 저장 (후기 제출 시 연결용)
     STATE.currentRecordId = newRecord.id;
+
+    // ✨ Supabase 저장 (다른 기기·다른 사람이 진단해도 관리자에서 보이도록)
+    if (window.PBS && window.PBS.saveRecord) {
+      const engineMap = {R:'RED',Y:'YELLOW',G:'GREEN',B:'BLUE'};
+      window.PBS.saveRecord({
+        test_type: 'adult_60',
+        is_premium: true,
+        user: newRecord.user,
+        answers: STATE.answers,
+        scores: { ...engineScores, ...gearScores },
+        topEngine: newRecord.mainEngine,
+        topGear: newRecord.top1.gear,
+        secondEngine: engineMap[newRecord.top2?.gear?.charAt(0)] || null,
+        duration: duration * 60,
+        lang: 'ko'
+      }).then(res => {
+        if (res?.ok) console.log('[PBS] Supabase 저장 완료:', res.id);
+      }).catch(e => console.warn('[PBS] Supabase 저장 실패:', e));
+    }
   } catch(e) {
     console.warn('[Admin Sync] record 저장 실패:', e);
   }
@@ -4222,6 +4241,15 @@ function saveReviewToAdmin(stars, text) {
         localStorage.setItem('pbs-records', JSON.stringify(records));
       }
     }
+    // ✨ Supabase 저장
+    if (window.PBS && window.PBS.saveReview) {
+      window.PBS.saveReview({
+        name: STATE.user?.name || '익명',
+        stars,
+        text,
+        record_id: null
+      });
+    }
   } catch(e) {
     console.warn('[Admin Sync] review 저장 실패:', e);
   }
@@ -4237,6 +4265,11 @@ function saveInquiryToAdmin(type, name, org, email, phone, message) {
       status: 'new'
     });
     localStorage.setItem('pbs-inquiries', JSON.stringify(inquiries));
+
+    // ✨ Supabase 저장
+    if (window.PBS && window.PBS.saveInquiry) {
+      window.PBS.saveInquiry({type, name, org, email, phone, message});
+    }
   } catch(e) {
     console.warn('[Admin Sync] inquiry 저장 실패:', e);
   }
@@ -5058,6 +5091,24 @@ function saveBasicRecordToAdmin(result) {
     };
     records.push(newRecord);
     localStorage.setItem('pbs-records', JSON.stringify(records));
+
+    // ✨ Supabase 저장 (무료 진단 결과도 관리자에서 보이게)
+    if (window.PBS && window.PBS.saveRecord) {
+      const engineMap = {red:'RED',yellow:'YELLOW',green:'GREEN',blue:'BLUE',purple:'PURPLE'};
+      window.PBS.saveRecord({
+        test_type: 'adult_basic',
+        is_premium: false,
+        user: newRecord.user,
+        answers: BASIC_STATE.answers,
+        scores: result.colorScores,
+        topEngine: engineMap[result.top] || null,
+        secondEngine: engineMap[result.second] || null,
+        duration: (result.duration || 5) * 60,
+        lang: 'ko'
+      }).then(res => {
+        if (res?.ok) console.log('[PBS] Supabase 저장 완료(basic):', res.id);
+      }).catch(e => console.warn('[PBS] Supabase 저장 실패:', e));
+    }
   } catch(e) {
     console.warn('[Admin Sync] basic record 저장 실패:', e);
   }
@@ -6376,7 +6427,88 @@ window.PBS.fetchMyRecords = async function(opts) {
 };
 
 // ============================================================
-// 함수 6: 활성 공지 배너 조회 (메인 사이트 상단 표시용)
+// 함수 7: Supabase → localStorage 동기화 (관리자 진입 시)
+//   - Supabase에 저장된 진단 결과·후기·문의를 가져와서
+//   - localStorage에 변환·병합 (관리자 페이지가 읽도록)
+// ============================================================
+window.PBS.syncRecordsToLocal = async function() {
+  if (!window.pbsDBReady) {
+    console.warn('[PBS] DB 미연결 — Supabase 동기화 건너뜀');
+    return { ok:false };
+  }
+  try {
+    // 1) 진단 기록 가져오기
+    const { data: srecs, error: e1 } = await window.pbsDB
+      .from('pbs_records').select('*')
+      .in('test_type', PBS_TEST_TYPES)
+      .order('created_at', { ascending: false })
+      .limit(500);
+    if (e1) throw e1;
+
+    // localStorage 기존 기록 (이 브라우저에서 만든 것)
+    const localRecords = JSON.parse(localStorage.getItem('pbs-records') || '[]');
+    const localIds = new Set(localRecords.map(r => r.id || r._supabase_id));
+
+    // Supabase 기록 → localStorage 형식으로 변환
+    const converted = (srecs || []).map(r => ({
+      id: r.id,
+      _supabase_id: r.id,
+      _from_supabase: true,
+      timestamp: new Date(r.created_at).getTime(),
+      testType: r.is_premium ? 'premium' : 'basic',
+      user: {
+        name: r.user_name || '익명',
+        job: r.user_job || '',
+        org: r.user_org || '',
+        age: r.user_age || '',
+        email: r.user_email || ''
+      },
+      engineScores: r.scores || {},
+      gearScores: r.scores || {},
+      mainEngine: r.top_engine || 'RED',
+      topColor: (r.top_engine || '').toLowerCase(),
+      secondColor: (r.second_engine || '').toLowerCase(),
+      colorScores: r.scores || {},
+      top1: { gear: r.top_gear || 'R1', name: '', percent: 0 },
+      top2: { gear: '', name: '', percent: 0 },
+      duration: Math.round((r.duration_sec || 300) / 60),
+      feedback: null
+    })).filter(r => !localIds.has(r.id));
+
+    // 병합 + 시간순 정렬
+    const merged = [...localRecords, ...converted]
+      .sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+    localStorage.setItem('pbs-records', JSON.stringify(merged));
+
+    // 2) 후기 가져오기
+    const { data: srevs } = await window.pbsDB
+      .from('pbs_reviews').select('*').eq('is_visible', true)
+      .order('created_at', { ascending: false }).limit(200);
+    if (srevs && srevs.length > 0) {
+      const localRevs = JSON.parse(localStorage.getItem('pbs-reviews') || '[]');
+      const localRevIds = new Set(localRevs.map(r => r.id || r._supabase_id));
+      const convertedRevs = srevs.filter(r => !localRevIds.has(r.id)).map(r => ({
+        id: r.id,
+        _supabase_id: r.id,
+        timestamp: new Date(r.created_at).getTime(),
+        name: r.name,
+        stars: r.stars,
+        text: r.text,
+        featured: false
+      }));
+      localStorage.setItem('pbs-reviews', JSON.stringify([...localRevs, ...convertedRevs]));
+    }
+
+    console.log(`[PBS] Supabase 동기화 완료: 진단 ${converted.length}건 추가`);
+    return { ok:true, addedRecords: converted.length };
+  } catch (e) {
+    console.warn('[PBS] syncRecordsToLocal 실패:', e);
+    return { ok:false, error: e.message };
+  }
+};
+
+// ============================================================
+// 함수 8: 활성 공지 배너 조회 (메인 사이트 상단 표시용)
 // ============================================================
 window.PBS.fetchActiveNotice = async function() {
   if (!window.pbsDBReady) return null;
@@ -9865,12 +9997,18 @@ document.addEventListener('click', (e) => {
 
 <script>
 // ===== 관리자 모드 진입/이탈 =====
-function openAdminMode() {
+async function openAdminMode() {
+  // ✨ 관리자 진입 시 Supabase에서 최신 결과 동기화
+  if (window.PBS && window.PBS.syncRecordsToLocal) {
+    try {
+      const r = await window.PBS.syncRecordsToLocal();
+      if (r?.ok) console.log('[PBS] 관리자 진입 동기화 완료:', r.addedRecords + '건');
+    } catch(e) { console.warn('[PBS] 동기화 중 오류:', e); }
+  }
   const tpl = document.getElementById('pbs-admin-template');
   const iframe = document.getElementById('pbs-admin-iframe');
-  if (!iframe.srcdoc || iframe.srcdoc === '') {
-    iframe.srcdoc = tpl.innerHTML; // 최초 1회만 로드 (이후 재진입은 빠름)
-  }
+  // 동기화 후 로드 (또는 새로고침)
+  iframe.srcdoc = tpl.innerHTML;
   document.getElementById('pbs-admin-overlay').style.display = 'block';
   document.body.style.overflow = 'hidden';
   console.log('[PBS] 관리자 모드 진입');
