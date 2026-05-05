@@ -1261,7 +1261,30 @@ html[data-lang]:not([data-lang="ko"]) .engine-card{overflow:hidden}
   transition:all 0.25s cubic-bezier(0.34,1.56,0.64,1);font-family:var(--font);
 }
 .basic-scale-btn:hover{transform:translateY(-3px);border-color:var(--q-color,#7030A0);background:#fff;box-shadow:0 6px 16px rgba(112,48,160,0.12)}
-.basic-scale-btn.selected{background:var(--q-color,#7030A0);border-color:var(--q-color,#7030A0);transform:scale(1.05);box-shadow:0 8px 22px rgba(112,48,160,0.4)}
+.basic-scale-btn.selected{background:linear-gradient(135deg,var(--q-color,#7030A0),var(--q-color,#7030A0)) !important;border-color:var(--q-color,#7030A0) !important;transform:scale(1.1) translateY(-4px);box-shadow:0 14px 32px rgba(0,0,0,0.22),0 0 0 4px rgba(255,255,255,0.6) inset;position:relative}
+.basic-scale-btn.selected::after{content:'✓';position:absolute;top:-10px;right:-10px;width:26px;height:26px;background:#fff;color:var(--q-color,#7030A0);border-radius:50%;font-weight:900;font-size:15px;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(0,0,0,0.25);animation:checkPop 0.4s cubic-bezier(0.34,1.56,0.64,1)}
+@keyframes checkPop{0%{transform:scale(0) rotate(-90deg);opacity:0}100%{transform:scale(1) rotate(0);opacity:1}}
+
+/* === 진행 응원 메시지 === */
+.basic-cheer-wrap{text-align:center;margin:14px 0 6px}
+.basic-cheer{display:inline-block;font-size:13px;font-weight:700;color:#7030A0;padding:7px 16px;background:linear-gradient(135deg,rgba(255,107,107,0.1),rgba(112,48,160,0.1));border-radius:999px;animation:cheerFlyIn 0.5s cubic-bezier(0.34,1.56,0.64,1)}
+@keyframes cheerFlyIn{from{opacity:0;transform:translateY(-8px) scale(0.9)}to{opacity:1;transform:translateY(0) scale(1)}}
+
+/* === 진행 dots 그리드 (응답 완료/미응답 시각화) === */
+.basic-dots-wrap{display:flex;flex-wrap:wrap;gap:5px;margin:14px auto 0;max-width:680px;justify-content:center;padding:0 12px}
+.basic-dot{width:24px;height:24px;border-radius:50%;border:2px solid #E8E4F5;background:#F8F7FC;font-size:9px;font-weight:800;color:#9690B5;cursor:pointer;display:grid;place-items:center;transition:all 0.2s;font-family:var(--font);padding:0}
+.basic-dot.answered{background:linear-gradient(135deg,#7030A0,#FF8C42);color:#fff;border-color:transparent}
+.basic-dot.current{transform:scale(1.35);box-shadow:0 0 0 3px rgba(112,48,160,0.3);border-color:#7030A0}
+.basic-dot.missing-highlight{background:#FFE5E5;border-color:#FF3366;color:#FF3366;animation:dotBlink 0.7s 4}
+@keyframes dotBlink{50%{transform:scale(1.25);box-shadow:0 0 14px rgba(255,51,102,0.6)}}
+.basic-dot:hover{transform:scale(1.15)}
+
+/* === 결과 진단 완료 배너 === */
+.basic-result-done-banner{background:linear-gradient(135deg,#FF6B6B 0%,#FF8C42 40%,#FFD93D 80%,#FFA8E8 100%);color:#fff;padding:26px 20px;border-radius:24px;text-align:center;margin-bottom:18px;box-shadow:0 10px 28px rgba(255,140,66,0.35);position:relative;overflow:hidden}
+.basic-result-done-banner h2{font-size:26px;font-weight:900;margin:0 0 8px;color:#fff;letter-spacing:-0.02em}
+.basic-result-done-banner p{font-size:14px;font-weight:600;margin:0 0 14px;opacity:0.96;line-height:1.5}
+.basic-result-done-banner .next-steps{display:flex;justify-content:center;gap:14px;flex-wrap:wrap;font-size:12px;font-weight:700;opacity:0.95}
+.basic-result-done-banner .next-steps span{padding:6px 12px;background:rgba(255,255,255,0.22);border-radius:999px;backdrop-filter:blur(6px)}
 .basic-scale-btn.selected .basic-scale-emoji,
 .basic-scale-btn.selected .basic-scale-num,
 .basic-scale-btn.selected .basic-scale-label{color:#fff}
@@ -4494,6 +4517,38 @@ function basicBeginQuestions() {
   renderBasicQuestion();
 }
 
+function getBasicCheer(idx, total) {
+  const pct = (idx / total) * 100;
+  if (pct <= 5)  return '🦋 시작이 반이에요! 천천히 골라보세요';
+  if (pct <= 20) return '🌸 잘 하고 있어요! 그 마음 그대로 가요';
+  if (pct <= 40) return '⭐ 꾸준히 가고 있네요!';
+  if (pct <= 55) return '🌟 절반 넘었어요! 힘내세요';
+  if (pct <= 75) return '🚀 거의 다 왔어요!';
+  if (pct <= 95) return '🎉 마지막 한 걸음!';
+  return '🎊 완료까지 한 문제!';
+}
+
+function renderBasicDots(missingIds) {
+  missingIds = missingIds || [];
+  const wrap = document.getElementById('basic-dots');
+  if (!wrap) return;
+  wrap.innerHTML = BASIC_QUESTIONS.map(q => {
+    const answered = !!BASIC_STATE.answers[q.id];
+    const isCurrent = (q.id - 1) === BASIC_STATE.currentQ;
+    const isMissing = missingIds.includes(q.id);
+    let cls = '';
+    if (answered) cls += ' answered';
+    if (isCurrent) cls += ' current';
+    if (isMissing) cls += ' missing-highlight';
+    return `<button class="basic-dot${cls}" onclick="basicJumpTo(${q.id})" title="문제 ${q.id}번${answered?' ✓ 응답완료':' · 미응답'}">${q.id}</button>`;
+  }).join('');
+}
+
+function basicJumpTo(qid) {
+  BASIC_STATE.currentQ = qid - 1;
+  renderBasicQuestion();
+}
+
 function renderBasicQuestion() {
   const q = BASIC_QUESTIONS[BASIC_STATE.currentQ];
   if (!q) return;
@@ -4503,8 +4558,10 @@ function renderBasicQuestion() {
   const answered = Object.keys(BASIC_STATE.answers).length;
 
   // 진행률 업데이트
-  document.getElementById('basic-progress-text').textContent = `${BASIC_STATE.currentQ + 1} / ${total}`;
+  document.getElementById('basic-progress-text').textContent = `${BASIC_STATE.currentQ + 1} / ${total}  ·  응답 ${answered}개`;
   document.getElementById('basic-progress-fill').style.width = ((BASIC_STATE.currentQ + 1) / total * 100) + '%';
+
+  const cheerMsg = getBasicCheer(BASIC_STATE.currentQ + 1, total);
 
   const body = document.getElementById('basic-body');
   body.innerHTML = `
@@ -4523,6 +4580,10 @@ function renderBasicQuestion() {
           `).join('')}
         </div>
       </div>
+      <div class="basic-cheer-wrap">
+        <span class="basic-cheer" key="${BASIC_STATE.currentQ}">${cheerMsg}</span>
+      </div>
+      <div class="basic-dots-wrap" id="basic-dots"></div>
       <div class="basic-nav">
         <button class="basic-nav-btn prev" onclick="basicPrev()" ${BASIC_STATE.currentQ === 0 ? 'disabled' : ''}>← 이전</button>
         ${BASIC_STATE.currentQ === total - 1
@@ -4531,6 +4592,7 @@ function renderBasicQuestion() {
       </div>
     </div>
   `;
+  renderBasicDots();
 }
 
 function answerBasic(qid, val) {
@@ -4563,12 +4625,16 @@ function basicPrev() {
 function finishBasicTest() {
   const missing = BASIC_QUESTIONS.filter(q => !BASIC_STATE.answers[q.id]);
   if (missing.length > 0) {
-    alert(`아직 답하지 않은 문제가 ${missing.length}개 있어요!\n첫 번째 빈 문제로 이동합니다.`);
+    // 첫 번째 미응답 문항으로 자동 이동
     BASIC_STATE.currentQ = missing[0].id - 1;
     renderBasicQuestion();
+    // 빨간색으로 미응답 칸 강조 표시 (3초간 깜빡임)
+    setTimeout(() => renderBasicDots(missing.map(q => q.id)), 100);
+    // 친절한 토스트 안내
+    showBasicToast(`⚠️ 아직 ${missing.length}개 문항이 남았어요! 빨갛게 깜빡이는 칸을 눌러 이동하세요`);
     return;
   }
-  // 점수 계산
+  // 점수 계산 + 결과 화면 이동
   BASIC_STATE.result = calculateBasicScores();
   saveBasicRecordToAdmin(BASIC_STATE.result);
   closeBasicTestDirect();
@@ -4615,6 +4681,17 @@ function renderBasicResult() {
   const top = BASIC_COLORS[r.top];
   const second = BASIC_COLORS[r.second];
   const body = document.getElementById('basic-result-body');
+  const _doneBanner = `
+    <div class="basic-result-done-banner">
+      <h2>🎉 진단 완료!</h2>
+      <p>${r.user.name}님의 컬러 강점 결과를 확인해보세요</p>
+      <div class="next-steps">
+        <span>📊 결과 확인</span>
+        <span>🔗 친구에게 공유</span>
+        <span>💬 후기 남기기</span>
+      </div>
+    </div>`;
+  // _doneBanner는 아래 body.innerHTML 시작 부분에 자동 삽입됨
 
   // SVG 아이콘 (디자인 결 맞춤)
   const ICON_CHART = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 14l3-3 4 4 6-6"/></svg>';
@@ -4628,6 +4705,7 @@ function renderBasicResult() {
 
   body.innerHTML = `
     <div class="basic-body-inner">
+      ${_doneBanner}
       <!-- 커버 -->
       <div class="basic-result-cover">
         <h2>${escapeHtmlMain(r.user.name)} 님은</h2>
@@ -6125,7 +6203,7 @@ if (document.readyState === 'loading') {
 // Supabase 설정 (PBS COLOR LAB 전용)
 // ============================================================
 const PBS_SUPABASE_URL = 'https://oqxlsnyuwtmjmbhgzjoz.supabase.co';
-const PBS_SUPABASE_KEY = 'sb_publishable_mn7lAEbiyw1ArefbUh9R7w_fZOdW5g0';
+const PBS_SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9xeGxzbnl1d3Rtam1iaGd6am96Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY3NTc5NDksImV4cCI6MjA5MjMzMzk0OX0.C-PPch12eVru2xhuU80WPYdBj5CJb1Py8m1-OsaGZW8';
 
 // 이 파일의 진단 종류 (성인 진단 통합 파일)
 const PBS_TEST_TYPES = ['adult_60', 'adult_basic'];
@@ -9581,8 +9659,16 @@ function renderPwPolicy(){
 function setPwPolicy(required){
   SETTINGS.pwRequired = required;
   saveSettings();
+  // 부모창 localStorage 동기화 (iframe 환경 대응 - 메인↔관리자)
+  try {
+    if (window.parent && window.parent !== window) {
+      const ps = JSON.parse(window.parent.localStorage.getItem('pbs-settings') || '{}');
+      ps.pwRequired = required;
+      window.parent.localStorage.setItem('pbs-settings', JSON.stringify(ps));
+    }
+  } catch(e) { console.warn('[PBS] 부모창 localStorage 동기화 실패:', e); }
   renderPwPolicy();
-  showToast(required ? '비밀번호 적용으로 변경되었습니다' : '비밀번호 미적용으로 변경되었습니다 (메인 사이트 새로고침 시 반영)', 'success');
+  showToast(required ? '비밀번호 적용으로 변경되었습니다' : '비밀번호 미적용으로 변경되었습니다 (메인 새로고침 시 즉시 반영)', 'success');
 }
 
 function renderNoticeButtons(){
