@@ -1375,6 +1375,16 @@ html[data-lang]:not([data-lang="ko"]) .engine-card{overflow:hidden}
 .basic-restart .btn-share{background:linear-gradient(135deg,#7030A0,#3D2F90);color:#fff;box-shadow:0 6px 18px rgba(112,48,160,0.35);display:inline-flex;align-items:center;gap:6px}
 .basic-restart .btn-restart{background:#fff;color:#7030A0;border:2px solid #E8E4F5}
 
+/* === BASIC 별점·후기 입력 === */
+.basic-feedback-stars{display:flex;gap:8px;justify-content:center;margin:18px 0}
+.basic-fb-star{background:none;border:none;font-size:36px;cursor:pointer;filter:grayscale(1);opacity:0.3;transition:all 0.2s;padding:4px}
+.basic-fb-star.active,.basic-fb-star:hover{filter:none;opacity:1;transform:scale(1.18)}
+.basic-fb-star:disabled{cursor:default}
+#basic-fb-text{width:100%;min-height:110px;padding:14px;border:2px solid #E8E4F5;border-radius:14px;font-family:var(--font);font-size:14px;line-height:1.6;resize:vertical;background:#fff;color:#3D2F90;transition:border-color 0.2s;box-sizing:border-box}
+#basic-fb-text:focus{border-color:#7030A0;outline:none;box-shadow:0 0 0 4px rgba(112,48,160,0.1)}
+#basic-fb-text:disabled{background:#F8F7FC;color:#9690B5}
+#basic-fb-thanks{margin-top:16px;padding:14px 16px;text-align:center;background:linear-gradient(135deg,rgba(0,168,120,0.1),rgba(112,48,160,0.1));border-radius:14px;color:#00A878;font-weight:800;font-size:14px;animation:cheerFlyIn 0.4s ease-out}
+
 /* Basic 결과 — 섹션 아이콘 (이모지 → SVG) */
 .section-icon{
   display:inline-flex;align-items:center;justify-content:center;
@@ -1839,7 +1849,7 @@ button.basic-job-pill:hover::after{opacity:1}
         <div class="hero-helper-chip"><svg><use href="#i-check"/></svg>10분이면 끝나는 60문항 진단</div>
         <div class="hero-helper-chip"><svg><use href="#i-check"/></svg>전문가 1:1 컨설팅 수준의 결과 리포트</div>
         <div class="hero-helper-chip"><svg><use href="#i-check"/></svg>진로·관계·자기이해 가이드 즉시 제공</div>
-        <div class="hero-helper-chip"><svg><use href="#i-check"/></svg>완전 무료 · 회원가입 불필요</div>
+
       </div>
 
       <div class="hero-cta" style="justify-content:flex-start;margin-top:8px">
@@ -3452,42 +3462,8 @@ function renderGearGrid() {
    ============================================================ */
 let _modalGearTarget = null;
 function openGearModal(gearId) {
-  // 모바일에서는 12기어 클릭 시 모달 열지 않음 (사용자 요청)
-  if (window.innerWidth <= 720) return;
-  _modalGearTarget = gearId;
-  const overlay = document.getElementById('gear-modal');
-  if (!overlay) return;
-  // 비밀번호 화면 표시
-  const D = GEAR_DETAIL[gearId];
-  overlay.querySelector('.modal').innerHTML = `
-    <button class="modal-close-btn" onclick="closeGearModal()" aria-label="닫기" style="background:rgba(0,0,0,0.4);color:#fff">
-      <svg width="18" height="18"><use href="#i-close"/></svg>
-    </button>
-    <div class="modal-pw-screen">
-      <div class="modal-pw-icon"><svg width="32" height="32"><use href="#i-lock"/></svg></div>
-      <h3>${gearId} · ${D.title}</h3>
-      <p>본 상세 분석 자료는 <strong style="color:var(--brand-purple)">PBS COLOR LAB 인증 회원</strong>에게 제공됩니다.<br>접근 비밀번호를 입력해주세요.</p>
-      <div class="modal-pw-input-wrap">
-        <input type="password" id="modal-pw" class="modal-pw-input" maxlength="4" placeholder="••••" inputmode="numeric" autocomplete="off">
-      </div>
-      <div class="modal-pw-error" id="modal-pw-error"></div>
-      <button class="btn btn-primary" onclick="verifyGearPw()" style="min-width:160px">
-        <svg width="14" height="14" style="margin-right:6px"><use href="#i-check"/></svg>
-        <span>확인</span>
-      </button>
-      <p class="modal-pw-hint">>최해숙 대표 전용 자료 · 비밀번호 문의: <strong>pbscolor77@naver.com</strong></p>
-    </div>
-  `;
-  overlay.classList.add('active');
-  document.body.style.overflow = 'hidden';
-  setTimeout(() => {
-    const inp = document.getElementById('modal-pw');
-    if (inp) {
-      inp.focus();
-      inp.addEventListener('keydown', (e) => { if (e.key === 'Enter') verifyGearPw(); });
-    }
-  }, 100);
-  ensureTranslated(overlay);
+  // 비밀번호 단계 제거 — 결과 화면에서 바로 상세 분석 보기
+  showGearDetail(gearId);
 }
 function verifyGearPw() {
   const pw = document.getElementById('modal-pw')?.value || '';
@@ -4582,6 +4558,62 @@ function basicJumpTo(qid) {
   renderBasicQuestion();
 }
 
+// === BASIC 후기 별점·제출 ===
+let _basicFbStar = 0;
+function setBasicFbStar(n) {
+  _basicFbStar = n;
+  document.querySelectorAll('.basic-fb-star').forEach((btn, i) => {
+    btn.classList.toggle('active', i < n);
+  });
+}
+function submitBasicFeedback() {
+  if (_basicFbStar === 0) {
+    showBasicToast('⭐ 별점을 선택해주세요! (1~5점)');
+    return;
+  }
+  const text = (document.getElementById('basic-fb-text')?.value || '').trim();
+  if (text.length < 1) {
+    showBasicToast('💬 한 줄이라도 후기를 적어주세요');
+    return;
+  }
+  const name = BASIC_STATE.user?.name || '익명';
+  const topColor = BASIC_STATE.result?.top || 'red';
+  const engineMap = {red:'RED',yellow:'YELLOW',green:'GREEN',blue:'BLUE',purple:'PURPLE'};
+
+  // localStorage 저장
+  try {
+    const reviews = JSON.parse(localStorage.getItem('pbs-reviews') || '[]');
+    reviews.push({
+      id: 'rev_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8),
+      timestamp: Date.now(),
+      name,
+      stars: _basicFbStar,
+      text,
+      mainEngine: engineMap[topColor] || 'RED',
+      top1: '',
+      featured: false,
+      isBasic: true
+    });
+    localStorage.setItem('pbs-reviews', JSON.stringify(reviews));
+  } catch(e) {}
+
+  // Supabase 저장
+  if (window.PBS && window.PBS.saveReview) {
+    window.PBS.saveReview({ name, stars: _basicFbStar, text, record_id: null });
+  }
+
+  // UI 잠금 + 감사 메시지
+  const submitBtn = document.getElementById('basic-fb-submit');
+  if (submitBtn) submitBtn.style.display = 'none';
+  document.querySelectorAll('.basic-fb-star').forEach(b => b.disabled = true);
+  const ta = document.getElementById('basic-fb-text');
+  if (ta) ta.disabled = true;
+  const thx = document.getElementById('basic-fb-thanks');
+  if (thx) thx.style.display = 'block';
+
+  showBasicToast('🌟 후기 감사합니다! 여러분의 반짝반짝 빛나는 아름다운 꿈을 꾸세요 ✨');
+}
+
 function renderBasicQuestion() {
   const q = BASIC_QUESTIONS[BASIC_STATE.currentQ];
   if (!q) return;
@@ -4628,25 +4660,42 @@ function renderBasicQuestion() {
   renderBasicDots();
 }
 
+// 다음 미응답 문항 인덱스 찾기 (없으면 -1)
+function findNextUnansweredQ(currentIdx) {
+  const total = BASIC_QUESTIONS.length;
+  for (let i = currentIdx + 1; i < total; i++) {
+    if (!BASIC_STATE.answers[BASIC_QUESTIONS[i].id]) return i;
+  }
+  for (let i = 0; i < currentIdx; i++) {
+    if (!BASIC_STATE.answers[BASIC_QUESTIONS[i].id]) return i;
+  }
+  return -1;
+}
+
 function answerBasic(qid, val) {
   BASIC_STATE.answers[qid] = val;
-  // 마지막(25번) 문항 답변 시 — 자동으로 결과 페이지로
-  if (BASIC_STATE.currentQ === BASIC_QUESTIONS.length - 1) {
-    setTimeout(() => finishBasicTest(), 400);
-    return;
-  }
-  // 그 외 — 자동으로 다음 문항
+  // 다음 미응답 문항 찾아 점프 (3번 답 → 4번 풀었으면 → 20번으로 자동 점프)
   setTimeout(() => {
-    BASIC_STATE.currentQ++;
-    renderBasicQuestion();
+    const next = findNextUnansweredQ(BASIC_STATE.currentQ);
+    if (next === -1) {
+      // 모든 문항 다 답함 → 결과 페이지로
+      finishBasicTest();
+    } else {
+      BASIC_STATE.currentQ = next;
+      renderBasicQuestion();
+    }
   }, 250);
 }
 
 function basicNext() {
-  if (BASIC_STATE.currentQ < BASIC_QUESTIONS.length - 1) {
+  // "다음" 버튼도 다음 미응답 문항 우선 (없으면 단순히 다음 인덱스)
+  const next = findNextUnansweredQ(BASIC_STATE.currentQ);
+  if (next !== -1) {
+    BASIC_STATE.currentQ = next;
+  } else if (BASIC_STATE.currentQ < BASIC_QUESTIONS.length - 1) {
     BASIC_STATE.currentQ++;
-    renderBasicQuestion();
   }
+  renderBasicQuestion();
 }
 function basicPrev() {
   if (BASIC_STATE.currentQ > 0) {
@@ -4801,8 +4850,10 @@ function renderBasicResult() {
         <h3><span class="section-icon" style="color:${top.dark}">${ICON_TARGET}</span>${top.name} 어울리는 직업</h3>
         <p class="basic-section-desc">
           내가 가장 빛나는 <strong style="color:${top.dark}">${top.name} 강점</strong>에 어울리는 직업이에요.
-          직업을 클릭하면 더 자세한 설명과 그 분야 유명인 예시를 볼 수 있어요!
         </p>
+        <div style="display:inline-flex;align-items:center;gap:6px;padding:8px 14px;background:linear-gradient(135deg,${top.color},${top.dark});color:#fff;border-radius:999px;font-size:12px;font-weight:800;margin-bottom:14px;box-shadow:0 4px 12px ${top.color}55;animation:cheerFlyIn 0.5s ease-out">
+          👆 직업 카드를 <strong>클릭</strong>하면 상세 설명·유명인 예시가 펼쳐져요!
+        </div>
         <div class="basic-jobs-grid">
           ${top.jobs.map(j => `
             <button type="button" class="basic-job-pill" onclick="showJobDetail('${j.replace(/'/g,'&apos;')}','${r.top}')" style="--j-bg:${top.bg};--j-color:${top.dark}">
@@ -4884,6 +4935,28 @@ function renderBasicResult() {
           <p style="margin:18px 0 0;padding:14px 16px;background:linear-gradient(135deg,rgba(112,48,160,0.08),rgba(61,47,144,0.08));border-radius:10px;font-size:13px;color:#3D2F90;line-height:1.7">
             💡 <strong>마지막으로 한 가지</strong> — 컬러 강점은 "타고난 본성"이 아니라 "현재의 자기 인식"입니다. 환경·경험·만나는 사람에 따라 강점은 변화하고 발달합니다. 진단 결과를 라벨이 아닌 <strong>아이와의 대화의 출발점</strong>으로 사용해주세요. 그것이 PBS COLOR LAB이 추구하는 진단의 본래 의미입니다.
           </p>
+        </div>
+      </div>
+
+      <!-- 별점·후기 입력 (신규) -->
+      <div class="basic-result-section" id="basic-feedback-section">
+        <h3>💬 진단 어떠셨나요? 후기·질문 남기기</h3>
+        <p style="color:#7B7995;font-size:13px;line-height:1.6;margin-bottom:14px">소중한 후기 한 줄이 다른 분들에게 큰 도움이 됩니다 ✨ 질문이나 궁금한 점도 함께 적어주세요!</p>
+        <div class="basic-feedback-stars" id="basic-fb-stars">
+          <button type="button" class="basic-fb-star" data-n="1" onclick="setBasicFbStar(1)">⭐</button>
+          <button type="button" class="basic-fb-star" data-n="2" onclick="setBasicFbStar(2)">⭐</button>
+          <button type="button" class="basic-fb-star" data-n="3" onclick="setBasicFbStar(3)">⭐</button>
+          <button type="button" class="basic-fb-star" data-n="4" onclick="setBasicFbStar(4)">⭐</button>
+          <button type="button" class="basic-fb-star" data-n="5" onclick="setBasicFbStar(5)">⭐</button>
+        </div>
+        <textarea id="basic-fb-text" placeholder="진단 결과가 어떠셨나요? 더 알고 싶은 점이나 질문도 자유롭게 적어주세요..." rows="4"></textarea>
+        <div style="text-align:center;margin-top:14px">
+          <button id="basic-fb-submit" onclick="submitBasicFeedback()" style="min-width:240px;padding:14px 28px;background:linear-gradient(135deg,#FF6B6B 0%,#FF8C42 50%,#FFD93D 100%);color:#fff;font-weight:900;font-size:15px;border:none;border-radius:999px;cursor:pointer;box-shadow:0 8px 22px rgba(255,107,107,0.45);transition:all 0.3s cubic-bezier(0.34,1.56,0.64,1);font-family:var(--font);letter-spacing:-0.01em" onmouseover="this.style.transform='translateY(-3px) scale(1.04)';this.style.boxShadow='0 12px 28px rgba(255,107,107,0.6)'" onmouseout="this.style.transform='';this.style.boxShadow='0 8px 22px rgba(255,107,107,0.45)'">
+            💌 후기 보내기
+          </button>
+        </div>
+        <div id="basic-fb-thanks" style="display:none">
+          🌟 여러분의 반짝반짝 빛나는 아름다운 꿈을 꾸세요 ✨
         </div>
       </div>
 
@@ -4993,10 +5066,14 @@ function closeJobDetail() {
 }
 
 function shareBasicResult() {
-  // 결과 텍스트 + 사이트 링크 함께 복사
-  const url = window.location.href.split('#')[0].split('?')[0];
+  // file:// 환경에서는 카톡으로 보내도 클릭 안 되므로 PBS_PUBLIC_URL 우선 사용
+  let url = window.location.href.split('#')[0].split('?')[0];
+  if (url.startsWith('file://') || url.startsWith('about:') || (typeof PBS_PUBLIC_URL !== 'undefined' && PBS_PUBLIC_URL)) {
+    if (typeof PBS_PUBLIC_URL !== 'undefined' && PBS_PUBLIC_URL) {
+      url = PBS_PUBLIC_URL;
+    }
+  }
   const r = BASIC_STATE.result;
-
   let shareText;
   if (r && r.top) {
     const colorMeta = (typeof BASIC_COLORS !== 'undefined' && BASIC_COLORS[r.top]) ? BASIC_COLORS[r.top] : null;
@@ -5007,20 +5084,31 @@ function shareBasicResult() {
     shareText = `🎁 PBS 컬러강점 진단 — 무료 체험\n나에게 어떤 컬러 강점이 있는지 확인해보세요!\n\n${url}`;
   }
 
-  // 1) 모바일·HTTPS 환경: Web Share API (가장 자연스러움)
+  // ✨ 즉시 토스트 (사용자 체감 속도 ↑) — 클립보드 작업은 백그라운드
+  showBasicToast('📋 결과 텍스트를 클립보드에 복사하고 있어요...');
+
+  // 1) 클립보드 API (HTTPS·localhost) — 빠른 성공 시 navigator.share보다 빠름
+  if (navigator.clipboard && navigator.clipboard.writeText && window.isSecureContext) {
+    navigator.clipboard.writeText(shareText).then(() => {
+      showBasicToast('✅ 복사 완료! 카톡·메시지에 붙여넣기하면 친구가 같은 진단을 받을 수 있어요 🎁');
+    }).catch(() => {
+      // 클립보드 실패 → Web Share API 시도
+      if (navigator.share) {
+        navigator.share({title:'PBS 컬러강점 결과', text:shareText, url:url}).catch(() => basicLegacyCopy(shareText));
+      } else {
+        basicLegacyCopy(shareText);
+      }
+    });
+    return;
+  }
+  // 2) 모바일·http: Web Share API
   if (navigator.share) {
     navigator.share({title:'PBS 컬러강점 결과', text:shareText, url:url})
+      .then(() => showBasicToast('✅ 공유했어요! 🎁'))
       .catch(() => basicLegacyCopy(shareText));
     return;
   }
-  // 2) 클립보드 API (HTTPS·https://localhost)
-  if (navigator.clipboard && navigator.clipboard.writeText) {
-    navigator.clipboard.writeText(shareText).then(() => {
-      showBasicToast('결과가 복사되었어요! 친구에게 보내보세요 🎁');
-    }).catch(() => basicLegacyCopy(shareText));
-    return;
-  }
-  // 3) fallback (file:// 로컬 파일 등)
+  // 3) fallback
   basicLegacyCopy(shareText);
 }
 
@@ -5651,7 +5739,7 @@ function renderResult(r) {
           <p>${r.combo.desc}</p>
         </div>
         <div class="combo-pair">
-          <div class="combo-side" style="--engine-color:${top1Eng.color};cursor:pointer" onclick="openGearModal('${r.top1.gear}')" title="클릭 시 상세 분석 (비번 8808)">
+          <div class="combo-side" style="--engine-color:${top1Eng.color};cursor:pointer" onclick="openGearModal('${r.top1.gear}')" title="클릭하면 심층 분석 펼쳐보기">
             <div class="combo-side-head">
               <div class="combo-side-circle">${r.top1.gear}</div>
               <div>
@@ -5661,10 +5749,10 @@ function renderResult(r) {
             </div>
             <p class="interp">${G1.desc}</p>
             <div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--border-subtle);font-size:11px;color:${top1Eng.color};font-weight:700;letter-spacing:0.06em;display:flex;align-items:center;gap:6px">
-              <svg width="11" height="11"><use href="#i-lock"/></svg> 클릭 · 심층 분석 보기
+              <svg width="11" height="11"><use href="#i-arrow"/></svg> 클릭 · 심층 분석 펼쳐보기
             </div>
           </div>
-          <div class="combo-side" style="--engine-color:${top2Eng.color};cursor:pointer" onclick="openGearModal('${r.top2.gear}')" title="클릭 시 상세 분석 (비번 8808)">
+          <div class="combo-side" style="--engine-color:${top2Eng.color};cursor:pointer" onclick="openGearModal('${r.top2.gear}')" title="클릭하면 심층 분석 펼쳐보기">
             <div class="combo-side-head">
               <div class="combo-side-circle">${r.top2.gear}</div>
               <div>
@@ -5674,7 +5762,7 @@ function renderResult(r) {
             </div>
             <p class="interp">${G2.desc}</p>
             <div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--border-subtle);font-size:11px;color:${top2Eng.color};font-weight:700;letter-spacing:0.06em;display:flex;align-items:center;gap:6px">
-              <svg width="11" height="11"><use href="#i-lock"/></svg> 클릭 · 심층 분석 보기
+              <svg width="11" height="11"><use href="#i-arrow"/></svg> 클릭 · 심층 분석 펼쳐보기
             </div>
           </div>
         </div>
@@ -6254,6 +6342,9 @@ if (document.readyState === 'loading') {
 // Supabase 설정 (PBS COLOR LAB 전용)
 // ============================================================
 const PBS_SUPABASE_URL = 'https://oqxlsnyuwtmjmbhgzjoz.supabase.co';
+// 공유 URL — Vercel·도메인 배포 후 여기에 정확한 URL 입력 (file:// 환경 대응)
+// 예: 'https://pbscolor.com' 또는 'https://pbs-color-xxxx.vercel.app'
+const PBS_PUBLIC_URL = 'https://pbscolor-4.vercel.app';
 const PBS_SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9xeGxzbnl1d3Rtam1iaGd6am96Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY3NTc5NDksImV4cCI6MjA5MjMzMzk0OX0.C-PPch12eVru2xhuU80WPYdBj5CJb1Py8m1-OsaGZW8';
 
 // 이 파일의 진단 종류 (성인 진단 통합 파일)
@@ -6437,6 +6528,9 @@ window.PBS.syncRecordsToLocal = async function() {
     return { ok:false };
   }
   try {
+    // 시드 데이터 패턴 (Supabase에서 가져올 때 자동 필터링)
+    const SEED_NAMES = ['김민지','박서준','이수정','정은혁','윤지호','강예린','한도윤','오세영','임채원','조민준','서다은','신하준','문지윤','배현우','송예진','김O진','박O수','이O연','정O윤','최O호','강O희','서O정'];
+
     // 1) 진단 기록 가져오기
     const { data: srecs, error: e1 } = await window.pbsDB
       .from('pbs_records').select('*')
@@ -6447,10 +6541,25 @@ window.PBS.syncRecordsToLocal = async function() {
 
     // localStorage 기존 기록 (이 브라우저에서 만든 것)
     const localRecords = JSON.parse(localStorage.getItem('pbs-records') || '[]');
-    const localIds = new Set(localRecords.map(r => r.id || r._supabase_id));
+    const localIds = new Set(localRecords.map(r => r.id || r._supabase_id).filter(Boolean));
+    // 추가 중복 키: name + timestamp 조합 (id 다른데 같은 진단일 가능성 차단)
+    const localKeys = new Set(localRecords.map(r => `${r.user?.name||''}_${Math.floor((r.timestamp||0)/60000)}`));
 
-    // Supabase 기록 → localStorage 형식으로 변환
-    const converted = (srecs || []).map(r => ({
+    // Supabase 기록 → localStorage 형식으로 변환 + 시드 필터 + 중복 제거
+    const converted = (srecs || [])
+      .filter(r => {
+        // 시드 이름 패턴 제외
+        const n = r.user_name || '';
+        if (SEED_NAMES.some(p => n.startsWith(p))) return false;
+        // ID 중복 제외
+        if (localIds.has(r.id)) return false;
+        // name+timestamp 키 중복 제외
+        const k = `${n}_${Math.floor(new Date(r.created_at).getTime()/60000)}`;
+        if (localKeys.has(k)) return false;
+        localKeys.add(k);
+        return true;
+      })
+      .map(r => ({
       id: r.id,
       _supabase_id: r.id,
       _from_supabase: true,
@@ -6473,7 +6582,7 @@ window.PBS.syncRecordsToLocal = async function() {
       top2: { gear: '', name: '', percent: 0 },
       duration: Math.round((r.duration_sec || 300) / 60),
       feedback: null
-    })).filter(r => !localIds.has(r.id));
+    }));
 
     // 병합 + 시간순 정렬
     const merged = [...localRecords, ...converted]
@@ -7789,6 +7898,14 @@ tbody tr:last-child td{border-bottom:none}
               <svg width="13" height="13"><use href="#i-upload"/></svg>
               <span>샘플 데이터 추가</span>
             </button>
+            <button class="topbar-btn" onclick="deleteAllSampleData()" style="background:rgba(255,51,102,0.1);color:var(--red);border-color:rgba(255,51,102,0.3)">
+              <svg width="13" height="13"><use href="#i-trash"/></svg>
+              <span>🧹 샘플 모두 삭제</span>
+            </button>
+            <button class="topbar-btn" onclick="resetAllLocalData()" style="background:rgba(255,51,102,0.18);color:#fff;border-color:#FF3366">
+              <svg width="13" height="13"><use href="#i-trash"/></svg>
+              <span>⚠️ 전체 초기화</span>
+            </button>
           </div>
         </div>
         <div class="tbl-wrap">
@@ -7818,9 +7935,17 @@ tbody tr:last-child td{border-bottom:none}
             </select>
           </div>
           <div style="overflow-x:auto;-webkit-overflow-scrolling:touch">
+            <div style="display:flex;gap:10px;align-items:center;margin-bottom:12px;padding:10px 14px;background:rgba(255,51,102,0.06);border-radius:10px;border:1px solid rgba(255,51,102,0.15)">
+              <button class="btn-sm danger" onclick="deleteSelectedRecords()" style="display:inline-flex;align-items:center;gap:6px">
+                <svg width="13" height="13"><use href="#i-trash"/></svg>
+                <span>🗑️ 선택 삭제 (<span id="selected-count">0</span>)</span>
+              </button>
+              <span style="font-size:12px;color:var(--text-muted)">왼쪽 체크박스로 여러 항목을 선택해 한 번에 삭제할 수 있어요</span>
+            </div>
             <table id="records-table">
               <thead>
                 <tr>
+                  <th style="width:34px;text-align:center"><input type="checkbox" id="records-check-all" onclick="toggleAllRecords(this.checked)" title="전체 선택"></th>
                   <th data-sort="idx">#</th>
                   <th data-sort="testType">유형</th>
                   <th data-sort="name">이름</th>
@@ -7979,9 +8104,17 @@ tbody tr:last-child td{border-bottom:none}
             </select>
           </div>
           <div style="overflow-x:auto;-webkit-overflow-scrolling:touch">
+            <div style="display:flex;gap:10px;align-items:center;margin-bottom:12px;padding:10px 14px;background:rgba(255,51,102,0.06);border-radius:10px;border:1px solid rgba(255,51,102,0.15)">
+              <button class="btn-sm danger" onclick="deleteSelectedInquiries()" style="display:inline-flex;align-items:center;gap:6px">
+                <svg width="13" height="13"><use href="#i-trash"/></svg>
+                <span>🗑️ 선택 삭제 (<span id="selected-inq-count">0</span>)</span>
+              </button>
+              <span style="font-size:12px;color:var(--text-muted)">왼쪽 체크박스로 여러 항목을 선택해 한 번에 삭제할 수 있어요</span>
+            </div>
             <table>
               <thead>
                 <tr>
+                  <th style="width:34px;text-align:center"><input type="checkbox" id="inq-check-all" onclick="toggleAllInquiries(this.checked)" title="전체 선택"></th>
                   <th>#</th>
                   <th>유형</th>
                   <th>이름</th>
@@ -8434,13 +8567,44 @@ function loadData(){
     if(n) NOTICE = {...NOTICE, ...n};
   }catch(e){}
 
-  // 첫 방문 시 샘플 데이터 자동 생성
-  if(RECORDS.length === 0 && REVIEWS.length === 0 && INQUIRIES.length === 0){
-    seedSampleData();
-  }
+  // 샘플 데이터 자동 생성 — 비활성화됨 (운영자 요청)
+  // 매번 진입할 때마다 샘플 패턴 정리 (이전 데이터에 _isSample 플래그가 없을 수 있어 강제 적용)
+  cleanAllSampleData();
 
   // 기존 짧은 시드 후기를 풍성한 버전으로 마이그레이션 (이미 시드된 사용자 대응)
-  migrateOldShortReviews();
+  // migrateOldShortReviews();   // 시드 후기 자체를 정리하므로 마이그레이션 불필요
+}
+
+// 샘플 데이터 강제 정리 (이름 패턴 + 시드 텍스트 패턴 + _isSample 플래그 매칭)
+function cleanAllSampleData(){
+  const sampleNamePatterns = ['김민지','박서준','이수정','정은혁','윤지호','강예린','한도윤','오세영','임채원','조민준','서다은','신하준','문지윤','배현우','송예진','김O진','박O수','이O연','정O윤','최O호','강O희','서O정'];
+  // 시드 후기 첫 30자 패턴 (긴 시드 텍스트 식별용)
+  const sampleReviewPrefixes = ['진단 결과를 보고 정말 놀랐어요','업무 스타일을 이해하는 데','진로 가이드 부분이 특히','관계 분석이 정말 인상적','다른 사람에게도 적극','처음엔 반신반의','회사 단체로 받았는데','결과지를 받고 한참','인생 전환기에 받았','20대 후반에 진로','리더십 책임을 맡게','오랜만에 양질의','프리랜서로 일하면서','엄마와 갈등이','퇴직을 앞두고'];
+  const before1 = RECORDS.length, before2 = REVIEWS.length, before3 = INQUIRIES.length;
+
+  RECORDS = RECORDS.filter(r => {
+    if (r._isSample) return false;
+    const n = r.user?.name || '';
+    return !sampleNamePatterns.some(p => n.startsWith(p));
+  });
+  REVIEWS = REVIEWS.filter(r => {
+    if (r._isSample) return false;
+    const n = r.name || '';
+    if (sampleNamePatterns.some(p => n.startsWith(p))) return false;
+    const t = (r.text || '').slice(0, 30);
+    if (sampleReviewPrefixes.some(p => t.includes(p))) return false;
+    return true;
+  });
+  INQUIRIES = INQUIRIES.filter(i => {
+    if (i._isSample) return false;
+    const n = i.name || '';
+    return !sampleNamePatterns.some(p => n.startsWith(p));
+  });
+
+  if (RECORDS.length !== before1) saveRecords();
+  if (REVIEWS.length !== before2) saveReviews();
+  if (INQUIRIES.length !== before3) saveInquiries();
+  console.log(`[PBS] 샘플 데이터 정리: 진단 ${before1-RECORDS.length}건, 후기 ${before2-REVIEWS.length}건, 문의 ${before3-INQUIRIES.length}건 삭제`);
 }
 
 function migrateOldShortReviews(){
@@ -8632,10 +8796,54 @@ function seedSampleData(){
 }
 
 function addSampleData(){
+  if (!confirm('샘플 데이터를 추가하시겠습니까?\n(테스트·시연용 가짜 데이터 15건 생성)\n\n나중에 "샘플 정리" 버튼으로 한 번에 제거 가능합니다.')) return;
   seedSampleData();
+  // 모든 시드 데이터에 _isSample 플래그 추가 (나중에 일괄 정리 가능)
   loadData();
+  RECORDS.forEach(r => { if (!r._isSample) r._isSample = true; });
+  REVIEWS.forEach(r => { if (!r._isSample) r._isSample = true; });
+  INQUIRIES.forEach(i => { if (!i._isSample) i._isSample = true; });
+  saveRecords(); saveReviews(); saveInquiries();
   refreshAll();
-  showToast('샘플 데이터를 추가했습니다', 'success');
+  showToast('샘플 데이터를 추가했습니다 (15건)', 'success');
+}
+
+function deleteAllSampleData(){
+  showConfirm({
+    title: '샘플 데이터를 모두 삭제하시겠습니까?',
+    msg: '실제 진단 결과는 그대로 유지되고, 샘플 표시된 항목만 삭제됩니다.',
+    onOk: () => {
+      const before1 = RECORDS.length, before2 = REVIEWS.length, before3 = INQUIRIES.length;
+      RECORDS = RECORDS.filter(r => !r._isSample);
+      REVIEWS = REVIEWS.filter(r => !r._isSample);
+      INQUIRIES = INQUIRIES.filter(i => !i._isSample);
+      saveRecords(); saveReviews(); saveInquiries();
+      refreshAll();
+      const total = (before1-RECORDS.length) + (before2-REVIEWS.length) + (before3-INQUIRIES.length);
+      showToast(`샘플 ${total}건 삭제 완료`, 'success');
+    }
+  });
+}
+
+// 🚨 모든 로컬 데이터 초기화 (검사기록·후기·문의 — 깨끗한 상태로)
+function resetAllLocalData(){
+  showConfirm({
+    title: '⚠️ 모든 데이터를 정말 초기화하시겠습니까?',
+    msg: '검사 기록·후기·문의가 모두 삭제됩니다. (실제 사용자 데이터 포함) 이 작업은 되돌릴 수 없습니다.\n\nSupabase 클라우드 데이터는 별도로 처리해야 합니다.',
+    onOk: () => {
+      const total = RECORDS.length + REVIEWS.length + INQUIRIES.length;
+      RECORDS = []; REVIEWS = []; INQUIRIES = [];
+      saveRecords(); saveReviews(); saveInquiries();
+      // localStorage 직접 비우기 (혹시 모를 잔재 정리)
+      try {
+        localStorage.removeItem('pbs-records');
+        localStorage.removeItem('pbs-reviews');
+        localStorage.removeItem('pbs-inquiries');
+      } catch(e) {}
+      refreshAll();
+      showToast(`전체 ${total}건 초기화 완료. 깨끗한 상태입니다 ✨`, 'success');
+    }
+  });
 }
 
 // ────────────────────────────────────────────────────────────
@@ -8994,7 +9202,7 @@ function renderRecords(){
   const list = getFilteredRecords();
   const tbody = document.getElementById('records-tbody');
   if(list.length === 0){
-    tbody.innerHTML = `<tr><td colspan="13">${renderEmpty('검사 기록이 없습니다', '필터 조건을 바꿔보거나 샘플 데이터를 추가하세요')}</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="14">${renderEmpty('검사 기록이 없습니다', '필터 조건을 바꿔보거나 샘플 데이터를 추가하세요')}</td></tr>`;
     document.getElementById('records-summary').textContent = '총 0건';
     document.getElementById('records-pagination').innerHTML = '';
   } else {
@@ -9009,6 +9217,7 @@ function renderRecords(){
         : `<span class="engine-pill" style="--engine-bg:rgba(112,48,160,0.14);--engine-color:#7030A0">✨ Premium</span>`;
       return `
       <tr>
+        <td style="text-align:center"><input type="checkbox" class="record-check" data-id="${r.id}" onclick="updateSelectedCount()"></td>
         <td class="text-muted">${start + i + 1}</td>
         <td>${tBadge}</td>
         <td><strong>${escapeHtml(r.user.name||'—')}</strong></td>
@@ -9216,6 +9425,38 @@ function confirmDeleteRecord(id, fromModal=false){
       if(fromModal) closeModal();
       refreshAll();
       showToast('진단 기록을 삭제했습니다', 'success');
+    }
+  });
+}
+
+// ── 일괄 삭제 (체크박스 선택 → 한 번에 삭제) ──
+function toggleAllRecords(checked){
+  document.querySelectorAll('.record-check').forEach(c => c.checked = checked);
+  updateSelectedCount();
+}
+function updateSelectedCount(){
+  const n = document.querySelectorAll('.record-check:checked').length;
+  const el = document.getElementById('selected-count');
+  if (el) el.textContent = n;
+}
+function deleteSelectedRecords(){
+  const checked = Array.from(document.querySelectorAll('.record-check:checked'));
+  if (checked.length === 0) {
+    showToast('삭제할 항목을 체크박스로 선택해주세요', 'warning');
+    return;
+  }
+  showConfirm({
+    title: `${checked.length}건의 검사 기록을 삭제하시겠습니까?`,
+    msg: '삭제된 기록은 복원할 수 없습니다. 신중하게 결정해주세요.',
+    onOk: () => {
+      const ids = checked.map(c => c.dataset.id);
+      RECORDS = RECORDS.filter(r => !ids.includes(r.id));
+      saveRecords();
+      // 전체 선택 체크박스 초기화
+      const all = document.getElementById('records-check-all');
+      if (all) all.checked = false;
+      refreshAll();
+      showToast(`${ids.length}건 삭제 완료`, 'success');
     }
   });
 }
@@ -9593,10 +9834,11 @@ function renderInquiries(){
 
   const tbody = document.getElementById('inquiries-tbody');
   if(list.length === 0){
-    tbody.innerHTML = `<tr><td colspan="10">${renderEmpty('문의가 없습니다','메인 사이트의 문의폼을 통해 접수되는 문의가 표시됩니다')}</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="11">${renderEmpty('문의가 없습니다','메인 사이트의 문의폼을 통해 접수되는 문의가 표시됩니다')}</td></tr>`;
   } else {
     tbody.innerHTML = list.map((i, idx) => `
       <tr>
+        <td style="text-align:center"><input type="checkbox" class="inq-check" data-id="${i.id}" onclick="updateInqSelectedCount()"></td>
         <td class="text-muted">${idx+1}</td>
         <td><span class="engine-pill" style="--engine-bg:rgba(112,48,160,0.14);--engine-color:var(--purple)">${escapeHtml(i.type||'기타')}</span></td>
         <td><strong>${escapeHtml(i.name||'—')}</strong></td>
@@ -9628,6 +9870,37 @@ function toggleInqStatus(id){
   refreshAll();
   showToast(`상태를 '${i.status==='replied'?'답변완료':'미답변'}'로 변경했습니다`, 'success');
 }
+// ── 문의 일괄 삭제 ──
+function toggleAllInquiries(checked){
+  document.querySelectorAll('.inq-check').forEach(c => c.checked = checked);
+  updateInqSelectedCount();
+}
+function updateInqSelectedCount(){
+  const n = document.querySelectorAll('.inq-check:checked').length;
+  const el = document.getElementById('selected-inq-count');
+  if (el) el.textContent = n;
+}
+function deleteSelectedInquiries(){
+  const checked = Array.from(document.querySelectorAll('.inq-check:checked'));
+  if (checked.length === 0) {
+    showToast('삭제할 항목을 체크박스로 선택해주세요', 'warning');
+    return;
+  }
+  showConfirm({
+    title: `${checked.length}건의 문의를 삭제하시겠습니까?`,
+    msg: '삭제 후 복원할 수 없습니다.',
+    onOk: () => {
+      const ids = checked.map(c => c.dataset.id);
+      INQUIRIES = INQUIRIES.filter(i => !ids.includes(i.id));
+      saveInquiries();
+      const all = document.getElementById('inq-check-all');
+      if (all) all.checked = false;
+      refreshAll();
+      showToast(`${ids.length}건 삭제 완료`, 'success');
+    }
+  });
+}
+
 function deleteInquiry(id){
   showConfirm({
     title:'문의를 삭제하시겠습니까?',
