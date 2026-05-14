@@ -3,6 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 <meta name="theme-color" content="#FF8C42">
 <title>PBS 컬러강점 어린이버전 — 나는 어떤 컬러 강점을 가지고 있을까요?</title>
 
@@ -85,6 +88,15 @@ img{max-width:100%;display:block}
   box-shadow:0 4px 14px rgba(255,140,66,0.4);transition:all var(--t-base) var(--ease);
 }
 .header-cta:hover{transform:translateY(-2px);box-shadow:0 8px 22px rgba(255,140,66,0.5)}
+.header-admin-btn{
+  padding:10px 16px;border-radius:var(--r-full);font-weight:800;font-size:13px;
+  background:linear-gradient(135deg,#3D2F90,#7030A0);color:#fff;
+  box-shadow:0 4px 14px rgba(112,48,160,0.35);transition:all var(--t-base) var(--ease);
+  white-space:nowrap;
+}
+.header-admin-btn:hover{transform:translateY(-2px);box-shadow:0 8px 22px rgba(112,48,160,0.5)}
+@media (max-width:480px){.header-admin-btn{padding:8px 12px;font-size:12px}}
+
 
 /* ===== HERO ===== */
 .hero{
@@ -307,13 +319,39 @@ img{max-width:100%;display:block}
   line-height:1.5;letter-spacing:-0.02em;margin-bottom:30px;
 }
 
-/* 3점 척도 답변 (😊🙂😐) */
-.q-scale{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+/* 답변 선택 시 문제 카드 전체가 컬러로 채워짐 */
+.q-card.has-answer{
+  background:linear-gradient(135deg, var(--q-bg), var(--q-bg)) !important;
+  border:4px solid var(--q-color) !important;
+  box-shadow:0 16px 48px var(--q-color) !important;
+  transform:scale(1.01);
+  transition:all 200ms cubic-bezier(0.34,1.56,0.64,1);
+}
+.q-card.has-answer .q-engine-tag{
+  transform:scale(1.08);
+  box-shadow:0 6px 18px rgba(0,0,0,0.15);
+}
+.q-card.has-answer .q-num,
+.q-card.has-answer .q-text{
+  color:var(--q-color);
+  font-weight:900;
+}
+.q-card.has-answer .q-num{opacity:0.85}
+
+/* 5점 척도 답변 (★~★★★★★) */
+.q-scale{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+@media (max-width:560px){
+  .q-scale{grid-template-columns:repeat(5,1fr);gap:5px}
+}
 .scale-btn{
-  background:#F8F6FA;border:3px solid #E8E4F5;border-radius:var(--r-lg);
-  padding:24px 12px;cursor:pointer;font-family:var(--font);
-  display:flex;flex-direction:column;align-items:center;gap:10px;
+  background:#F8F6FA;border:3px solid #E8E4F5;border-radius:var(--r-md);
+  padding:18px 6px;cursor:pointer;font-family:var(--font);
+  display:flex;flex-direction:column;align-items:center;gap:8px;
   transition:all var(--t-base) var(--ease);position:relative;
+  min-height:130px;
+}
+@media (max-width:560px){
+  .scale-btn{padding:14px 4px;gap:6px;min-height:110px;border-width:2px}
 }
 .scale-btn:hover{transform:translateY(-4px);border-color:var(--q-color);background:#fff;box-shadow:0 8px 22px rgba(155,89,182,0.15)}
 .scale-btn.selected{
@@ -334,11 +372,14 @@ img{max-width:100%;display:block}
 .scale-btn.selected .scale-emoji,
 .scale-btn.selected .scale-label{color:#fff}
 .scale-stars-big{
-  font-size:36px;letter-spacing:2px;color:#FFD93D;line-height:1;font-weight:900;
+  font-size:22px;letter-spacing:1px;color:#FFD93D;line-height:1;font-weight:900;
   text-shadow:0 2px 4px rgba(245,166,35,0.3);
 }
-.scale-label{font-size:15px;font-weight:800;color:var(--text-main);text-align:center}
-.scale-score{font-size:12px;font-weight:900;color:var(--purple);background:rgba(155,89,182,0.12);padding:3px 10px;border-radius:999px;letter-spacing:-0.01em}
+@media (max-width:560px){.scale-stars-big{font-size:16px;letter-spacing:0}}
+.scale-label{font-size:12px;font-weight:800;color:var(--text-main);text-align:center;line-height:1.3}
+@media (max-width:560px){.scale-label{font-size:10.5px}}
+.scale-score{font-size:11px;font-weight:900;color:var(--purple);background:rgba(155,89,182,0.12);padding:2px 8px;border-radius:999px;letter-spacing:-0.01em}
+@media (max-width:560px){.scale-score{font-size:10px;padding:2px 6px}}
 .scale-btn.selected .scale-stars-big{color:#FFD93D;text-shadow:0 2px 6px rgba(255,217,61,0.6)}
 .scale-btn.selected .scale-score{background:rgba(255,255,255,0.25);color:#fff}
 
@@ -679,7 +720,10 @@ img{max-width:100%;display:block}
       <strong>PBS 컬러강점</strong>
       <span class="logo-sub">어린이버전</span>
     </a>
-    <button class="header-cta" onclick="openIntroModal()">진단 시작 →</button>
+    <div style="display:flex;gap:8px;align-items:center">
+      <button class="header-admin-btn" onclick="openAdminMode()" title="관리자 페이지">⚙️ 관리자</button>
+      <button class="header-cta" onclick="openIntroModal()">진단 시작 →</button>
+    </div>
   </div>
 </header>
 
@@ -1019,6 +1063,16 @@ img{max-width:100%;display:block}
 <title>PBS COLOR LAB · Admin Console</title>
 <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <style>
+/* 검사 기록 체크박스 */
+.rec-check, #rec-check-all{
+  width:18px;height:18px;cursor:pointer;accent-color:#7030A0;
+}
+.topbar-btn.danger{
+  background:linear-gradient(135deg,#FF3366,#FF8C42);color:#fff;border:0;
+}
+.topbar-btn.danger:hover{filter:brightness(1.1);transform:translateY(-1px)}
+
+
 /* ============================================================
    PBS COLOR LAB · ADMIN CONSOLE
    Design System: Navy Indigo + Royal Purple, Dark-first
@@ -2062,7 +2116,7 @@ tbody tr:last-child td{border-bottom:none}
 </svg>
 
 <!-- ═══════════════════════════════════════════════════════════
-     LOCK SCREEN (비밀번호 8808)
+     LOCK SCREEN (비밀번호 8801)
      ═══════════════════════════════════════════════════════════ -->
 <div class="lock-screen" id="lock-screen">
   <div class="lock-card">
@@ -2164,7 +2218,7 @@ tbody tr:last-child td{border-bottom:none}
         <span class="topbar-sub" id="topbar-sub">PBS COLOR LAB Admin</span>
       </div>
       <div class="topbar-actions">
-        <button class="topbar-btn" onclick="refreshAll()">
+        <button class="topbar-btn" onclick="syncFromCloudAndRefresh()">
           <svg width="13" height="13"><use href="#i-refresh"/></svg>
           <span>새로고침</span>
         </button>
@@ -2262,6 +2316,10 @@ tbody tr:last-child td{border-bottom:none}
             <p>전체 진단 결과 검색·필터·관리</p>
           </div>
           <div class="page-actions">
+            <button class="topbar-btn danger" id="rec-bulk-delete" onclick="confirmDeleteSelectedRecords()" style="display:none">
+              <svg width="13" height="13"><use href="#i-trash"/></svg>
+              <span>선택 항목 삭제 (<span id="rec-checked-count">0</span>건)</span>
+            </button>
             <button class="topbar-btn" onclick="addSampleData()">
               <svg width="13" height="13"><use href="#i-upload"/></svg>
               <span>샘플 데이터 추가</span>
@@ -2274,11 +2332,6 @@ tbody tr:last-child td{border-bottom:none}
               <svg width="16" height="16"><use href="#i-search"/></svg>
               <input type="text" class="search-input" id="rec-search" placeholder="이름·이메일·직업·소속 검색...">
             </div>
-            <select class="filter-select" id="rec-filter-type">
-              <option value="">전체 유형</option>
-              <option value="basic">🌈 Basic (학생용)</option>
-              <option value="premium">✨ Premium (전문가용)</option>
-            </select>
             <select class="filter-select" id="rec-filter-engine">
               <option value="">전체 엔진</option>
               <option value="RED">🔴 RED 추진</option>
@@ -2298,8 +2351,8 @@ tbody tr:last-child td{border-bottom:none}
             <table id="records-table">
               <thead>
                 <tr>
+                  <th style="width:36px"><input type="checkbox" id="rec-check-all" onclick="toggleAllRecordCheck(this)"></th>
                   <th data-sort="idx">#</th>
-                  <th data-sort="testType">유형</th>
                   <th data-sort="name">이름</th>
                   <th data-sort="job">직업</th>
                   <th data-sort="org">소속</th>
@@ -2716,7 +2769,8 @@ tbody tr:last-child td{border-bottom:none}
    ============================================================ */
 
 // ── Storage Keys ──
-const KEY_RECORDS = 'pbs-records';
+const KEY_RECORDS = 'pbs-child-records';
+const KEY_RECORDS_LEGACY = 'pbs-records'; // 어른판과 공유하던 옛 키 (1회 이관용)
 const KEY_REVIEWS = 'pbs-reviews';
 const KEY_INQUIRIES = 'pbs-inquiries';
 const KEY_CONTENT = 'pbs-content';
@@ -2760,7 +2814,7 @@ let REVIEWS_FILTER = {search:'', stars:'', featured:''};
 // ────────────────────────────────────────────────────────────
 // LOCK SCREEN
 // ────────────────────────────────────────────────────────────
-const ADMIN_PW = '8808';
+const ADMIN_PW = '8801';
 
 function checkSession(){
   try{
@@ -2906,8 +2960,60 @@ function navigateTo(pageId){
 // DATA LOAD / SAVE
 // ────────────────────────────────────────────────────────────
 function loadData(){
-  try{ RECORDS = JSON.parse(localStorage.getItem(KEY_RECORDS) || '[]'); }catch(e){ RECORDS = []; }
-  try{ REVIEWS = JSON.parse(localStorage.getItem(KEY_REVIEWS) || '[]'); }catch(e){ REVIEWS = []; }
+  try{
+    // 1) 어린이 전용 키 로드
+    let _loaded = JSON.parse(localStorage.getItem(KEY_RECORDS) || '[]');
+    // 어린이 키에 어른 데이터가 잘못 섞여 있으면 1회 청소
+    const _beforeClean = _loaded.length;
+    _loaded = _loaded.filter(r => r && (r.testType === 'child' || r.test_type === 'child_30' || r.test_type === 'child'));
+    if(_loaded.length !== _beforeClean){
+      console.log('[PBS-Child Admin] 어린이 키에서 어른 데이터 ' + (_beforeClean - _loaded.length) + '건 정리');
+      localStorage.setItem(KEY_RECORDS, JSON.stringify(_loaded));
+    }
+    RECORDS = _loaded;
+    // 2) 옛 'pbs-records'에 섞여있던 어린이 데이터 1회 이관 + 어른 데이터는 필터링 제외
+    try{
+      const legacy = JSON.parse(localStorage.getItem(KEY_RECORDS_LEGACY) || '[]');
+      const childLegacy = legacy.filter(r => r && (r.testType === 'child' || r.test_type === 'child_30' || r.test_type === 'child'));
+      if(childLegacy.length){
+        const haveIds = new Set(RECORDS.map(r => r.id).filter(Boolean));
+        const adds = childLegacy.filter(r => !haveIds.has(r.id));
+        if(adds.length){
+          RECORDS = [...RECORDS, ...adds].sort((a,b)=>(b.timestamp||0)-(a.timestamp||0));
+          localStorage.setItem(KEY_RECORDS, JSON.stringify(RECORDS));
+          console.log('[PBS-Child Admin] 옛 데이터에서 어린이 기록 ' + adds.length + '건 이관');
+        }
+      }
+    }catch(e){ console.warn('legacy 이관 스킵', e); }
+    // 3) 어른 데이터가 섞여 있으면 한 번 더 필터 + 모든 기록을 testType: 'child' 로 정규화
+    RECORDS = RECORDS
+      .filter(r => r && (r.testType === 'child' || r.test_type === 'child_30' || r.test_type === 'child'))
+      .map(r => ({ ...r, testType: 'child' }));  // ← 필드 차이로 표시 필터가 막히는 문제 해결
+    // 4) phantom(잘못된) 기록 자동 제거 — NaN 날짜·top1.gear 없는 기록은 옛 중복 저장 버그 잔재
+    const _beforePhantom = RECORDS.length;
+    RECORDS = RECORDS.filter(r => {
+      const hasValidTime = r.timestamp && !isNaN(r.timestamp) && r.timestamp > 0;
+      const hasValidTop = r.top1 && r.top1.gear && r.top1.gear.length > 0 && r.top1.gear !== '—';
+      const hasValidName = r.user && r.user.name && r.user.name !== '익명' && r.user.name.length > 0;
+      return hasValidTime && hasValidTop && hasValidName;
+    });
+    const _removedPhantom = _beforePhantom - RECORDS.length;
+    if (_removedPhantom > 0) {
+      console.log('[PBS-Child Admin] phantom 기록 ' + _removedPhantom + '건 자동 제거');
+      localStorage.setItem(KEY_RECORDS, JSON.stringify(RECORDS));
+      // 토스트는 initApp 끝나고 보이게 지연
+      setTimeout(() => {
+        if (typeof showToast === 'function') {
+          showToast('잘못 저장된 기록 ' + _removedPhantom + '건을 자동 정리했습니다', 'success');
+        }
+      }, 800);
+    }
+  }catch(e){ RECORDS = []; }
+  try{
+    const raw = JSON.parse(localStorage.getItem(KEY_REVIEWS) || '[]');
+    // 어린이판 후기만 통과 (isChild === true)
+    REVIEWS = raw.filter(r => r && r.isChild === true);
+  }catch(e){ REVIEWS = []; }
   try{ INQUIRIES = JSON.parse(localStorage.getItem(KEY_INQUIRIES) || '[]'); }catch(e){ INQUIRIES = []; }
   try{ CONTENT = JSON.parse(localStorage.getItem(KEY_CONTENT) || '{}'); }catch(e){ CONTENT = {}; }
   try{
@@ -2919,10 +3025,10 @@ function loadData(){
     if(n) NOTICE = {...NOTICE, ...n};
   }catch(e){}
 
-  // 첫 방문 시 샘플 데이터 자동 생성
-  if(RECORDS.length === 0 && REVIEWS.length === 0 && INQUIRIES.length === 0){
-    seedSampleData();
-  }
+  // 어린이판은 자동 시드를 사용하지 않음 (어른 데이터 차단)
+  // if(RECORDS.length === 0 && REVIEWS.length === 0 && INQUIRIES.length === 0){
+  //   seedSampleData();  // ← 어른판용이라 어린이판에서 비활성
+  // }
 
   // 기존 짧은 시드 후기를 풍성한 버전으로 마이그레이션 (이미 시드된 사용자 대응)
   migrateOldShortReviews();
@@ -2955,7 +3061,11 @@ function migrateOldShortReviews(){
   }
 }
 function saveRecords(){ localStorage.setItem(KEY_RECORDS, JSON.stringify(RECORDS)); }
-function saveReviews(){ localStorage.setItem(KEY_REVIEWS, JSON.stringify(REVIEWS)); }
+function saveReviews(){
+  // 어린이판은 isChild === true 인 것만 저장 (어른 후기 차단)
+  const childOnly = REVIEWS.filter(r => r && r.isChild === true);
+  localStorage.setItem(KEY_REVIEWS, JSON.stringify(childOnly));
+}
 function saveInquiries(){ localStorage.setItem(KEY_INQUIRIES, JSON.stringify(INQUIRIES)); }
 function saveSettings(){ localStorage.setItem(KEY_SETTINGS, JSON.stringify(SETTINGS)); }
 function saveNotice(){ localStorage.setItem(KEY_NOTICE, JSON.stringify(NOTICE)); }
@@ -3117,10 +3227,71 @@ function seedSampleData(){
 }
 
 function addSampleData(){
-  seedSampleData();
-  loadData();
+  // 어린이용 샘플 8건 + 어린이 후기 3건 추가
+  const now = Date.now();
+  const day = 86400000;
+  const childNames = ['지윤','민준','서연','도윤','하은','시우','지호','예린'];
+  const childAges = ['8','9','10','11','12','9','10','11'];
+  const childOrgs = ['행복초등학교 2학년','별빛초등학교 3학년','무지개초등학교 4학년','꿈나무초등학교 5학년','파란하늘초등학교 6학년','한빛초등학교 3학년','새싹초등학교 4학년','통합돌봄센터'];
+  const teachers = ['김선생님','이선생님','박선생님','최선생님','정선생님'];
+  const engines = ['RED','YELLOW','GREEN','BLUE','PURPLE'];
+  const engineNames = {RED:'사자',YELLOW:'해바라기',GREEN:'나무',BLUE:'바다',PURPLE:'팔레트'};
+  const childReviewTexts = [
+    '우리 아이가 정말 재미있게 진단을 받았어요. 결과지를 함께 보면서 아이의 강점을 새롭게 발견했어요. 보호자 가이드가 정말 큰 도움이 됐습니다.',
+    '아이가 자기 자신을 이해하기 시작했어요. "엄마, 나는 나무형이래!"라고 자랑스럽게 말하는 모습이 보기 좋아요.',
+    '통합돌봄 센터에서 활용했어요. 문항이 쉽고 직관적이라 어린 친구들도 잘 따라했습니다.',
+    '진로 추천이 너무 좋아요. 왜 어울리는지 설명해줘서 아이가 미래에 대한 꿈을 구체화할 수 있었어요.',
+    '담임 선생님께도 보여드렸더니 아이를 더 잘 이해하게 됐다고 하셨어요.'
+  ];
+  for(let i=0; i<8; i++){
+    const mainEng = engines[Math.floor(Math.random()*5)];
+    const secondEng = engines.filter(e=>e!==mainEng)[Math.floor(Math.random()*4)];
+    const scores = {};
+    engines.forEach(e => {
+      scores[e] = e===mainEng ? 22+Math.floor(Math.random()*6)
+                : e===secondEng ? 16+Math.floor(Math.random()*5)
+                : 6+Math.floor(Math.random()*8);
+    });
+    RECORDS.push({
+      id: 'child_sample_' + Date.now() + '_' + i,
+      timestamp: now - Math.floor(Math.random()*30)*day,
+      testType: 'child',
+      user: {
+        name: childNames[i],
+        age: childAges[i],
+        school: childOrgs[i],
+        org: childOrgs[i],
+        contact: '010-0000-' + String(1000+i).slice(-4),
+        teacher: teachers[i % 5]
+      },
+      colorScores: scores, engineScores: scores,
+      mainEngine: mainEng,
+      topColor: mainEng.toLowerCase(),
+      secondColor: secondEng.toLowerCase(),
+      top1: { gear: mainEng.charAt(0)+'1', name: engineNames[mainEng], percent: Math.round(scores[mainEng]/28*100) },
+      top2: { gear: secondEng.charAt(0)+'1', name: engineNames[secondEng], percent: Math.round(scores[secondEng]/28*100) },
+      duration: 5 + Math.floor(Math.random()*8),
+      feedback: Math.random()>0.5 ? {
+        stars: 4 + Math.floor(Math.random()*2),
+        text: childReviewTexts[Math.floor(Math.random()*childReviewTexts.length)]
+      } : null
+    });
+  }
+  for(let i=0; i<3; i++){
+    REVIEWS.push({
+      id: 'rev_child_' + Date.now() + '_' + i,
+      timestamp: now - Math.floor(Math.random()*14)*day,
+      name: childNames[i] + ' 보호자',
+      stars: 5,
+      text: childReviewTexts[i],
+      mainEngine: engines[i % 5],
+      isChild: true,
+      featured: i === 0
+    });
+  }
+  saveRecords(); saveReviews();
   refreshAll();
-  showToast('샘플 데이터를 추가했습니다', 'success');
+  showToast('어린이용 샘플 데이터 8건 + 후기 3건을 추가했습니다', 'success');
 }
 
 // ────────────────────────────────────────────────────────────
@@ -3171,6 +3342,27 @@ function initApp(){
 // ────────────────────────────────────────────────────────────
 // REFRESH ALL
 // ────────────────────────────────────────────────────────────
+
+/* ============================================================
+   클라우드(Supabase) 동기화 + 화면 갱신 (사용자가 새로고침 누를 때만)
+   ============================================================ */
+async function syncFromCloudAndRefresh(){
+  // parent window의 PBS 모듈 호출
+  showToast('클라우드 동기화 중...', 'info');
+  try {
+    if (window.parent && window.parent.PBS && window.parent.PBS.syncRecordsToLocal) {
+      const r = await window.parent.PBS.syncRecordsToLocal();
+      if (r?.ok) {
+        showToast('클라우드 동기화 완료 (' + (r.addedRecords||0) + '건 추가)', 'success');
+      }
+    }
+  } catch(e) {
+    console.warn('동기화 오류:', e);
+    showToast('동기화 실패: ' + (e.message||e), 'error');
+  }
+  refreshAll();
+}
+
 function refreshAll(){
   loadData();
   // 배지 업데이트
@@ -3189,6 +3381,18 @@ function refreshAll(){
 // ────────────────────────────────────────────────────────────
 // UTILITIES
 // ────────────────────────────────────────────────────────────
+
+function fmtDuration(rec){
+  // durationSec(초) 우선, 없으면 duration*60(분→초 변환), 아무것도 없으면 '—'
+  const sec = rec.durationSec || (rec.duration ? rec.duration * 60 : 0);
+  if(!sec || sec <= 0) return '—';
+  if(sec < 60) return Math.round(sec) + '초';
+  const m = Math.floor(sec/60);
+  const s = Math.round(sec%60);
+  if(s === 0) return m + '분';
+  return m + '분 ' + s + '초';
+}
+
 function fmtDate(ts){
   const d = new Date(ts);
   return `${d.getFullYear()}.${String(d.getMonth()+1).padStart(2,'0')}.${String(d.getDate()).padStart(2,'0')}`;
@@ -3208,6 +3412,36 @@ function fmtRelative(ts){
   if(day < 7) return `${day}일 전`;
   return fmtDate(ts);
 }
+// === 코칭 자동 생성 & 메모 저장 (어린이판 전용) ===
+const CHILD_COACHING_TEMPLATES = {
+  RED:    '🦁 사자형 — 씩씩하고 도전을 좋아하는 아이입니다. 친구들 앞에서 먼저 손을 들고 새로운 일에 뛰어드는 추진력이 강점이에요. ▶ 코칭 포인트: 작은 목표를 단계별로 세우게 도와주세요. 결과보다 "시도한 용기"를 칭찬하면 자신감이 더 단단해집니다. 운동·리더 역할·도전 미션이 잘 맞아요.',
+  YELLOW: '🌻 해바라기형 — 밝고 사람을 좋아하는 아이입니다. 친구들과 어울릴 때 에너지가 폭발하고 분위기를 환하게 만들어요. ▶ 코칭 포인트: 발표·역할극·팀활동 기회를 자주 만들어 주세요. 혼자 집중해야 하는 시간엔 짝꿍과 함께 하는 방식을 권하면 효과가 좋아요.',
+  GREEN:  '🌳 나무형 — 따뜻하고 친구를 잘 돌보는 아이입니다. 약속을 지키고 마음 아픈 친구 옆에 있어주는 신뢰의 강점이 있어요. ▶ 코칭 포인트: 자기 감정을 말로 표현하는 연습을 함께 해주세요. "네가 어떤 마음일지 들어볼게" 같은 안전한 공간이 큰 도움이 됩니다.',
+  BLUE:   '🌊 바다형 — 호기심 많고 깊이 생각하는 아이입니다. 책·실험·분해·관찰을 좋아하고 "왜?"라는 질문을 자주 해요. ▶ 코칭 포인트: 답을 바로 주기보다 함께 찾아보는 시간을 만들어주세요. 조용히 집중할 수 있는 공간과 충분한 시간을 보장하면 잠재력이 활짝 펴요.',
+  PURPLE: '🎨 팔레트형 — 상상력·표현력이 풍부한 아이입니다. 그림·노래·이야기·춤 같은 표현 활동에서 빛이 나요. ▶ 코칭 포인트: 결과물보다 "표현하는 과정" 자체를 인정해 주세요. 자유롭게 만들 수 있는 재료와 시간을 충분히 주면 자기 색깔이 또렷해집니다.'
+};
+function getCoachingAuto(engine){
+  return CHILD_COACHING_TEMPLATES[engine] || '진단 결과를 바탕으로 아이의 강점을 자주 칭찬해 주세요.';
+}
+// 어린이판 전용 코칭 메모 저장소 (record id 별)
+const CHILD_COACH_KEY = 'pbs-child-coaching-notes';
+function getCoachingNote(id){
+  try{
+    const all = JSON.parse(localStorage.getItem(CHILD_COACH_KEY) || '{}');
+    return all[id] || '';
+  }catch(e){ return ''; }
+}
+function saveCoachingNote(id){
+  const ta = document.getElementById('coach-memo-' + id);
+  if(!ta) return;
+  try{
+    const all = JSON.parse(localStorage.getItem(CHILD_COACH_KEY) || '{}');
+    all[id] = ta.value;
+    localStorage.setItem(CHILD_COACH_KEY, JSON.stringify(all));
+    showToast('코칭 메모를 저장했습니다', 'success');
+  }catch(e){ showToast('저장 실패: ' + e.message, 'error'); }
+}
+
 function escapeHtml(s){
   if(s === null || s === undefined) return '';
   return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]);
@@ -3447,7 +3681,7 @@ function getFilteredRecords(){
   }
   // 검사 유형 (Basic/Premium)
   if(RECORDS_FILTER.testType){
-    list = list.filter(r => (r.testType || 'premium') === RECORDS_FILTER.testType);
+    list = list.filter(r => (r.testType || 'child') === RECORDS_FILTER.testType);
   }
   // 기간
   if(RECORDS_FILTER.period !== 'all'){
@@ -3476,6 +3710,7 @@ function getFilteredRecords(){
 }
 
 function renderRecords(){
+  try {
   const list = getFilteredRecords();
   const tbody = document.getElementById('records-tbody');
   if(list.length === 0){
@@ -3488,23 +3723,23 @@ function renderRecords(){
     const start = (RECORDS_PAGE - 1) * RECORDS_PER_PAGE;
     const slice = list.slice(start, start + RECORDS_PER_PAGE);
     tbody.innerHTML = slice.map((r, i) => {
-      const tType = r.testType || 'premium';
-      const tBadge = tType === 'basic'
-        ? `<span class="engine-pill" style="--engine-bg:rgba(255,140,66,0.16);--engine-color:#FF8C42">🌈 Basic</span>`
-        : `<span class="engine-pill" style="--engine-bg:rgba(112,48,160,0.14);--engine-color:#7030A0">✨ Premium</span>`;
+      // 어린이판 — 유형 셀 제거, 안전한 user 객체 접근
+      const u = r.user || {};
+      const t1 = r.top1 || {gear:'',name:'',percent:0};
+      const t2 = r.top2 || {gear:'',name:'',percent:0};
       return `
-      <tr>
+      <tr data-rec-id="${r.id}">
+        <td><input type="checkbox" class="rec-check" value="${r.id}" onclick="onRecordCheckChange()"></td>
         <td class="text-muted">${start + i + 1}</td>
-        <td>${tBadge}</td>
-        <td><strong>${escapeHtml(r.user.name||'—')}</strong></td>
-        <td>${escapeHtml(r.user.job||'—')}</td>
-        <td>${escapeHtml(r.user.org||'—')}</td>
-        <td class="text-muted">${escapeHtml(r.user.age||'—')}</td>
-        <td class="text-muted">${escapeHtml(truncate(r.user.email||'—', 20))}</td>
-        <td><span class="engine-pill ${r.mainEngine}"><span class="dot"></span>${r.mainEngine}</span></td>
-        <td><span class="gear-pill ${GEARS[r.top1.gear]?.engine || r.mainEngine}">${r.top1.gear}</span></td>
-        <td><span class="gear-pill ${GEARS[r.top2.gear]?.engine || r.mainEngine}">${r.top2.gear}</span></td>
-        <td class="text-muted text-right">${r.duration?r.duration+'분':'—'}</td>
+        <td><strong>${escapeHtml(u.name||'—')}</strong></td>
+        <td>${escapeHtml(u.job||u.teacher||'—')}</td>
+        <td>${escapeHtml(u.org||u.school||'—')}</td>
+        <td class="text-muted">${escapeHtml(u.age||'—')}</td>
+        <td class="text-muted">${escapeHtml(truncate(u.email||u.contact||'—', 20))}</td>
+        <td><span class="engine-pill ${r.mainEngine||'RED'}"><span class="dot"></span>${r.mainEngine||'RED'}</span></td>
+        <td><span class="gear-pill ${(GEARS[t1.gear]?.engine) || r.mainEngine || 'RED'}">${t1.gear||'—'}</span></td>
+        <td><span class="gear-pill ${(GEARS[t2.gear]?.engine) || r.mainEngine || 'RED'}">${t2.gear||'—'}</span></td>
+        <td class="text-muted text-right">${fmtDuration(r)}</td>
         <td class="text-muted">${fmtDate(r.timestamp)}</td>
         <td>
           <div class="tbl-actions">
@@ -3529,6 +3764,17 @@ function renderRecords(){
       th.classList.add('sort-' + RECORDS_SORT.dir);
     }
   });
+  } catch(e) {
+    console.error('[PBS-Child Admin] renderRecords 에러:', e);
+    const tbody = document.getElementById('records-tbody');
+    if(tbody){
+      tbody.innerHTML = `<tr><td colspan="13" style="padding:24px;background:#FFE5EC;color:#C92A4F;font-size:13px">
+        ⚠️ 화면 그리기 오류: ${e.message}<br><br>
+        <strong>디버그 정보:</strong> RECORDS.length=${RECORDS.length} · 첫 기록 키: ${RECORDS[0] ? Object.keys(RECORDS[0]).join(', ') : '(비어있음)'}<br>
+        <button class="btn-sm" style="margin-top:10px;padding:8px 16px;background:#C92A4F;color:#fff;border:0;border-radius:6px;cursor:pointer" onclick="console.log('전체 RECORDS:', RECORDS); alert('콘솔에 RECORDS 출력됨 (F12 확인)')">콘솔에 데이터 덤프</button>
+      </td></tr>`;
+    }
+  }
 }
 
 function renderPagination(totalPages){
@@ -3634,7 +3880,7 @@ function showRecordDetail(id){
     <div class="modal-head">
       <div>
         <h2>${escapeHtml(r.user.name)} 님의 진단 결과</h2>
-        <div class="modal-sub">${typeBadge} · ${fmtDateTime(r.timestamp)} · ${r.duration||'—'}분 소요</div>
+        <div class="modal-sub">${typeBadge} · ${fmtDateTime(r.timestamp)} · ${fmtDuration(r)} 소요</div>
       </div>
       <button class="modal-close" onclick="closeModal()"><svg width="16" height="16"><use href="#i-x"/></svg></button>
     </div>
@@ -3660,7 +3906,7 @@ function showRecordDetail(id){
               <div class="row"><span class="label">주 엔진/색깔</span><span class="value"><span class="engine-pill ${r.mainEngine}"><span class="dot"></span>${r.mainEngine}</span></span></div>
               <div class="row"><span class="label">강점 1순위</span><span class="value">${escapeHtml(r.top1.name)} (${r.top1.percent}${isBasic?'':' %'})</span></div>
               <div class="row"><span class="label">강점 2순위</span><span class="value">${escapeHtml(r.top2.name)} (${r.top2.percent}${isBasic?'':' %'})</span></div>
-              <div class="row"><span class="label">소요 시간</span><span class="value">${r.duration||'—'}분</span></div>
+              <div class="row"><span class="label">소요 시간</span><span class="value">${fmtDuration(r)}</span></div>
             </div>
           </div>
         </div>
@@ -3668,6 +3914,19 @@ function showRecordDetail(id){
 
       ${scoresHtml}
 
+      <div class="detail-section">
+        <h4>🎯 코칭 가이드 (자동 생성)</h4>
+        <div style="background:linear-gradient(135deg,#FFF4D6 0%,#FFE5EC 50%,#EFE0F4 100%);border-radius:var(--r-md);padding:18px 20px;font-size:13.5px;line-height:1.85;color:var(--text-2)">
+          ${escapeHtml(getCoachingAuto(r.mainEngine))}
+        </div>
+      </div>
+      <div class="detail-section">
+        <h4>📝 나의 코칭 메모 (관리자 입력)</h4>
+        <textarea id="coach-memo-${r.id}" placeholder="이 진단자에게 전할 맞춤 코칭·관찰 내용을 자유롭게 적어주세요. (예: 부모님께 전한 강점 포인트, 다음 만남에서 다룰 주제 등)" style="width:100%;min-height:120px;padding:14px;border:1.5px solid var(--border);border-radius:var(--r-md);font-family:inherit;font-size:13.5px;line-height:1.7;resize:vertical;background:var(--bg-card-2);color:var(--text-1)">${escapeHtml(getCoachingNote(r.id))}</textarea>
+        <div style="display:flex;justify-content:flex-end;margin-top:10px">
+          <button class="btn-sm primary" onclick="saveCoachingNote('${r.id}')" style="padding:8px 18px">💾 코칭 메모 저장</button>
+        </div>
+      </div>
       ${r.feedback ? `
         <div class="detail-section">
           <h4>진단 후 소감</h4>
@@ -3689,6 +3948,51 @@ function showRecordDetail(id){
 }
 function closeModal(){
   document.getElementById('detail-modal').classList.remove('active');
+}
+
+
+/* ============================================================
+   체크박스 일괄 선택·삭제
+   ============================================================ */
+function toggleAllRecordCheck(masterCheckbox){
+  document.querySelectorAll('.rec-check').forEach(cb => {
+    cb.checked = masterCheckbox.checked;
+  });
+  onRecordCheckChange();
+}
+
+function onRecordCheckChange(){
+  const checks = document.querySelectorAll('.rec-check');
+  const checked = document.querySelectorAll('.rec-check:checked');
+  document.getElementById('rec-checked-count').textContent = checked.length;
+  const bulkBtn = document.getElementById('rec-bulk-delete');
+  if(bulkBtn) bulkBtn.style.display = checked.length > 0 ? '' : 'none';
+  // 전체 체크박스 상태 갱신
+  const masterCb = document.getElementById('rec-check-all');
+  if(masterCb){
+    if(checked.length === 0) masterCb.checked = false;
+    else if(checked.length === checks.length) masterCb.checked = true;
+    else masterCb.indeterminate = true;
+  }
+}
+
+function confirmDeleteSelectedRecords(){
+  const ids = Array.from(document.querySelectorAll('.rec-check:checked')).map(cb => cb.value);
+  if(ids.length === 0){
+    showToast('삭제할 항목을 선택해주세요', 'warn');
+    return;
+  }
+  showConfirm({
+    title: `${ids.length}건의 진단 기록을 삭제하시겠습니까?`,
+    msg: '선택한 기록이 영구 삭제됩니다. 되돌릴 수 없습니다.',
+    onOk: () => {
+      const idSet = new Set(ids);
+      RECORDS = RECORDS.filter(r => !idSet.has(r.id));
+      saveRecords();
+      refreshAll();
+      showToast(`${ids.length}건의 기록을 삭제했습니다`, 'success');
+    }
+  });
 }
 
 function confirmDeleteRecord(id, fromModal=false){
@@ -4435,7 +4739,17 @@ function confirmReset(){
           RECORDS = []; REVIEWS = []; INQUIRIES = [];
           saveRecords(); saveReviews(); saveInquiries();
           refreshAll();
-          showToast('모든 데이터를 삭제했습니다', 'success');
+          // 어린이판 전용 키 + 공용 키 + reset-stamp 모두 청소
+          try {
+            localStorage.removeItem('pbs-child-records');
+            localStorage.removeItem('pbs-records');
+            localStorage.removeItem('pbs-reviews');
+            localStorage.removeItem('pbs-inquiries');
+            localStorage.removeItem('pbs-child-coaching-notes');
+            // reset-stamp 기록 → 이 시점 이전의 Supabase 데이터는 다시 불러오지 않음
+            localStorage.setItem('pbs-child-reset-stamp', String(Date.now()));
+          } catch(e) {}
+          showToast('모든 데이터를 완전히 삭제했습니다. (옛 클라우드 데이터도 차단됨)', 'success');
         }
       });
     }
@@ -4466,7 +4780,8 @@ document.addEventListener('click', (e) => {
 
 <script>
 /* ============================================================
-   Supabase 설정 (PBS COLOR LAB DB 공유 — test_type='child_30' 격리)
+   Supabase 설정 (어린이 전용 테이블 — pbs_child_records, pbs_child_reviews)
+   2026-05-14: 어른판과 완전 분리. 더 이상 공유 테이블 사용 안 함.
    ============================================================ */
 const PBS_SUPABASE_URL = 'https://oqxlsnyuwtmjmbhgzjoz.supabase.co';
 const PBS_SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9xeGxzbnl1d3Rtam1iaGd6am96Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY3NTc5NDksImV4cCI6MjA5MjMzMzk0OX0.C-PPch12eVru2xhuU80WPYdBj5CJb1Py8m1-OsaGZW8';
@@ -4499,7 +4814,7 @@ window.PBS = window.PBS || {};
 window.PBS.verifyCode = async function(code, testType) {
   if (!window.pbsDBReady) return { ok:false, message:'서버 연결 실패' };
   try {
-    const { data, error } = await window.pbsDB.rpc('verify_access_code', {
+    const { data, error } = await window.pbsDB.rpc('verify_child_access_code', {
       p_code: code, p_test_type: testType || 'child'
     });
     if (error) return { ok:false, message:'코드 검증 오류' };
@@ -4509,12 +4824,8 @@ window.PBS.verifyCode = async function(code, testType) {
 
 // === 함수 2: 진단 결과 저장 (localStorage + Supabase) ===
 window.PBS.saveRecord = async function(record) {
-  // localStorage 백업
-  try {
-    const records = JSON.parse(localStorage.getItem('pbs-records') || '[]');
-    records.unshift({ ...record, _local_id: Date.now() });
-    localStorage.setItem('pbs-records', JSON.stringify(records.slice(0, 500)));
-  } catch (e) {}
+  // localStorage 저장은 saveChildRecordToAdmin 이 담당 — 여기는 Supabase 전용
+  // (옛 중복 저장 코드 제거: 한 진단당 1건만 쌓이도록)
   if (!window.pbsDBReady) return { ok:false, fallback:'local' };
   try {
     const payload = {
@@ -4540,7 +4851,7 @@ window.PBS.saveRecord = async function(record) {
       referrer: document.referrer ? document.referrer.slice(0, 200) : null
     };
     const { data, error } = await window.pbsDB
-      .from('pbs_records').insert(payload).select('id').single();
+      .from('pbs_child_records').insert(payload).select('id').single();
     if (error) throw error;
     return { ok:true, id: data?.id };
   } catch (e) {
@@ -4558,7 +4869,7 @@ window.PBS.saveReview = async function(review) {
   } catch (e) {}
   if (!window.pbsDBReady) return { ok:false };
   try {
-    const { error } = await window.pbsDB.from('pbs_reviews').insert({
+    const { error } = await window.pbsDB.from('pbs_child_reviews').insert({
       name: review.name || '익명',
       stars: review.stars || 5,
       text: review.text || '',
@@ -4575,13 +4886,23 @@ window.PBS.syncRecordsToLocal = async function() {
   if (!window.pbsDBReady) return { ok:false };
   try {
     const SEED_NAMES = ['김민지','박서준','이수정','정은혁','윤지호','강예린','한도윤','오세영','임채원','조민준','서다은','신하준','문지윤','배현우','송예진'];
-    const { data: srecs, error } = await window.pbsDB
-      .from('pbs_records').select('*')
-      .in('test_type', PBS_TEST_TYPES)
+    // reset-stamp 이후 데이터만 가져오기 (옛 데이터 부활 차단)
+    let _resetStamp = 0;
+    try { _resetStamp = parseInt(localStorage.getItem('pbs-child-reset-stamp') || '0', 10); } catch(e){}
+    let _q = window.pbsDB.from('pbs_child_records').select('*').in('test_type', PBS_TEST_TYPES);
+    if (_resetStamp > 0) {
+      _q = _q.gte('created_at', new Date(_resetStamp).toISOString());
+    }
+    const { data: srecs, error } = await _q
       .order('created_at', { ascending: false }).limit(500);
     if (error) throw error;
 
-    const localRecords = JSON.parse(localStorage.getItem('pbs-records') || '[]');
+    // 어린이 전용 키 우선, 공용 키도 같이 읽어 합침
+    const childKey = 'pbs-child-records';
+    const localChildRecs = JSON.parse(localStorage.getItem(childKey) || '[]');
+    const localCommonRecs = JSON.parse(localStorage.getItem('pbs-records') || '[]')
+      .filter(r => r.testType === 'child' || r.test_type === 'child_30');
+    const localRecords = [...localChildRecs, ...localCommonRecs];
     const localIds = new Set(localRecords.map(r => r.id || r._supabase_id).filter(Boolean));
     const localKeys = new Set(localRecords.map(r => `${r.user?.name||''}_${Math.floor((r.timestamp||0)/60000)}`));
 
@@ -4622,13 +4943,16 @@ window.PBS.syncRecordsToLocal = async function() {
       }));
 
     if (converted.length > 0) {
-      const merged = [...localRecords, ...converted].sort((a,b) => (b.timestamp||0) - (a.timestamp||0));
-      localStorage.setItem('pbs-records', JSON.stringify(merged));
+      const merged = [...localRecords, ...converted]
+        .map(r => ({ ...r, testType: r.testType || 'child' }))
+        .sort((a,b) => (b.timestamp||0) - (a.timestamp||0));
+      // 어린이 전용 키에 저장 (어른 데이터와 격리)
+      localStorage.setItem('pbs-child-records', JSON.stringify(merged));
     }
 
     // 후기도 동기화
     const { data: srevs } = await window.pbsDB
-      .from('pbs_reviews').select('*').eq('is_visible', true)
+      .from('pbs_child_reviews').select('*').eq('is_visible', true)
       .order('created_at', { ascending: false }).limit(200);
     if (srevs && srevs.length > 0) {
       const localRevs = JSON.parse(localStorage.getItem('pbs-reviews') || '[]');
@@ -4829,9 +5153,11 @@ const CHILD_FINAL_QUESTIONS = [
 ];
 
 const CHILD_SCALE = [
-  {value:1, stars:'★',         starCount:1, label:'별로 아니야', score:1},
-  {value:3, stars:'★★★',     starCount:3, label:'가끔 그래',   score:3},
-  {value:5, stars:'★★★★★', starCount:5, label:'그래! 그래!', score:5}
+  {value:1, stars:'★',         starCount:1, label:'전혀 아니야',   score:1},
+  {value:2, stars:'★★',       starCount:2, label:'별로 아니야',   score:2},
+  {value:3, stars:'★★★',     starCount:3, label:'보통이야',       score:3},
+  {value:4, stars:'★★★★',   starCount:4, label:'그런 편이야',   score:4},
+  {value:5, stars:'★★★★★', starCount:5, label:'완전 그래!',     score:5}
 ];
 
 /* ============================================================
@@ -4916,7 +5242,7 @@ function renderChildQuestion() {
 
     body.innerHTML = `
       <div class="test-cheer"><span class="test-cheer-chip">${cheer}</span></div>
-      <div class="q-card" style="--q-color:${E.color};--q-bg:${E.bg}">
+      <div class="q-card${ans !== undefined ? ' has-answer' : ''}" style="--q-color:${E.color};--q-bg:${E.bg}">
         <div class="q-engine-tag" style="background:${E.bg};color:${E.color}">
           <span class="q-emoji">${E.emoji}</span>
           <span>${E.name} · ${E.title}</span>
@@ -4946,7 +5272,7 @@ function renderChildQuestion() {
 
     body.innerHTML = `
       <div class="test-cheer"><span class="test-cheer-chip">${cheer}</span></div>
-      <div class="q-card" style="--q-color:var(--purple);--q-bg:var(--purple-bg)">
+      <div class="q-card${ans ? ' has-answer' : ''}" style="--q-color:var(--purple);--q-bg:var(--purple-bg)">
         <div class="q-engine-tag" style="background:var(--purple-bg);color:var(--purple)">
           <span class="q-emoji">⭐</span>
           <span>종합 질문</span>
@@ -4988,7 +5314,7 @@ function childAnswer(qid, value) {
       CHILD_STATE.currentQ = next;
       renderChildQuestion();
     }
-  }, 280);
+  }, 150);
 }
 
 /* ============================================================
@@ -5004,7 +5330,7 @@ function childFinalAnswer(qid, engine) {
       CHILD_STATE.currentQ = next;
       renderChildQuestion();
     }
-  }, 280);
+  }, 150);
 }
 
 function childPrev() {
@@ -5060,7 +5386,8 @@ function calculateChildScores() {
     sorted,
     top,
     second,
-    duration: Math.max(1, Math.round((Date.now() - CHILD_STATE.startTime) / 60000))
+    duration: Math.max(1, Math.round((Date.now() - CHILD_STATE.startTime) / 60000)),  // 호환용 분 단위
+    durationSec: Math.max(1, Math.round((Date.now() - CHILD_STATE.startTime) / 1000))  // 정밀 초 단위
   };
 }
 
@@ -5094,8 +5421,11 @@ function finishChildTest() {
    진단 결과 저장 (localStorage + Supabase)
    ============================================================ */
 function saveChildRecordToAdmin(result) {
+  // 어린이판 전용 키와 (호환용) 공용 키 양쪽에 저장
   try {
-    const records = JSON.parse(localStorage.getItem('pbs-records') || '[]');
+    const childKey = 'pbs-child-records';
+    const sharedKey = 'pbs-records';
+    const records = JSON.parse(localStorage.getItem(childKey) || '[]');
     const newRecord = {
       id: 'child_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8),
       timestamp: Date.now(),
@@ -5116,10 +5446,12 @@ function saveChildRecordToAdmin(result) {
       top1: { gear: (result.top || 'R').charAt(0) + '1', name: CHILD_ENGINES[result.top]?.name || '', percent: Math.round((result.scores[result.top]||0)/40*100) },
       top2: { gear: (result.second || 'R').charAt(0) + '1', name: CHILD_ENGINES[result.second]?.name || '', percent: Math.round((result.scores[result.second]||0)/40*100) },
       duration: result.duration,
+      durationSec: result.durationSec || (result.duration * 60),  // 초 단위 (정밀 표시용)
       feedback: null
     };
     records.unshift(newRecord);
-    localStorage.setItem('pbs-records', JSON.stringify(records.slice(0, 500)));
+    // 어린이 전용 키에만 저장 (중복 방지)
+    localStorage.setItem(childKey, JSON.stringify(records.slice(0, 500)));
     CHILD_STATE.currentRecordId = newRecord.id;
   } catch(e) { console.warn('[PBS-Child] localStorage 저장 실패:', e); }
 
@@ -5166,7 +5498,9 @@ const CHILD_RESULT_DATA = {
     talk: '솔직하고 직접적으로 말하는 게 강점이에요! 단, 화났을 때는 한 번 깊게 숨 쉬고 말하면 더 잘 전달돼요.',
     alone: '도전 목표를 세우고 끝까지 해내는 자기관리가 정말 멋져요. 운동·게임·만들기 같은 활발한 활동에서 빛나요.',
     learn: '몸으로 직접 부딪쳐 배우는 게 가장 잘 맞아요. 책상에 오래 앉아있기보다 체험·실험·발표 활동을 늘려보세요.',
-    jobs: ['운동선수','군인','소방관','경찰관','CEO','모험가','탐험가','응급구조사','스포츠 코치','체육 교사','경호원','항공기 조종사','특수부대 요원','격투기 선수','등산가','심판','스포츠 트레이너','응급의학과 의사'],
+    healing: '에너지가 가득한 너는 몸을 움직일 때 마음도 시원해져요. 답답할 땐 자전거·달리기·점프 같은 운동으로 풀어요. 큰 소리로 응원 구호 외치기도 좋아요!',
+    express: '씩씩한 너만의 색깔은 빨강·주황 같은 따뜻한 색이 잘 어울려요. 모자·운동복·도전 스티커처럼 활기찬 스타일로 너를 표현해봐.',
+        jobs: ['운동선수','군인','소방관','경찰관','CEO','모험가','탐험가','응급구조사','스포츠 코치','체육 교사','경호원','항공기 조종사','특수부대 요원','격투기 선수','등산가','심판','스포츠 트레이너','응급의학과 의사'],
     inclusiveJobs: [
       '패럴림픽 운동선수','장애 인권 활동가','동기부여 강사','피트니스 트레이너 보조',
       '경비·안전 관리','택배·물류 분류','체육 시설 관리','우편물·문서 배송',
@@ -5174,6 +5508,7 @@ const CHILD_RESULT_DATA = {
       '무인 매장 점검·보충','자전거·킥보드 정비 보조','창고 정리·재고 관리','차량 세차 보조',
       '학교·공공시설 관리','퀵서비스·심부름 활동'
     ],
+    jobReason: "{name}는 새로운 일에 가장 먼저 도전하고, 어려운 일도 끝까지 해내는 추진력이 강해요. 몸을 움직이고 사람들을 이끄는 일을 할 때 가장 신이 나는 친구예요. 그래서 도전·리더십·신체 활동이 필요한 직업에서 가장 행복하게 빛날 수 있어요.",
     people: [
       {tag:'kr', name:'손흥민', desc:'안 된다고 했지만 끝까지 도전해 세계 최고 축구선수가 됐어요.'},
       {tag:'kr', name:'박세리', desc:'한국 골프의 길을 처음 개척한 도전왕.'},
@@ -5196,7 +5531,9 @@ const CHILD_RESULT_DATA = {
     talk: '말하는 것도, 듣는 것도 잘하는 소통의 천재예요. 표정·이모지·SNS도 잘 쓰니 그 강점을 마음껏 활용하세요!',
     alone: '혼자 있을 때보다 친구·가족과 함께 있을 때 더 큰 힘이 나요. 그룹 활동에서 빛나니 모임을 자주 가져보세요.',
     learn: '친구와 토론하거나 발표·역할극으로 배울 때 가장 잘 익혀져요. 공부 모임·스터디·동아리를 적극 활용하세요.',
-    jobs: ['선생님','아나운서','가수','유튜버','MC','이벤트 기획자','배우','모델','광고 기획자','마케터','통역사','외교관','호텔리어','승무원','라디오 PD','뮤지컬 배우','댄서','쇼호스트'],
+    healing: '햇살 같은 너는 친구·가족과 수다 떨 때 마음이 환해져요. 슬플 땐 좋아하는 노래 부르거나 친구한테 전화 한 통! 혼자 끙끙대지 말기 약속.',
+    express: '밝은 너에겐 노랑·핑크 같은 환한 색이 잘 어울려요. 환한 미소 사진, 친구들과 셀카, 손편지·이모지로 너의 마음을 마음껏 전해봐.',
+        jobs: ['선생님','아나운서','가수','유튜버','MC','이벤트 기획자','배우','모델','광고 기획자','마케터','통역사','외교관','호텔리어','승무원','라디오 PD','뮤지컬 배우','댄서','쇼호스트'],
     inclusiveJobs: [
       '장애인 강사','라디오 진행자','스포츠 캐스터','유튜버 크리에이터',
       '카페 바리스타','매장 안내·접객','콜센터 상담','이벤트 진행 보조',
@@ -5204,6 +5541,7 @@ const CHILD_RESULT_DATA = {
       '어린이집 보조','도서관 안내','관광 안내 보조','행사 도우미·MC',
       '라이브 커머스 진행 보조','매장 마케팅 보조'
     ],
+    jobReason: "{name}는 사람들과 어울릴 때 에너지가 폭발하고, 다른 사람의 마음을 따뜻하게 알아주는 공감 능력이 뛰어나요. 표현하고 소통하고 분위기를 만드는 일을 할 때 가장 큰 행복을 느껴요. 그래서 말·표현·소통·사람을 빛내는 직업에서 잘 어울려요.",
     people: [
       {tag:'kr', name:'유재석', desc:'사람의 마음을 따뜻하게 하는 말로 모두를 웃게 하는 국민MC.'},
       {tag:'kr', name:'김연아', desc:'차가운 빙판 위에서 환한 미소로 세상을 사로잡은 피겨여왕.'},
@@ -5226,7 +5564,9 @@ const CHILD_RESULT_DATA = {
     talk: '천천히, 진심을 담아 말하는 게 강점이에요. 글이나 편지로 마음을 전하는 것도 잘 어울려요.',
     alone: '꾸준한 책임감과 성실함이 빛나요. 동물이나 식물을 돌보거나, 한 가지를 깊이 파는 활동에서 가장 행복해요.',
     learn: '천천히 반복해서 익히는 학습법이 잘 맞아요. 조용한 환경·단계별 진도·믿을 수 있는 선생님이 있을 때 폭발해요.',
-    jobs: ['의사','간호사','수의사','사회복지사','환경운동가','동물 조련사','상담사','한의사','약사','물리치료사','작업치료사','영양사','보육교사','특수교사','산림 보호관','농부','원예사','요리사'],
+    healing: '따뜻한 너는 식물·동물·푹신한 이불 곁에서 마음이 안정돼요. 산책·일기·차분한 음악도 좋아요. 마음이 무거울 땐 천천히 깊게 숨 쉬어봐.',
+    express: '차분한 너에겐 초록·베이지 같은 자연 색이 잘 어울려요. 좋아하는 동물·식물 그림이 그려진 옷, 손때 묻은 노트로 너의 따뜻함을 보여줘.',
+        jobs: ['의사','간호사','수의사','사회복지사','환경운동가','동물 조련사','상담사','한의사','약사','물리치료사','작업치료사','영양사','보육교사','특수교사','산림 보호관','농부','원예사','요리사'],
     inclusiveJobs: [
       '케어 매니저','도서관 사서','동물 돌봄 전문가','식물 관리사',
       '요양 보호 보조','어린이집 보조','병원 안내','복지관 활동 보조',
@@ -5234,6 +5574,7 @@ const CHILD_RESULT_DATA = {
       '동물보호소 활동','환경 정화 봉사','쓰레기 분리수거 보조','식당 서비스 보조',
       '조리 보조·식자재 손질','마트 진열·정리 보조','방문 돌봄 보조','노인 말동무·산책 동행'
     ],
+    jobReason: "{name}는 약속을 꼭 지키고, 사람·동물·식물을 진심으로 돌보는 따뜻한 마음을 가졌어요. 누군가에게 도움이 될 때 가장 큰 보람을 느끼는 친구예요. 그래서 사람·생명을 직접 돌보고 신뢰가 중요한 직업에서 가장 행복하게 일할 수 있어요.",
     people: [
       {tag:'kr', name:'이태석 신부', desc:'아프리카 톤즈의 친구들을 사랑으로 돌본 의사.'},
       {tag:'kr', name:'엄홍길', desc:'한 걸음씩 꾸준히 산을 올라 16좌를 모두 정복한 산악인.'},
@@ -5256,7 +5597,9 @@ const CHILD_RESULT_DATA = {
     talk: '논리적이고 정확하게 말하는 게 강점이에요. 글·다이어그램·차분한 설명이 잘 어울려요.',
     alone: '혼자 깊이 생각하는 시간이 정말 소중해요. 책·만들기·실험·정리하기 같은 활동에서 빛나요.',
     learn: '책·논리·체계로 깊이 파고드는 학습이 가장 잘 맞아요. 한 분야를 깊이 공부하는 데 천재적이에요.',
-    jobs: ['과학자','발명가','프로그래머','데이터 분석가','게임 개발자','천문학자','수학자','AI 연구원','의학 연구원','회계사','변호사','판사','엔지니어','로봇공학자','건축가','통계 전문가','물리학자','생물학자'],
+    healing: '깊이 생각하는 너는 조용한 방·책·퍼즐 곁에서 충전돼요. 머리가 복잡할 땐 한 가지 주제만 깊이 파고들어봐. 잠도 충분히 자야 똑똑한 뇌가 더 빛나요.',
+    express: '차분한 너에겐 파랑·남색 같은 시원한 색이 잘 어울려요. 깔끔한 셔츠, 좋아하는 책·로고가 들어간 가방으로 너만의 지적인 스타일을 보여줘.',
+        jobs: ['과학자','발명가','프로그래머','데이터 분석가','게임 개발자','천문학자','수학자','AI 연구원','의학 연구원','회계사','변호사','판사','엔지니어','로봇공학자','건축가','통계 전문가','물리학자','생물학자'],
     inclusiveJobs: [
       '컴퓨터 프로그래머','데이터 라벨러','회계 보조','사진 분석가',
       '문서 정리·스캔','자료 입력','품질 검사','부품 조립',
@@ -5264,6 +5607,7 @@ const CHILD_RESULT_DATA = {
       '박물관 유물 정리 보조','도서·서류 관리','IT 헬프데스크 보조','영상 자막 작업',
       '음향·조명 보조','전자제품 조립','인쇄·복사 출력','비품 관리'
     ],
+    jobReason: "{name}는 '왜?'라는 질문을 자주 하고, 한 가지를 깊이 파고들어 답을 찾아내는 집중력이 뛰어나요. 새로운 것을 발견하고 차근차근 분석할 때 가장 신이 나요. 그래서 탐구·분석·발명·체계가 필요한 직업에서 가장 큰 성취를 이룰 수 있어요.",
     people: [
       {tag:'kr', name:'장영실', desc:'조선시대 신분의 벽을 넘어 천재 과학자가 된 발명왕.'},
       {tag:'kr', name:'이세돌', desc:'수만 가지 수를 차분히 분석하는 바둑 천재.'},
@@ -5286,7 +5630,9 @@ const CHILD_RESULT_DATA = {
     talk: '말로는 잘 안 나오는 것을 그림·노래·춤·이야기로 표현하는 마법사예요. 너만의 표현 방식을 더 깊이 키워보세요.',
     alone: '혼자 작품을 만들거나 상상의 세계에 빠지는 시간이 가장 행복해요. 그림·악기·글쓰기·연기 등 창작 활동에 시간을 듬뿍 주세요.',
     learn: '그림·노래·이야기·연기로 배울 때 가장 빠르게 익혀요. 만든 것을 직접 보여주는 학습이 잘 맞아요.',
-    jobs: ['화가','만화가','작곡가','시인','영화감독','디자이너','무용수','그림책 작가','사진작가','일러스트레이터','패션 디자이너','그래픽 디자이너','웹툰 작가','소설가','연주자','성우','큐레이터','도예가'],
+    healing: '감수성 풍부한 너는 그림·노래·이야기로 마음을 표현할 때 평화로워져요. 마음이 흔들릴 땐 그림일기·작곡·자유 낙서로 풀어봐. 너의 마음은 작품이 돼요.',
+    express: '창의적인 너에겐 보라·코랄·무지개 같은 화려한 색이 잘 어울려요. 직접 만든 액세서리, 자수·페인팅 옷, 특별한 헤어스타일로 너만의 색깔을 마음껏 표현해.',
+        jobs: ['화가','만화가','작곡가','시인','영화감독','디자이너','무용수','그림책 작가','사진작가','일러스트레이터','패션 디자이너','그래픽 디자이너','웹툰 작가','소설가','연주자','성우','큐레이터','도예가'],
     inclusiveJobs: [
       '화가','도예 작가','사진작가','작곡가','그림책 작가',
       '캘리그래퍼','자수 작가','공예 작가','꽃꽂이·플로리스트','네일아티스트',
@@ -5294,6 +5640,7 @@ const CHILD_RESULT_DATA = {
       '도자기·공방 작업','동영상 편집 보조','바느질·뜨개질 작가','페이스 페인팅',
       '카드·초대장 디자인 보조','매장 디스플레이·기념품 디자인'
     ],
+    jobReason: "{name}는 마음속에 가득한 상상을 그림·노래·이야기로 표현하는 마법 같은 능력을 가졌어요. 나만의 색깔과 스타일을 만들 때 가장 행복한 친구예요. 그래서 창작·예술·디자인·표현이 중심이 되는 직업에서 너의 보물 같은 재능이 빛날 수 있어요.",
     people: [
       {tag:'kr', name:'백남준', desc:'TV로 그림을 그린 한국이 낳은 세계적 미디어 아티스트.'},
       {tag:'kr', name:'봉준호', desc:'이야기로 세상을 사로잡아 오스카상을 받은 영화감독.'},
@@ -5443,8 +5790,13 @@ const CHILD_PARENT_GUIDE = {
    결과 화면 렌더
    ============================================================ */
 function renderChildResult() {
+  try {
   const r = CHILD_STATE.result;
-  if (!r) return;
+  if (!r) {
+    const body = document.getElementById('child-result-body');
+    if(body) body.innerHTML = '<div style="text-align:center;padding:60px 20px"><h2>⚠️ 결과를 계산하지 못했어요</h2><p style="margin-top:14px;color:#888">진단 데이터가 없습니다. 처음부터 다시 진행해주세요.</p></div>';
+    return;
+  }
   const top = CHILD_ENGINES[r.top];
   const second = CHILD_ENGINES[r.second];
   const data = CHILD_RESULT_DATA[r.top];
@@ -5547,7 +5899,7 @@ function renderChildResult() {
       </div>
     </div>
 
-    <!-- 영역별 (친구·소통·자기관리·학습) -->
+    <!-- 영역별 (6개: 친구·소통·자기관리·학습·힐링·표현) -->
     <div class="result-section">
       <h3><span class="section-icon">🌟</span> 나는 이렇게 빛나요</h3>
       <div class="area-grid">
@@ -5571,19 +5923,33 @@ function renderChildResult() {
           <h4>잘 배우는 학습법</h4>
           <p>${data.learn}</p>
         </div>
+        <div class="area-card" style="--area-color:${data.coverColor};--area-bg:${data.coverBg}">
+          <div class="area-icon">💆</div>
+          <h4>마음을 돌보는 힐링법</h4>
+          <p>${data.healing || '잠을 충분히 자고, 좋아하는 활동에 푹 빠지는 시간을 가져보세요.'}</p>
+        </div>
+        <div class="area-card" style="--area-color:${data.coverColor};--area-bg:${data.coverBg}">
+          <div class="area-icon">✨</div>
+          <h4>나만의 색깔 보여주기</h4>
+          <p>${data.express || '나에게 잘 어울리는 색·옷·물건으로 나를 표현해보세요.'}</p>
+        </div>
       </div>
     </div>
 
-    <!-- 진로·직업 -->
+    <!-- 진로·직업 (왜 이런 직업이 어울리는지 설명 추가) -->
     <div class="result-section">
       <h3><span class="section-icon">💼</span> 미래에 잘 어울리는 직업</h3>
+      <div class="job-reason" style="background:linear-gradient(135deg,${data.coverBg},#fff);border-left:4px solid ${data.coverColor};border-radius:14px;padding:18px 22px;margin-bottom:22px;font-size:14.5px;line-height:1.85;color:var(--text-soft)">
+        <strong style="color:${data.coverColor};font-size:15px">💡 왜 이런 직업이 어울릴까요?</strong><br>
+        ${data.jobReason ? data.jobReason.replace('{name}', escapeHtml(r.user.name || '아이')) : ''}
+      </div>
       <div class="jobs-block">
         <div class="jobs-block-title">🌈 일반 직업·진로 (총 ${data.jobs.length}개)</div>
         <div class="jobs-grid">${jobs}</div>
       </div>
       <div class="jobs-block" style="margin-bottom:0">
         <button type="button" class="jobs-toggle" onclick="toggleInclusiveJobs(this)">
-          <span>🤝 누구나 도전할 수 있는 직무<span class="jobs-toggle-count">${data.inclusiveJobs.length}개</span></span>
+          <span>🤝 포용형 직업<span class="jobs-toggle-count">${data.inclusiveJobs.length}개</span></span>
           <span class="arrow">▼</span>
         </button>
         <div class="jobs-grid jobs-collapsible">${inclusiveJobs}</div>
@@ -5680,6 +6046,11 @@ function renderChildResult() {
       <button class="result-footer-btn close" onclick="closeChildResult()">닫기</button>
     </div>
   `;
+  } catch(e) {
+    console.error('[PBS-Child] renderChildResult 에러:', e);
+    const body = document.getElementById('child-result-body');
+    if(body) body.innerHTML = '<div style="text-align:center;padding:60px 20px"><h2>😔 결과 화면을 그리는 중 문제가 생겼어요</h2><p style="margin-top:14px;color:#888;line-height:1.7">개발자 도구(F12) 콘솔에서 에러를 확인해주세요.<br><br><code style="background:#f5f5f5;padding:6px 10px;border-radius:6px;font-size:13px">'+ (e.message||e) +'</code></p><button onclick="location.reload()" style="margin-top:20px;padding:12px 28px;background:#7030A0;color:#fff;border:0;border-radius:24px;font-weight:700;cursor:pointer">새로고침</button></div>';
+  }
 }
 
 /* ============================================================
@@ -5810,51 +6181,56 @@ async function downloadChildPDF() {
     const pdfW = pdf.internal.pageSize.getWidth();
     const pdfH = pdf.internal.pageSize.getHeight();
     const imgW = pdfW;
-    const imgH = (canvas.height * imgW) / canvas.width;
-    let pos = 0; let heightLeft = imgH;
-    pdf.addImage(imgData, 'JPEG', 0, pos, imgW, imgH);
+    const imgH = canvas.height * imgW / canvas.width;
+    let heightLeft = imgH;
+    let position = 0;
+    pdf.addImage(imgData, 'JPEG', 0, position, imgW, imgH);
     heightLeft -= pdfH;
     while (heightLeft > 0) {
-      pos = heightLeft - imgH;
+      position = heightLeft - imgH;
       pdf.addPage();
-      pdf.addImage(imgData, 'JPEG', 0, pos, imgW, imgH);
+      pdf.addImage(imgData, 'JPEG', 0, position, imgW, imgH);
       heightLeft -= pdfH;
     }
-    const fname = `PBS컬러강점_${CHILD_STATE.result.user.name}_${new Date().toISOString().slice(0,10)}.pdf`;
-    pdf.save(fname);
-    showChildToast('✅ PDF 다운로드 완료!');
+    const safeName = (CHILD_STATE.user?.name || '결과').replace(/[\\/:*?"<>|]/g, '_');
+    const today = new Date().toISOString().slice(0,10);
+    pdf.save(`PBS_컬러강점_어린이판_${safeName}_${today}.pdf`);
+    showChildToast('✅ PDF 저장 완료!');
   } catch(e) {
-    console.error(e);
-    alert('PDF 생성 중 오류가 발생했어요. 화면 전체를 캡처해서 저장해주세요.');
+    console.error('[PBS-Child] PDF 생성 실패:', e);
+    showChildToast('❌ PDF 만들기 실패. 잠시 후 다시 시도해주세요.');
   }
 }
-
 /* ============================================================
-   HTML 이스케이프 (안전한 텍스트 표시)
+   HTML 이스케이프 (XSS 방지 — 외부 스크립트용)
    ============================================================ */
-function escapeHtml(s) {
-  if (!s) return '';
+function escapeHtml(s){
+  if(s === null || s === undefined) return '';
   return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
 
 /* ============================================================
-   관리자 모드 (Sub-step 3-5d에서 통합 예정)
+   관리자 모드 (잘려나간 부분 복원)
    ============================================================ */
 async function openAdminMode() {
-  // ✨ Supabase에서 최신 결과 동기화
-  if (window.PBS && window.PBS.syncRecordsToLocal) {
-    try {
-      const r = await window.PBS.syncRecordsToLocal();
-      if (r?.ok) console.log('[PBS-Child] 관리자 진입 동기화:', r.addedRecords + '건');
-    } catch(e) { console.warn('[PBS-Child] 동기화 오류:', e); }
-  }
+  // ✨ Supabase 자동 동기화는 끔 (옛 데이터 자동 부활 방지)
+  // 필요시 관리자 콘솔 안에서 수동 '새로고침' 버튼을 사용하세요.
+  // (옛 동작이 필요하면 아래 주석을 풀면 됨)
+  // if (window.PBS && window.PBS.syncRecordsToLocal) {
+  //   try { await window.PBS.syncRecordsToLocal(); } catch(e) {}
+  // }
   const tpl = document.getElementById('pbs-admin-template');
   const iframe = document.getElementById('pbs-admin-iframe');
+  if (!tpl || !iframe) {
+    alert('관리자 화면을 열 수 없습니다 (요소 없음)');
+    return;
+  }
   iframe.srcdoc = tpl.innerHTML;
   document.getElementById('pbs-admin-overlay').style.display = 'block';
   document.body.style.overflow = 'hidden';
   console.log('[PBS-Child] 관리자 모드 진입');
 }
+
 function closeAdminMode() {
   document.getElementById('pbs-admin-overlay').style.display = 'none';
   document.body.style.overflow = '';
@@ -5863,23 +6239,19 @@ function closeAdminMode() {
   }
 }
 
-/* ============================================================
-   진입 트리거 (단축키·해시)
-   ============================================================ */
+/* 진입 트리거 (단축키·해시) */
 document.addEventListener('keydown', e => {
   if (e.ctrlKey && e.shiftKey && (e.key === 'A' || e.key === 'a')) {
     e.preventDefault(); openAdminMode();
   }
-  if (e.key === 'Escape' && document.getElementById('pbs-admin-overlay').style.display === 'block') {
+  if (e.key === 'Escape' && document.getElementById('pbs-admin-overlay')?.style.display === 'block') {
     closeAdminMode();
   }
 });
-window.addEventListener('DOMContentLoaded', () => {
-  if (window.location.hash === '#admin') setTimeout(openAdminMode, 300);
-});
+if (window.location.hash === '#admin') {
+  setTimeout(() => openAdminMode(), 300);
+}
 
-console.log('[PBS-Child] 어린이판 골격 로드 완료. 진단 모듈은 Sub-step 3-5b에서 추가됩니다.');
 </script>
-
 </body>
 </html>
