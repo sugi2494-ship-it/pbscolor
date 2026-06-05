@@ -4646,6 +4646,8 @@ function finishTest() {
     return;
   }
   STATE.result = calculateScores();
+  // 결과 localStorage 보존 (재방문 시 이어보기)
+  try { localStorage.setItem('pbs-last-premium-result', JSON.stringify({result: STATE.result, user: STATE.user, ts: Date.now()})); } catch(e) {}
   // 관리자 페이지로 진단 결과 자동 저장
   saveRecordToAdmin(STATE.result);
   closeTest();
@@ -5282,6 +5284,8 @@ function finishBasicTest() {
   }
   // 점수 계산 + 결과 화면 이동
   BASIC_STATE.result = calculateBasicScores();
+  // 결과 localStorage 보존 (재방문 시 이어보기)
+  try { localStorage.setItem('pbs-last-basic-result', JSON.stringify({result: BASIC_STATE.result, user: BASIC_STATE.user, ts: Date.now()})); } catch(e) {}
   saveBasicRecordToAdmin(BASIC_STATE.result);
   closeBasicTestDirect();
   setTimeout(() => openBasicResult(), 100);
@@ -7516,6 +7520,76 @@ function init() {
   window.addEventListener('storage', e => {
     if (e.key === 'pbs-content') applyDynamicContent();
   });
+  // 이전 결과 이어보기 배너
+  setTimeout(checkResumeResult, 800);
+}
+
+function checkResumeResult() {
+  const WEEK = 7 * 24 * 60 * 60 * 1000;
+  // 프리미엄 결과 확인
+  try {
+    const saved = JSON.parse(localStorage.getItem('pbs-last-premium-result') || 'null');
+    if (saved && saved.result && saved.ts && (Date.now() - saved.ts) < WEEK) {
+      showResumeBanner(saved, 'premium');
+      return;
+    }
+  } catch(e) {}
+  // 무료 기본 결과 확인
+  try {
+    const saved = JSON.parse(localStorage.getItem('pbs-last-basic-result') || 'null');
+    if (saved && saved.result && saved.ts && (Date.now() - saved.ts) < WEEK) {
+      showResumeBanner(saved, 'basic');
+      return;
+    }
+  } catch(e) {}
+}
+
+function showResumeBanner(saved, type) {
+  if (document.getElementById('pbs-resume-banner')) return;
+  const name = saved.user?.name || saved.result?.user?.name || '';
+  const engine = saved.result?.mainEngine || saved.result?.top || '';
+  const engineEmoji = {RED:'🔴', YELLOW:'🟡', GREEN:'🟢', BLUE:'🔵', red:'🔴', yellow:'🟡', green:'🟢', blue:'🔵'}[engine] || '✨';
+  const timeStr = (() => {
+    const diff = Date.now() - saved.ts;
+    const min = Math.floor(diff/60000);
+    if (min < 60) return min < 1 ? '방금 전' : `${min}분 전`;
+    const hr = Math.floor(min/60);
+    if (hr < 24) return `${hr}시간 전`;
+    return `${Math.floor(hr/24)}일 전`;
+  })();
+  const banner = document.createElement('div');
+  banner.id = 'pbs-resume-banner';
+  banner.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);z-index:9800;background:#1C1A2E;color:#fff;padding:14px 20px;border-radius:16px;box-shadow:0 8px 32px rgba(112,48,160,0.45);display:flex;align-items:center;gap:14px;font-family:Pretendard,sans-serif;font-size:14px;max-width:90vw;border:1px solid rgba(112,48,160,0.4);animation:fadeInUp 0.4s ease';
+  banner.innerHTML = `
+    <span style="font-size:22px">${engineEmoji}</span>
+    <div style="flex:1;line-height:1.4">
+      <div style="font-weight:700;font-size:13px;color:#BBB8D2">${timeStr} 진단 결과가 있어요</div>
+      <div style="font-weight:600">${name ? name + '님의 ' : ''}결과 이어보기</div>
+    </div>
+    <button onclick="resumeLastResult('${type}')" style="background:linear-gradient(135deg,#3D2F90,#7030A0);color:#fff;border:none;padding:8px 16px;border-radius:10px;font-weight:700;cursor:pointer;font-size:13px;white-space:nowrap">결과 보기</button>
+    <button onclick="document.getElementById('pbs-resume-banner').remove()" style="background:none;border:none;color:#8A87A6;cursor:pointer;font-size:18px;padding:0 4px;line-height:1">✕</button>`;
+  document.body.appendChild(banner);
+}
+
+function resumeLastResult(type) {
+  document.getElementById('pbs-resume-banner')?.remove();
+  if (type === 'premium') {
+    try {
+      const saved = JSON.parse(localStorage.getItem('pbs-last-premium-result') || 'null');
+      if (!saved?.result) return;
+      STATE.result = saved.result;
+      if (saved.user) STATE.user = saved.user;
+      openResult();
+    } catch(e) {}
+  } else {
+    try {
+      const saved = JSON.parse(localStorage.getItem('pbs-last-basic-result') || 'null');
+      if (!saved?.result) return;
+      BASIC_STATE.result = saved.result;
+      if (saved.user) BASIC_STATE.user = saved.user;
+      openBasicResult();
+    } catch(e) {}
+  }
 }
 
 /* ============================================================
