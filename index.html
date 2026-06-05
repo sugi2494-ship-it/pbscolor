@@ -11256,6 +11256,17 @@ function updateSelectedCount(){
   const el = document.getElementById('selected-count');
   if (el) el.textContent = n;
 }
+function _deleteRecordsFromSupabase(supabaseIds){
+  if (!supabaseIds || supabaseIds.length === 0) return;
+  const db = (window.parent && window.parent.pbsDB) ? window.parent.pbsDB : (window.pbsDB || null);
+  if (!db) return;
+  supabaseIds.forEach(sid => {
+    db.from('pbs_records').delete().eq('id', sid).then(({ error }) => {
+      if (error) console.warn('[Admin] 기록 Supabase 삭제 실패:', sid, error);
+    });
+  });
+}
+
 function deleteSelectedRecords(){
   const checked = Array.from(document.querySelectorAll('.record-check:checked'));
   if (checked.length === 0) {
@@ -11267,9 +11278,11 @@ function deleteSelectedRecords(){
     msg: '삭제된 기록은 복원할 수 없습니다. 신중하게 결정해주세요.',
     onOk: () => {
       const ids = checked.map(c => c.dataset.id);
+      const toDelete = RECORDS.filter(r => ids.includes(r.id));
+      const supIds = toDelete.map(r => r._supabase_id).filter(Boolean);
       RECORDS = RECORDS.filter(r => !ids.includes(r.id));
       saveRecords();
-      // 전체 선택 체크박스 초기화
+      _deleteRecordsFromSupabase(supIds);
       const all = document.getElementById('records-check-all');
       if (all) all.checked = false;
       refreshAll();
@@ -11834,6 +11847,17 @@ function updateInqSelectedCount(){
   const el = document.getElementById('selected-inq-count');
   if (el) el.textContent = n;
 }
+function _deleteInquiriesFromSupabase(supabaseIds){
+  if (!supabaseIds || supabaseIds.length === 0) return;
+  const db = (window.parent && window.parent.pbsDB) ? window.parent.pbsDB : (window.pbsDB || null);
+  if (!db) return;
+  supabaseIds.forEach(sid => {
+    db.from('pbs_inquiries').delete().eq('id', sid).then(({ error }) => {
+      if (error) console.warn('[Admin] 문의 Supabase 삭제 실패:', sid, error);
+    });
+  });
+}
+
 function deleteSelectedInquiries(){
   const checked = Array.from(document.querySelectorAll('.inq-check:checked'));
   if (checked.length === 0) {
@@ -11845,8 +11869,11 @@ function deleteSelectedInquiries(){
     msg: '삭제 후 복원할 수 없습니다.',
     onOk: () => {
       const ids = checked.map(c => c.dataset.id);
+      const toDelete = INQUIRIES.filter(i => ids.includes(i.id));
+      const supIds = toDelete.map(i => i._supabase_id).filter(Boolean);
       INQUIRIES = INQUIRIES.filter(i => !ids.includes(i.id));
       saveInquiries();
+      _deleteInquiriesFromSupabase(supIds);
       const all = document.getElementById('inq-check-all');
       if (all) all.checked = false;
       refreshAll();
@@ -11860,8 +11887,10 @@ function deleteInquiry(id){
     title:'문의를 삭제하시겠습니까?',
     msg:'삭제 후 복원할 수 없습니다.',
     onOk: () => {
+      const item = INQUIRIES.find(i => i.id === id);
       INQUIRIES = INQUIRIES.filter(i => i.id !== id);
       saveInquiries();
+      if (item?._supabase_id) _deleteInquiriesFromSupabase([item._supabase_id]);
       refreshAll();
       showToast('문의를 삭제했습니다', 'success');
     }
