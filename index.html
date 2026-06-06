@@ -5764,38 +5764,42 @@ const DEFAULT_TESTIMONIALS = [
     quote:'평생 "왜 나만 이렇게 깊게 생각할까", "왜 사람들이랑 어울리는 게 이렇게 피곤할까" 하는 의문이 있었어요. PBS 진단에서 B3 보라가 100%, 다른 영역은 거의 비어있는 결과가 나왔는데 처음엔 좀 충격이었습니다. 그런데 결과지에 "직관과 통찰로 본질을 꿰뚫는 사색가, 혼자 있는 시간이 창작의 원천"이라고 적혀 있는 걸 보고 펑펑 울었어요. 평생 단점이라고 생각했던 게 사실은 제 가장 큰 강점이었던 거죠. 지금은 그 결과지를 작업실에 붙여두고 글이 안 풀릴 때마다 봅니다.'}
 ];
 
-function renderMainTestimonials() {
+async function renderMainTestimonials() {
   const grid = document.getElementById('testimonial-grid');
   if (!grid) return;
 
-  let testimonials = [];
+  let live = [];
   try {
-    const reviews = JSON.parse(localStorage.getItem('pbs-reviews') || '[]');
-    const featured = reviews.filter(r => r.featured && r.text && r.text.trim().length > 0);
-    if (featured.length > 0) {
-      // 관리자가 선택한 후기를 최신순으로 표시
-      testimonials = featured
-        .sort((a, b) => b.timestamp - a.timestamp)
-        .slice(0, 3)
-        .map(r => {
-          const engineColors = {RED:'#FF3366', YELLOW:'#F5A623', GREEN:'#00A878', BLUE:'#0077B6'};
-          const c = engineColors[r.mainEngine] || '#7030A0';
-          return {
-            name: r.name,
-            meta: r.mainEngine ? `${r.mainEngine} · 진단 후기` : '실제 진단 후기',
-            stars: r.stars,
-            gradient: `linear-gradient(135deg,${c},#7030A0)`,
-            initial: (r.name || '?').charAt(0).toUpperCase(),
-            quote: r.text,
-            isLive: true  // 실제 후기 표시
-          };
-        });
+    let featured = [];
+    // 1순위: Supabase featured 후기 (모든 방문자·기기 동일)
+    if (window.PBS && window.PBS.getFeaturedReviews && window.pbsDBReady) {
+      const rows = await window.PBS.getFeaturedReviews();
+      featured = (rows || []).map(r => ({ name: r.name, stars: r.stars, text: r.text, mainEngine: null }));
     }
+    // 2순위(폴백): localStorage featured 후기
+    if (featured.length === 0) {
+      const reviews = JSON.parse(localStorage.getItem('pbs-reviews') || '[]');
+      featured = reviews.filter(r => r.featured && r.text && r.text.trim().length > 0)
+        .sort((a, b) => (b.timestamp||0) - (a.timestamp||0))
+        .map(r => ({ name: r.name, stars: r.stars, text: r.text, mainEngine: r.mainEngine }));
+    }
+    live = featured.slice(0, 3).map(r => {
+      const engineColors = {RED:'#FF3366', YELLOW:'#F5A623', GREEN:'#00A878', BLUE:'#0077B6'};
+      const c = engineColors[r.mainEngine] || '#7030A0';
+      return {
+        name: r.name,
+        meta: r.mainEngine ? `${r.mainEngine} · 진단 후기` : '실제 진단 후기',
+        stars: r.stars,
+        gradient: `linear-gradient(135deg,${c},#7030A0)`,
+        initial: (r.name || '?').charAt(0).toUpperCase(),
+        quote: r.text,
+        isLive: true
+      };
+    });
   } catch (e) {}
 
-  // 실제 후기(관리자 노출)가 있어도 기본 샘플 후기는 항상 함께 노출한다.
-  // (실제 후기를 먼저, 그 뒤에 샘플 후기 — 샘플이 사라지지 않도록)
-  testimonials = [...testimonials, ...DEFAULT_TESTIMONIALS];
+  // 실제 후기 + 기본 샘플 후기 항상 함께 노출 (샘플이 사라지지 않도록)
+  const testimonials = [...live, ...DEFAULT_TESTIMONIALS];
 
   grid.innerHTML = testimonials.map(t => `
     <article class="testimonial-card">
@@ -5811,6 +5815,12 @@ function renderMainTestimonials() {
       </div>
     </article>
   `).join('');
+
+  // DB가 아직 준비되지 않았으면 잠시 후 1회 재시도(메인 featured 반영)
+  if (!window.pbsDBReady && !renderMainTestimonials._retried) {
+    renderMainTestimonials._retried = true;
+    setTimeout(() => renderMainTestimonials(), 1500);
+  }
 }
 
 function escapeHtmlMain(s) {
@@ -8055,6 +8065,27 @@ window.PBS.fetchMyRecords = async function(opts) {
 };
 
 // ============================================================
+// 함수 6b: featured 후기 조회(메인용) + featured 설정(관리자용, 안전 RPC)
+window.PBS.getFeaturedReviews = async function() {
+  if (!window.pbsDBReady) return [];
+  try {
+    const { data, error } = await window.pbsDB
+      .from('pbs_reviews').select('*')
+      .eq('is_visible', true).eq('is_featured', true)
+      .order('created_at', { ascending: false }).limit(6);
+    if (error) throw error;
+    return data || [];
+  } catch (e) { console.warn('[PBS] getFeaturedReviews 실패:', e); return []; }
+};
+window.PBS.setReviewFeatured = async function(id, featured) {
+  if (!window.pbsDBReady) return { ok:false };
+  try {
+    const { error } = await window.pbsDB.rpc('set_review_featured', { p_id: id, p_featured: !!featured });
+    if (error) throw error;
+    return { ok:true };
+  } catch (e) { console.warn('[PBS] setReviewFeatured 실패:', e); return { ok:false, error: e.message }; }
+};
+
 // 함수 7: Supabase → localStorage 동기화 (관리자 진입 시)
 //   - Supabase에 저장된 진단 결과·후기·문의를 가져와서
 //   - localStorage에 변환·병합 (관리자 페이지가 읽도록)
@@ -8065,88 +8096,127 @@ window.PBS.syncRecordsToLocal = async function() {
     return { ok:false };
   }
   try {
-    // 시드 데이터 패턴 (Supabase에서 가져올 때 자동 필터링)
+    // 시드 데이터 패턴 (표시에서 제외)
     const SEED_NAMES = ['김민지','박서준','이수정','정은혁','윤지호','강예린','한도윤','오세영','임채원','조민준','서다은','신하준','문지윤','배현우','송예진','김O진','박O수','이O연','정O윤','최O호','강O희','서O정'];
+    const GEAR_NAMES = {R1:'마젠타',R2:'레드',R3:'레드오렌지',Y1:'오렌지',Y2:'골드',Y3:'옐로우',G1:'옐로우그린',G2:'그린',G3:'블루그린',B1:'블루',B2:'인디고',B3:'보라'};
+    const _engOf = (g) => ({R:'RED',Y:'YELLOW',G:'GREEN',B:'BLUE'}[(g||'').charAt(0)] || 'RED');
 
-    // 1) 진단 기록 가져오기
-    const { data: srecs, error: e1 } = await window.pbsDB
+    // 1) Supabase 진단 기록 = 기준(source of truth) — 모든 기기가 동일하게 보도록
+    let { data: srecs, error: e1 } = await window.pbsDB
       .from('pbs_records').select('*')
       .in('test_type', PBS_TEST_TYPES)
       .order('created_at', { ascending: false })
-      .limit(500);
+      .limit(1000);
     if (e1) throw e1;
+    srecs = srecs || [];
 
-    // localStorage 기존 기록 (이 브라우저에서 만든 것)
+    // 1-a) 이 기기에만 있고 DB에 없는 기록은 먼저 업로드(손실 방지)
     const localRecords = JSON.parse(localStorage.getItem('pbs-records') || '[]');
-    const localIds = new Set(localRecords.map(r => r.id || r._supabase_id).filter(Boolean));
-    // 추가 중복 키: name + timestamp 조합 (id 다른데 같은 진단일 가능성 차단)
-    const localKeys = new Set(localRecords.map(r => `${r.user?.name||''}_${Math.floor((r.timestamp||0)/60000)}`));
-
-    // Supabase 기록 → localStorage 형식으로 변환 + 시드 필터 + 중복 제거
-    const converted = (srecs || [])
-      .filter(r => {
-        // 시드 이름 패턴 제외
-        const n = r.user_name || '';
-        if (SEED_NAMES.some(p => n.startsWith(p))) return false;
-        // ID 중복 제외
-        if (localIds.has(r.id)) return false;
-        // name+timestamp 키 중복 제외
-        const k = `${n}_${Math.floor(new Date(r.created_at).getTime()/60000)}`;
-        if (localKeys.has(k)) return false;
-        localKeys.add(k);
-        return true;
-      })
-      .map(r => ({
-      id: r.id,
-      _supabase_id: r.id,
-      _from_supabase: true,
-      timestamp: new Date(r.created_at).getTime(),
-      testType: r.is_premium ? 'premium' : 'basic',
-      user: {
-        name: r.user_name || '익명',
-        job: r.user_job || '',
-        org: r.user_org || '',
-        age: r.user_age || '',
-        email: r.user_email || ''
-      },
-      engineScores: r.scores || {},
-      gearScores: r.scores || {},
-      mainEngine: r.top_engine || 'RED',
-      topColor: (r.top_engine || '').toLowerCase(),
-      secondColor: (r.second_engine || '').toLowerCase(),
-      colorScores: r.scores || {},
-      top1: { gear: r.top_gear || 'R1', name: '', percent: (r.scores && r.scores[r.top_gear]) || 0 },
-      top2: { gear: r.second_engine ? r.second_engine.charAt(0) + '1' : '', name: '', percent: 0 },
-      duration: Math.round((r.duration_sec || 300) / 60),
-      feedback: null
-    }));
-
-    // 병합 + 시간순 정렬
-    const merged = [...localRecords, ...converted]
-      .sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
-    localStorage.setItem('pbs-records', JSON.stringify(merged));
-
-    // 2) 후기 가져오기
-    const { data: srevs } = await window.pbsDB
-      .from('pbs_reviews').select('*').eq('is_visible', true)
-      .order('created_at', { ascending: false }).limit(200);
-    if (srevs && srevs.length > 0) {
-      const localRevs = JSON.parse(localStorage.getItem('pbs-reviews') || '[]');
-      const localRevIds = new Set(localRevs.map(r => r.id || r._supabase_id));
-      const convertedRevs = srevs.filter(r => !localRevIds.has(r.id)).map(r => ({
-        id: r.id,
-        _supabase_id: r.id,
-        timestamp: new Date(r.created_at).getTime(),
-        name: r.name,
-        stars: r.stars,
-        text: r.text,
-        featured: false
-      }));
-      localStorage.setItem('pbs-reviews', JSON.stringify([...localRevs, ...convertedRevs]));
+    const dbKeys = new Set(srecs.map(r => `${r.user_name||''}_${Math.floor(new Date(r.created_at).getTime()/60000)}`));
+    const localOnly = localRecords.filter(r => {
+      if (!r || r._from_supabase || r._supabase_id) return false;
+      const nm = r.user && r.user.name ? r.user.name : '';
+      const m = Math.floor((r.timestamp||0)/60000);
+      // 저장시각과 DB 기록시각이 분 경계를 넘는 경우 대비 ±1분까지 매칭(중복 업로드 방지)
+      if (dbKeys.has(`${nm}_${m}`) || dbKeys.has(`${nm}_${m-1}`) || dbKeys.has(`${nm}_${m+1}`)) return false;
+      return true;
+    }).slice(0, 50);
+    let uploaded = 0;
+    for (const r of localOnly) {
+      try {
+        const sc = r.gearScores || r.engineScores || r.colorScores || {};
+        await window.pbsDB.from('pbs_records').insert({
+          test_type: r.testType === 'basic' ? 'adult_basic' : 'adult_60',
+          is_premium: r.testType !== 'basic',
+          user_name: (r.user && r.user.name) || null,
+          user_age: (r.user && r.user.age) || null,
+          user_org: (r.user && r.user.org) || null,
+          user_email: (r.user && r.user.email) || null,
+          user_phone: (r.user && r.user.phone) || null,
+          user_job: (r.user && r.user.job) || null,
+          scores: sc,
+          top_engine: r.mainEngine || null,
+          top_gear: (r.top1 && r.top1.gear) || null,
+          second_engine: null,
+          duration_sec: r.duration_sec || (r.duration ? r.duration * 60 : null),
+          created_at: r.timestamp ? new Date(r.timestamp).toISOString() : null
+        });
+        uploaded++;
+      } catch (err) { console.warn('[PBS] 로컬 기록 업로드 실패', err); }
+    }
+    if (uploaded > 0) {
+      const re = await window.pbsDB.from('pbs_records').select('*')
+        .in('test_type', PBS_TEST_TYPES).order('created_at', { ascending: false }).limit(1000);
+      if (!re.error && re.data) srecs = re.data;
     }
 
-    console.log(`[PBS] Supabase 동기화 완료: 진단 ${converted.length}건 추가`);
-    return { ok:true, addedRecords: converted.length };
+    // 1-b) Supabase 기록 → localStorage 형식 변환 (id 기준, 시드 이름만 제외)
+    const converted = srecs
+      .filter(r => { const n = r.user_name || ''; return !SEED_NAMES.some(p => n.startsWith(p)); })
+      .map(r => {
+        const tg = r.top_gear || 'R1';
+        return {
+          id: r.id, _supabase_id: r.id, _from_supabase: true,
+          timestamp: new Date(r.created_at).getTime(),
+          testType: r.is_premium ? 'premium' : 'basic',
+          user: { name: r.user_name || '익명', job: r.user_job || '', org: r.user_org || '', age: r.user_age || '', email: r.user_email || '', phone: r.user_phone || '', country: r.user_country || '' },
+          engineScores: r.scores || {},
+          gearScores: r.scores || {},
+          mainEngine: r.top_engine || _engOf(tg),
+          topColor: (r.top_engine || '').toLowerCase(),
+          secondColor: (r.second_engine || '').toLowerCase(),
+          colorScores: r.scores || {},
+          top1: { gear: tg, name: GEAR_NAMES[tg] || '', percent: (r.scores && r.scores[tg]) || 0 },
+          top2: { gear: r.second_engine ? r.second_engine.charAt(0) + '1' : '', name: '', percent: 0 },
+          duration: Math.round((r.duration_sec || 300) / 60),
+          duration_sec: r.duration_sec || null,
+          feedback: null
+        };
+      });
+
+    // 1-c) localStorage 교체 — 모든 기기 동일
+    converted.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+    localStorage.setItem('pbs-records', JSON.stringify(converted));
+
+    // 2) Supabase 후기 = 기준(source of truth) — featured 포함
+    let { data: srevs } = await window.pbsDB
+      .from('pbs_reviews').select('*')
+      .order('created_at', { ascending: false }).limit(500);
+    srevs = srevs || [];
+    // 2-a) 기기에만 있고 DB에 없는 후기 업로드(손실 방지)
+    const localRevs = JSON.parse(localStorage.getItem('pbs-reviews') || '[]');
+    const dbRevKeys = new Set(srevs.map(r => `${r.name||''}_${(r.text||'').slice(0,20)}`));
+    const localOnlyRevs = localRevs.filter(r => {
+      if (!r || r._from_supabase || r._supabase_id) return false;
+      const k = `${r.name||''}_${(r.text||'').slice(0,20)}`;
+      return r.text && !dbRevKeys.has(k);
+    }).slice(0, 50);
+    let revUploaded = 0;
+    for (const r of localOnlyRevs) {
+      try {
+        await window.pbsDB.from('pbs_reviews').insert({
+          site: PBS_SITE_ID, name: r.name || '익명', stars: r.stars || 5,
+          text: r.text || '', record_id: null, is_visible: true, is_featured: !!r.featured
+        });
+        revUploaded++;
+      } catch (err) { console.warn('[PBS] 로컬 후기 업로드 실패', err); }
+    }
+    if (revUploaded > 0) {
+      const re2 = await window.pbsDB.from('pbs_reviews').select('*')
+        .order('created_at', { ascending: false }).limit(500);
+      if (!re2.error && re2.data) srevs = re2.data;
+    }
+    // 2-b) localStorage 교체 (featured = DB is_featured)
+    const convertedRevs = srevs.map(r => ({
+      id: r.id, _supabase_id: r.id, _from_supabase: true,
+      timestamp: new Date(r.created_at).getTime(),
+      name: r.name, stars: r.stars, text: r.text,
+      featured: !!r.is_featured
+    }));
+    localStorage.setItem('pbs-reviews', JSON.stringify(convertedRevs));
+
+    console.log(`[PBS] Supabase 동기화 완료(기준): 진단 ${converted.length}건, 후기 ${convertedRevs.length}건`);
+    return { ok:true, addedRecords: converted.length, reviews: convertedRevs.length };
   } catch (e) {
     console.warn('[PBS] syncRecordsToLocal 실패:', e);
     return { ok:false, error: e.message };
@@ -11965,6 +12035,12 @@ function toggleFeatured(id){
     }
   }
   r.featured = !r.featured;
+  // Supabase에 featured 반영 → 모든 기기·메인 페이지에서 공유
+  try {
+    const sid = r._supabase_id || r.id;
+    const PBSref = (window.parent && window.parent.PBS) ? window.parent.PBS : (typeof window.PBS !== 'undefined' ? window.PBS : null);
+    if (PBSref && PBSref.setReviewFeatured && sid) PBSref.setReviewFeatured(sid, r.featured);
+  } catch (e) { console.warn('featured 동기화 실패', e); }
   saveReviews();
   renderReviews();
   showToast(r.featured ? '메인 노출 후기로 등록되었습니다' : '메인 노출에서 제외되었습니다', 'success');
