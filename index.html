@@ -11589,8 +11589,11 @@ function confirmDeleteRecord(id, fromModal=false){
     title: '진단 기록을 삭제하시겠습니까?',
     msg: '삭제된 기록은 복원할 수 없습니다.',
     onOk: () => {
+      const rec = RECORDS.find(r => r.id === id);
+      const sid = rec && (rec._supabase_id || rec.id);
       RECORDS = RECORDS.filter(r => r.id !== id);
       saveRecords();
+      if (sid) _deleteRecordsFromSupabase([sid]);
       if(fromModal) closeModal();
       refreshAll();
       showToast('진단 기록을 삭제했습니다', 'success');
@@ -11613,7 +11616,7 @@ function _deleteRecordsFromSupabase(supabaseIds){
   const db = (window.parent && window.parent.pbsDB) ? window.parent.pbsDB : (window.pbsDB || null);
   if (!db) return;
   supabaseIds.forEach(sid => {
-    db.from('pbs_records').delete().eq('id', sid).then(({ error }) => {
+    db.rpc('admin_delete_record', { p_id: sid, p_secret: ADMIN_PW }).then(({ error }) => {
       if (error) console.warn('[Admin] 기록 Supabase 삭제 실패:', sid, error);
     });
   });
@@ -12080,8 +12083,16 @@ function deleteReview(id){
     title:'후기를 삭제하시겠습니까?',
     msg:'삭제 후 복원할 수 없습니다.',
     onOk: () => {
+      const rev = REVIEWS.find(r => r.id === id);
+      const sid = rev && (rev._supabase_id || rev.id);
       REVIEWS = REVIEWS.filter(r => r.id !== id);
       saveReviews();
+      if (sid) {
+        const db = (window.parent && window.parent.pbsDB) ? window.parent.pbsDB : (window.pbsDB || null);
+        if (db) db.rpc('admin_delete_review', { p_id: sid, p_secret: ADMIN_PW }).then(({ error }) => {
+          if (error) console.warn('[Admin] 후기 Supabase 삭제 실패:', sid, error);
+        });
+      }
       refreshAll();
       showToast('후기를 삭제했습니다', 'success');
     }
@@ -12210,7 +12221,7 @@ function _deleteInquiriesFromSupabase(supabaseIds){
   const db = (window.parent && window.parent.pbsDB) ? window.parent.pbsDB : (window.pbsDB || null);
   if (!db) return;
   supabaseIds.forEach(sid => {
-    db.from('pbs_inquiries').delete().eq('id', sid).then(({ error }) => {
+    db.rpc('admin_delete_inquiry', { p_id: sid, p_secret: ADMIN_PW }).then(({ error }) => {
       if (error) console.warn('[Admin] 문의 Supabase 삭제 실패:', sid, error);
     });
   });
