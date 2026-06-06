@@ -5776,13 +5776,13 @@ function renderMainTestimonials() {
       // 관리자가 선택한 후기를 최신순으로 표시
       testimonials = featured
         .sort((a, b) => b.timestamp - a.timestamp)
-        .slice(0, 6)
+        .slice(0, 3)
         .map(r => {
           const engineColors = {RED:'#FF3366', YELLOW:'#F5A623', GREEN:'#00A878', BLUE:'#0077B6'};
           const c = engineColors[r.mainEngine] || '#7030A0';
           return {
             name: r.name,
-            meta: `${r.mainEngine} · 진단 후기`,
+            meta: r.mainEngine ? `${r.mainEngine} · 진단 후기` : '실제 진단 후기',
             stars: r.stars,
             gradient: `linear-gradient(135deg,${c},#7030A0)`,
             initial: (r.name || '?').charAt(0).toUpperCase(),
@@ -5793,10 +5793,9 @@ function renderMainTestimonials() {
     }
   } catch (e) {}
 
-  // 관리자 노출 후기가 없으면 기본 후기 사용
-  if (testimonials.length === 0) {
-    testimonials = DEFAULT_TESTIMONIALS;
-  }
+  // 실제 후기(관리자 노출)가 있어도 기본 샘플 후기는 항상 함께 노출한다.
+  // (실제 후기를 먼저, 그 뒤에 샘플 후기 — 샘플이 사라지지 않도록)
+  testimonials = [...testimonials, ...DEFAULT_TESTIMONIALS];
 
   grid.innerHTML = testimonials.map(t => `
     <article class="testimonial-card">
