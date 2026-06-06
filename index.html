@@ -11182,13 +11182,17 @@ function showRecordDetail(id){
       <div class="detail-section">
         <h4>4엔진 점수</h4>
         <div class="engine-bars">
-          ${Object.entries(r.engineScores||{}).map(([k,v]) => `
+          ${['RED','YELLOW','GREEN','BLUE'].map((k) => {
+            const v = (r.engineScores||{})[k] || 0;
+            const ec = ENGINES[k] ? ENGINES[k].color : '#7030A0';
+            const en = ENGINES[k] ? ENGINES[k].name : k;
+            return `
             <div class="engine-bar">
-              <span class="name" style="color:${ENGINES[k]?.color||'#7030A0'}">${k}</span>
-              <div class="track"><div class="fill" style="width:${v}%;background:${ENGINES[k]?.color||'#7030A0'}"></div></div>
+              <span class="name" style="color:${ec};flex:0 0 130px">${en}</span>
+              <div class="track"><div class="fill" style="width:${v}%;background:${ec}"></div></div>
               <span class="pct">${v}%</span>
-            </div>
-          `).join('')}
+            </div>`;
+          }).join('')}
         </div>
       </div>
       <div class="detail-section">
@@ -11269,6 +11273,7 @@ function showRecordDetail(id){
       <button class="btn-sm danger" onclick="confirmDeleteRecord('${r.id}',true)">
         <svg width="11" height="11"><use href="#i-trash"/></svg>삭제
       </button>
+      <button class="btn-sm" id="pdf-dl-btn" onclick="downloadRecordPdf('${r.id}')" style="padding:10px 18px">📄 결과지 PDF 다운로드</button>
       <button class="btn-sm primary" onclick="closeModal()" style="padding:10px 22px">닫기</button>
     </div>
   `;
@@ -11276,6 +11281,162 @@ function showRecordDetail(id){
 }
 function closeModal(){
   document.getElementById('detail-modal').classList.remove('active');
+}
+
+// ────────────────────────────────────────────────────────────
+// 고객 결과지 PDF 다운로드 (html2canvas + jsPDF, 한글 폰트 안전)
+// ────────────────────────────────────────────────────────────
+function _pbsLoadScript(src){
+  return new Promise((resolve, reject) => {
+    if (document.querySelector(`script[data-pbs-src="${src}"]`)) { resolve(); return; }
+    const sc = document.createElement('script');
+    sc.src = src; sc.setAttribute('data-pbs-src', src);
+    sc.onload = () => resolve();
+    sc.onerror = () => reject(new Error('스크립트 로드 실패: ' + src));
+    document.head.appendChild(sc);
+  });
+}
+
+function _buildResultSheetHtml(r){
+  const isBasic = r.testType === 'basic';
+  const dt = fmtDateTime(r.timestamp);
+  const typeLabel = isBasic ? 'Basic 25문항' : 'Premium 60문항';
+  const durTxt = r.duration_sec ? `${Math.floor(r.duration_sec/60)}분 ${r.duration_sec%60}초`
+                : r.duration ? `${r.duration}분` : '—';
+  const bar = (label, val, color, max) => {
+    const pct = Math.max(0, Math.min(100, max ? (val/max*100) : val));
+    const valTxt = max ? `${val}/${max}` : `${val}%`;
+    return `
+      <div style="display:flex;align-items:center;gap:14px;margin-bottom:11px">
+        <span style="flex:0 0 160px;font-size:13px;font-weight:700;color:${color}">${label}</span>
+        <div style="flex:1;height:13px;background:#ECEAF3;border-radius:7px;overflow:hidden">
+          <div style="height:100%;width:${pct}%;background:${color};border-radius:7px"></div>
+        </div>
+        <span style="flex:0 0 56px;text-align:right;font-size:13px;font-weight:800;color:#1C1A2E">${valTxt}</span>
+      </div>`;
+  };
+
+  let scoreBlocks = '';
+  if (isBasic) {
+    const BASIC_C = {
+      red:{name:'빨간색 도전·용기',color:'#FF3366'}, yellow:{name:'노란색 표현·소통',color:'#F5A623'},
+      green:{name:'초록색 배려·안정',color:'#00A878'}, blue:{name:'파란색 생각·탐구',color:'#0077B6'},
+      purple:{name:'보라색 상상·창의',color:'#9B59B6'}
+    };
+    const cs = r.colorScores || {};
+    scoreBlocks = `
+      <h2 style="font-size:15px;color:#1C1A2E;margin:26px 0 14px;font-weight:800">5컬러 점수 (각 25점 만점)</h2>
+      ${Object.entries(BASIC_C).map(([k,v]) => bar(v.name, cs[k]||0, v.color, 25)).join('')}`;
+  } else {
+    const engineBars = ['RED','YELLOW','GREEN','BLUE'].map(k => {
+      const v = (r.engineScores||{})[k] || 0;
+      const E = ENGINES[k] || {color:'#7030A0', name:k};
+      return bar(E.name, v, E.color);
+    }).join('');
+    const gearBars = Object.entries(r.gearScores||{}).sort((a,b)=>b[1]-a[1]).map(([k,v]) => {
+      const eng = GEARS[k] ? GEARS[k].engine : 'RED';
+      const color = ENGINES[eng] ? ENGINES[eng].color : '#7030A0';
+      const nm = GEARS[k] ? GEARS[k].name : '';
+      return bar(`${k} ${nm}`, v, color);
+    }).join('');
+    scoreBlocks = `
+      <h2 style="font-size:15px;color:#1C1A2E;margin:26px 0 14px;font-weight:800">4엔진 점수</h2>
+      ${engineBars}
+      <h2 style="font-size:15px;color:#1C1A2E;margin:26px 0 14px;font-weight:800">12기어 상세 점수</h2>
+      ${gearBars}`;
+  }
+
+  const mainColor = ENGINES[r.mainEngine] ? ENGINES[r.mainEngine].color : '#7030A0';
+  const mainName = ENGINES[r.mainEngine] ? ENGINES[r.mainEngine].name : (r.mainEngine || '—');
+
+  return `
+    <div style="width:760px;box-sizing:border-box;padding:44px 48px;background:#ffffff;font-family:'Pretendard Variable',Pretendard,-apple-system,system-ui,sans-serif;color:#1C1A2E">
+      <div style="border-bottom:3px solid ${mainColor};padding-bottom:18px;margin-bottom:24px">
+        <div style="font-size:12px;font-weight:800;letter-spacing:0.18em;color:${mainColor}">PBS COLOR LAB · 컬러 강점 결과지</div>
+        <h1 style="font-size:26px;font-weight:900;margin:8px 0 6px">${escapeHtml(r.user.name||'고객')} 님의 진단 결과</h1>
+        <div style="font-size:12.5px;color:#6B6880">${typeLabel} · ${dt} · 소요 ${durTxt}</div>
+      </div>
+
+      <div style="display:flex;gap:24px;margin-bottom:8px">
+        <div style="flex:1">
+          <div style="font-size:12px;font-weight:800;color:#6B6880;margin-bottom:8px">응답자 정보</div>
+          <table style="width:100%;font-size:13px;border-collapse:collapse">
+            <tr><td style="padding:4px 0;color:#6B6880;width:64px">이름</td><td style="padding:4px 0;font-weight:600">${escapeHtml(r.user.name||'—')}</td></tr>
+            <tr><td style="padding:4px 0;color:#6B6880">직업</td><td style="padding:4px 0;font-weight:600">${escapeHtml(r.user.job||'—')}</td></tr>
+            <tr><td style="padding:4px 0;color:#6B6880">소속</td><td style="padding:4px 0;font-weight:600">${escapeHtml(r.user.org||'—')}</td></tr>
+          </table>
+        </div>
+        <div style="flex:1">
+          <div style="font-size:12px;font-weight:800;color:#6B6880;margin-bottom:8px">핵심 결과</div>
+          <table style="width:100%;font-size:13px;border-collapse:collapse">
+            <tr><td style="padding:4px 0;color:#6B6880;width:80px">주 엔진</td><td style="padding:4px 0;font-weight:800;color:${mainColor}">${mainName}</td></tr>
+            <tr><td style="padding:4px 0;color:#6B6880">강점 1순위</td><td style="padding:4px 0;font-weight:600">${escapeHtml(r.top1?.name||'—')} (${r.top1?.percent ?? '—'}${isBasic?'':'%'})</td></tr>
+            <tr><td style="padding:4px 0;color:#6B6880">강점 2순위</td><td style="padding:4px 0;font-weight:600">${escapeHtml(r.top2?.name||'—')} (${r.top2?.percent ?? '—'}${isBasic?'':'%'})</td></tr>
+          </table>
+        </div>
+      </div>
+
+      ${scoreBlocks}
+
+      <div style="margin-top:30px;padding-top:14px;border-top:1px solid #E5E3EE;font-size:11px;color:#9A97AD;text-align:center">
+        PBS COLOR LAB · 칼 융·괴테·막스 뤼셔·DISC 통합 컬러 강점 진단 · pbscolor.vercel.app
+      </div>
+    </div>`;
+}
+
+async function downloadRecordPdf(id){
+  const r = RECORDS.find(x => x.id === id);
+  if (!r) { showToast('기록을 찾을 수 없습니다', 'error'); return; }
+  const btn = document.getElementById('pdf-dl-btn');
+  const orig = btn ? btn.textContent : '';
+  if (btn) { btn.disabled = true; btn.textContent = '⏳ PDF 생성 중...'; }
+  try {
+    await _pbsLoadScript('https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js');
+    await _pbsLoadScript('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js');
+
+    const holder = document.createElement('div');
+    holder.style.cssText = 'position:fixed;left:-10000px;top:0;z-index:-1';
+    holder.innerHTML = _buildResultSheetHtml(r);
+    document.body.appendChild(holder);
+    const sheet = holder.firstElementChild;
+
+    // 폰트 적용 대기
+    if (document.fonts && document.fonts.ready) { try { await document.fonts.ready; } catch(e){} }
+    await new Promise(res => setTimeout(res, 120));
+
+    const canvas = await html2canvas(sheet, { scale: 2, backgroundColor: '#ffffff', useCORS: true, logging: false });
+    document.body.removeChild(holder);
+
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF({ unit: 'pt', format: 'a4' });
+    const pageW = pdf.internal.pageSize.getWidth();
+    const pageH = pdf.internal.pageSize.getHeight();
+    const imgW = pageW;
+    const imgH = canvas.height * (pageW / canvas.width);
+    const imgData = canvas.toDataURL('image/jpeg', 0.95);
+
+    let heightLeft = imgH;
+    let position = 0;
+    pdf.addImage(imgData, 'JPEG', 0, position, imgW, imgH);
+    heightLeft -= pageH;
+    while (heightLeft > 0) {
+      position -= pageH;
+      pdf.addPage();
+      pdf.addImage(imgData, 'JPEG', 0, position, imgW, imgH);
+      heightLeft -= pageH;
+    }
+
+    const safeName = (r.user.name || '고객').replace(/[\\/:*?"<>|]/g, '');
+    pdf.save(`${safeName}_컬러강점결과지.pdf`);
+    if (btn) { btn.textContent = '✅ 다운로드 완료'; }
+    showToast('결과지 PDF를 다운로드했습니다', 'success');
+  } catch (e) {
+    console.error('[PDF] 생성 실패:', e);
+    showToast('PDF 생성에 실패했습니다. 잠시 후 다시 시도해주세요.', 'error');
+    if (btn) { btn.textContent = orig || '📄 결과지 PDF 다운로드'; }
+  } finally {
+    setTimeout(() => { if (btn) { btn.disabled = false; btn.textContent = orig || '📄 결과지 PDF 다운로드'; } }, 1500);
+  }
 }
 
 /* ── 엔진/기어 팝업 ── */
