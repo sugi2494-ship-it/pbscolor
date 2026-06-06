@@ -8215,8 +8215,46 @@ window.PBS.syncRecordsToLocal = async function() {
     }));
     localStorage.setItem('pbs-reviews', JSON.stringify(convertedRevs));
 
-    console.log(`[PBS] Supabase 동기화 완료(기준): 진단 ${converted.length}건, 후기 ${convertedRevs.length}건`);
-    return { ok:true, addedRecords: converted.length, reviews: convertedRevs.length };
+    // 3) Supabase 문의 = 기준(source of truth) — 삭제된 문의가 다른 기기에 남지 않도록
+    let { data: sinqs } = await window.pbsDB
+      .from('pbs_inquiries').select('*')
+      .order('created_at', { ascending: false }).limit(500);
+    sinqs = sinqs || [];
+    // 3-a) 기기에만 있고 DB에 없는 문의 업로드(손실 방지) — _supabase_id 없는 것만
+    const localInqs = JSON.parse(localStorage.getItem('pbs-inquiries') || '[]');
+    const dbInqKeys = new Set(sinqs.map(r => `${r.name||''}_${(r.message||'').slice(0,20)}`));
+    const localOnlyInqs = localInqs.filter(r => {
+      if (!r || r._from_supabase || r._from_cloud || r._supabase_id) return false;
+      const k = `${r.name||''}_${(r.message||'').slice(0,20)}`;
+      return (r.message || r.name) && !dbInqKeys.has(k);
+    }).slice(0, 50);
+    let inqUploaded = 0;
+    for (const r of localOnlyInqs) {
+      try {
+        await window.pbsDB.from('pbs_inquiries').insert({
+          site: PBS_SITE_ID, inquiry_type: r.type || 'other',
+          name: r.name || '', org: r.org || null, email: r.email || null,
+          phone: r.phone || null, message: r.message || '', status: r.status || 'new'
+        });
+        inqUploaded++;
+      } catch (err) { console.warn('[PBS] 로컬 문의 업로드 실패', err); }
+    }
+    if (inqUploaded > 0) {
+      const re3 = await window.pbsDB.from('pbs_inquiries').select('*').order('created_at', { ascending: false }).limit(500);
+      if (!re3.error && re3.data) sinqs = re3.data;
+    }
+    // 3-b) localStorage 교체 (날짜 null이면 NaN 방지)
+    const convertedInqs = sinqs.map(r => ({
+      id: r.id, _supabase_id: r.id, _from_supabase: true,
+      timestamp: r.created_at ? new Date(r.created_at).getTime() : Date.now(),
+      type: r.inquiry_type || r.type || '기타',
+      name: r.name || '', org: r.org || '', email: r.email || '',
+      phone: r.phone || '', message: r.message || '', status: r.status || 'new'
+    }));
+    localStorage.setItem('pbs-inquiries', JSON.stringify(convertedInqs));
+
+    console.log(`[PBS] Supabase 동기화 완료(기준): 진단 ${converted.length}건, 후기 ${convertedRevs.length}건, 문의 ${convertedInqs.length}건`);
+    return { ok:true, addedRecords: converted.length, reviews: convertedRevs.length, inquiries: convertedInqs.length };
   } catch (e) {
     console.warn('[PBS] syncRecordsToLocal 실패:', e);
     return { ok:false, error: e.message };
@@ -10475,8 +10513,8 @@ async function pbsAdminSyncFromCloud(opts){
           id: 'cloud_' + r.id,
           _supabase_id: r.id,
           _from_cloud: true,
-          timestamp: new Date(r.created_at).getTime(),
-          type: r.inquiry_type || '기타',
+          timestamp: r.created_at ? new Date(r.created_at).getTime() : Date.now(),
+          type: r.inquiry_type || r.type || '기타',
           name: r.name || '',
           org: r.org || '',
           email: r.email || '',
