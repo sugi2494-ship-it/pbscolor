@@ -7675,6 +7675,74 @@ if (document.readyState === 'loading') {
 } else {
   init();
 }
+
+// ────────────────────────────────────────────────────────────
+// 뒤로가기(브라우저 back) 버튼 인터셉터
+// 기어 상세 → 결과/조회/진단 화면 → 홈 순서로 한 단계씩 닫음
+// (각 화면은 열릴 때 history.pushState 로 상태를 쌓아둠)
+// ────────────────────────────────────────────────────────────
+window.addEventListener('popstate', function() {
+  // 1) 기어 상세 모달이 열려 있으면 → 모달만 닫고 결과화면 유지
+  const gearModal = document.getElementById('gear-modal');
+  if (gearModal && gearModal.classList.contains('active')) {
+    gearModal.classList.remove('active');
+    document.body.style.overflow = '';
+    _modalGearTarget = null;
+    // 결과화면이 아직 열려 있으므로 result 히스토리 상태 복원
+    const resultScreen = document.getElementById('result-screen');
+    if (resultScreen && resultScreen.classList.contains('active')) {
+      history.pushState({ pbsView: 'result' }, '', location.pathname + '#result');
+    }
+    return;
+  }
+  // 1.5) Lookup(결과 조회) 화면이 열려 있으면 → 닫기
+  const lookupScreen = document.getElementById('lookup-screen');
+  if (lookupScreen && lookupScreen.classList.contains('active')) {
+    closeLookupResult();
+    return;
+  }
+  // 2) 결과 화면이 열려 있으면 → 결과화면 닫기
+  const resultScreen = document.getElementById('result-screen');
+  if (resultScreen && resultScreen.classList.contains('active')) {
+    resultScreen.classList.remove('active');
+    document.body.classList.remove('modal-open');
+    STATE.view = 'home';
+    history.replaceState(null, '', location.pathname);
+    return;
+  }
+  // 3) Basic 결과 화면이 열려 있으면 → 닫기
+  const basicResult = document.getElementById('basic-result-screen');
+  if (basicResult && basicResult.classList.contains('active')) {
+    basicResult.classList.remove('active');
+    document.body.classList.remove('modal-open');
+    history.replaceState(null, '', location.pathname);
+    return;
+  }
+  // 4) 진단(테스트) 화면이 열려 있으면 → 닫기 (진행 중이면 응답 저장)
+  const testScreen = document.getElementById('test-screen');
+  if (testScreen && testScreen.classList.contains('active')) {
+    if (STATE.view === 'test' && STATE.testStage === 'question' &&
+        Object.keys(STATE.answers).length > 0 && Object.keys(STATE.answers).length < 60) {
+      saveState();
+    }
+    testScreen.classList.remove('active');
+    document.body.classList.remove('modal-open');
+    STATE.view = 'home';
+    const pz = document.getElementById('progress-zone');
+    if (pz) pz.style.display = 'none';
+    history.replaceState(null, '', location.pathname);
+    return;
+  }
+  // 5) Basic 진단 화면이 열려 있으면 → 닫기
+  const basicTest = document.getElementById('basic-test-screen');
+  if (basicTest && basicTest.classList.contains('active')) {
+    basicTest.classList.remove('active');
+    document.body.classList.remove('modal-open');
+    history.replaceState(null, '', location.pathname);
+    return;
+  }
+  // 그 외에는 브라우저 기본 뒤로가기 동작을 그대로 허용
+});
 </script>
 
 <!-- =========================================================
