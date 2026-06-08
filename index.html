@@ -2351,6 +2351,13 @@ button.basic-job-pill:hover::after{opacity:1}
       <p>K-뷰티와 색채 전문성을 바탕으로 5개 대륙에서 VIP 컨설팅과 공식 행사를 수행하고 있습니다.</p>
     </div>
 
+    <div style="text-align:center;margin:8px 0 4px">
+      <button type="button" class="btn btn-ghost" onclick="toggleGlobalFold(this)" id="global-fold-btn" style="font-size:14px">
+        <span>🌍 글로벌 활동 이력 펼쳐보기 ▾</span>
+      </button>
+    </div>
+    <div id="global-fold-body" style="display:none">
+
     <!-- Hero Card: 두바이 -->
     <div class="ref-hero">
       <div class="ref-hero-inner">
@@ -2445,6 +2452,7 @@ button.basic-job-pill:hover::after{opacity:1}
         </div>
       </div>
     </div>
+      </div>
   </div>
 </section>
 
@@ -2506,40 +2514,8 @@ button.basic-job-pill:hover::after{opacity:1}
 </section>
 
 <!-- ========== SERVICE / PROGRAM ========== -->
-<!-- ========== PREMIUM REPORT (사전 등록) ========== -->
-<section class="section" id="premium" style="background:linear-gradient(180deg,var(--bg-page) 0%,color-mix(in srgb,#FFD166 4%,var(--bg-page)) 100%);position:relative;overflow:hidden">
-  <div style="position:absolute;top:-200px;right:-200px;width:500px;height:500px;background:linear-gradient(135deg,#FFD166,#F5A623);border-radius:50%;filter:blur(140px);opacity:0.12;pointer-events:none"></div>
-  <div class="container" style="position:relative">
-    <div class="section-head">
-      <div class="eyebrow" style="color:#D4870D">💎 PREMIUM REPORT · 출시 임박</div>
-      <h2 class="h2">진단 결과만으로 부족할 때<br><span style="background:linear-gradient(120deg,#7030A0,#FF3366,#F5A623);-webkit-background-clip:text;background-clip:text;color:transparent">강점을 성과로 바꾸는 30+페이지 리포트</span></h2>
-      <p>무료 진단이 "나는 어떤 사람인가"였다면, 프리미엄 리포트는 "그래서 무엇을 할까"의 답입니다.</p>
-    </div>
-
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:36px;align-items:start;margin-top:36px" class="premium-grid">
-      <!-- 왼쪽: 리포트 미리보기 -->
-      <div>
-        <div style="background:var(--bg-surface);border-radius:var(--r-2xl);padding:36px;box-shadow:var(--shadow-lg);border:1px solid var(--border-default);position:relative">
-          <div style="position:absolute;top:-12px;left:24px;background:linear-gradient(135deg,#7030A0,#FF3366);color:#fff;font-size:11px;font-weight:800;letter-spacing:0.08em;padding:5px 14px;border-radius:var(--r-full);box-shadow:0 8px 20px rgba(112,48,160,0.3)">PREMIUM CONTENT</div>
-          <h3 style="font-size:22px;font-weight:800;margin-bottom:18px;margin-top:8px;letter-spacing:-0.02em">리포트에 들어가는 것</h3>
-          <ul style="list-style:none;padding:0;margin:0;display:grid;gap:14px">
-            <li style="display:flex;gap:12px;align-items:flex-start"><span style="font-size:20px;line-height:1.2">📊</span><div><strong style="display:block;margin-bottom:2px">12기어 패턴 심층 분석</strong><span style="font-size:13px;color:var(--text-secondary);line-height:1.5">레이더 모양으로 자동 분류된 나의 강점 유형 + 발달 단계별 가이드</span></div></li>
-            <li style="display:flex;gap:12px;align-items:flex-start"><span style="font-size:20px;line-height:1.2">⏰</span><div><strong style="display:block;margin-bottom:2px">엔진별 시간관리·주간 루틴</strong><span style="font-size:13px;color:var(--text-secondary);line-height:1.5">나의 컬러에 맞춘 집중력 시간대·휴식 패턴·목표 달성 루틴 템플릿</span></div></li>
-            <li style="display:flex;gap:12px;align-items:flex-start"><span style="font-size:20px;line-height:1.2">🎯</span><div><strong style="display:block;margin-bottom:2px">직업 매칭 50선</strong><span style="font-size:13px;color:var(--text-secondary);line-height:1.5">내 강점에 맞는 직업 50개 + 진로 로드맵 + 같은 컬러 유명인 사례집</span></div></li>
-            <li style="display:flex;gap:12px;align-items:flex-start"><span style="font-size:20px;line-height:1.2">🔥</span><div><strong style="display:block;margin-bottom:2px">90일 강점 활용 챌린지</strong><span style="font-size:13px;color:var(--text-secondary);line-height:1.5">매주 1개씩 강점을 작동시키는 실행 챌린지 + 진행 기록표</span></div></li>
-            <li style="display:flex;gap:12px;align-items:flex-start"><span style="font-size:20px;line-height:1.2">🧭</span><div><strong style="display:block;margin-bottom:2px">의사결정 매트릭스</strong><span style="font-size:13px;color:var(--text-secondary);line-height:1.5">중요한 선택의 갈림길에서 내 컬러 기반으로 결정 내리는 도구</span></div></li>
-            <li style="display:flex;gap:12px;align-items:flex-start"><span style="font-size:20px;line-height:1.2">💑</span><div><strong style="display:block;margin-bottom:2px">관계 응대 매뉴얼</strong><span style="font-size:13px;color:var(--text-secondary);line-height:1.5">가족·연인·동료의 컬러 유형별 대화법과 갈등 해결 시나리오</span></div></li>
-            <li style="display:flex;gap:12px;align-items:flex-start"><span style="font-size:20px;line-height:1.2">📖</span><div><strong style="display:block;margin-bottom:2px">인쇄 가능 PDF + 책갈피 카드</strong><span style="font-size:13px;color:var(--text-secondary);line-height:1.5">두고두고 꺼내 보는 소장용 디자인. 책상·다이어리 동봉 가능</span></div></li>
-          </ul>
-        </div>
-      </div>
-
-    </div>
-  </div>
-</section>
-
 <!-- ========== COACH CERTIFICATION (1기 모집) ========== -->
-<section class="section" id="coach" style="background:linear-gradient(180deg,var(--bg-page) 0%,color-mix(in srgb,#7030A0 5%,var(--bg-page)) 100%);position:relative;overflow:hidden">
+<section class="section" id="coach" style="display:none;background:linear-gradient(180deg,var(--bg-page) 0%,color-mix(in srgb,#7030A0 5%,var(--bg-page)) 100%);position:relative;overflow:hidden">
   <div style="position:absolute;top:-300px;left:-200px;width:600px;height:600px;background:linear-gradient(135deg,#7030A0,#FF3366);border-radius:50%;filter:blur(160px);opacity:0.12;pointer-events:none"></div>
   <div class="container" style="position:relative">
     <div class="section-head">
@@ -4198,6 +4174,16 @@ function isPwRequired() {
     if (s && s.pwRequired === true) return true;
   } catch(e) {}
   return false;
+}
+
+// 글로벌 활동 이력 접기/펼치기
+function toggleGlobalFold(btn){
+  var b = document.getElementById('global-fold-body');
+  if(!b) return;
+  var open = b.style.display !== 'none';
+  b.style.display = open ? 'none' : 'block';
+  var sp = btn.querySelector('span');
+  if(sp) sp.textContent = open ? '🌍 글로벌 활동 이력 펼쳐보기 ▾' : '🌍 글로벌 활동 이력 접기 ▴';
 }
 
 // "진단 시작" 클릭 시 — Basic / Premium 선택 모달부터
