@@ -10142,6 +10142,7 @@ let REVIEWS = [];
 let INQUIRIES = [];
 let CONTENT = {};
 let SETTINGS = { pwRequired: true };  // 진단 비번 ON/OFF
+let CLOUD_SYNCED = false;  // 첫 클라우드 동기화 완료 여부 (카운트 깜빡임 방지)
 let NOTICE = { active: false, text: '', link: '', emoji: '🎉' };  // 공지사항
 let CURRENT_PAGE = 'dashboard';
 let RECORDS_PAGE = 1;
@@ -10783,10 +10784,10 @@ function resetAllLocalData(){
 function initApp(){
   loadData();
 
-  // 클라우드 자동 동기화 (1초 후 백그라운드 실행 — 다른 사용자/PC 데이터까지 모두 모아 보기)
-  setTimeout(() => {
-    try { pbsAdminSyncFromCloud({ silent:false }); } catch(e) { console.warn('cloud sync:', e); }
-  }, 1000);
+  // 첫 진입: 클라우드 동기화를 먼저 끝낸 뒤 카운트를 확정 표시 (60→70 깜빡임 방지)
+  Promise.resolve().then(() => pbsAdminSyncFromCloud({ silent:true }))
+    .catch(e => { console.warn('cloud sync:', e); })
+    .finally(() => { CLOUD_SYNCED = true; refreshAll(); });
 
   // ── 🔔 실시간 알림: 새 진단 접수 시 브라우저 알림 ──
   setTimeout(() => {
@@ -10939,7 +10940,7 @@ function renderDashboard(){
     : '—';
 
   const kpis = [
-    {label:'전체 검사 수', value:total, unit:'건', trend:`Basic ${basicCount} · Premium ${premiumCount}`, color:'purple', icon:'i-users'},
+    {label:'전체 검사 수', value: CLOUD_SYNCED ? total : '…', unit:'건', trend:`Basic ${basicCount} · Premium ${premiumCount}`, color:'purple', icon:'i-users'},
     {label:'최근 7일', value:weekCount, unit:'건', trend:`+${todayCount} 오늘`, color:'red', icon:'i-trend-up'},
     {label:'미답변 문의', value:newInq, unit:'건', trend:`총 ${INQUIRIES.length}건 중`, color:'yellow', icon:'i-message'},
     {label:'평균 만족도', value:avgStars, unit:avgStars==='—'?'':'/5', trend:`후기 ${REVIEWS.length}건`, color:'green', icon:'i-star'}
