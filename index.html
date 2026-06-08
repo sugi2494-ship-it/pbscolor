@@ -737,7 +737,8 @@ body.modal-open{overflow:hidden}
 }
 @media print{
   /* 인쇄 시 화면 전체 숨기기 */
-  body > *:not(.result-screen){ display:none !important }
+  body > *{ display:none !important }
+  #pdf-print-area{ display:block !important; -webkit-print-color-adjust:exact; print-color-adjust:exact }
   .header,.test-screen,.footer,.result-cta,.result-cover-actions,.nav-menu,.header-actions{ display:none !important }
   /* result-screen 기본 */
   .result-screen{ position:static !important; overflow:visible !important; background:#fff !important; display:block !important }
@@ -6986,6 +6987,14 @@ function renderResult(r) {
             <strong style="display:block;font-size:16px;margin-bottom:6px">후기 감사합니다!</strong>
             <span style="font-size:14px">당신만의 컬러로, 빛나시기를 바랍니다 ✨</span>
           </div>
+          <div id="result-download-block" style="display:none;margin-top:22px;text-align:center">
+            <button class="btn btn-primary" onclick="downloadResult()" style="margin-bottom:14px">📄 무료 결과지 PDF 다운로드</button>
+            <div style="max-width:480px;margin:0 auto;padding:18px;border:1.5px solid #7030A0;border-radius:14px;background:linear-gradient(135deg,rgba(112,48,160,0.06),rgba(255,51,102,0.05));text-align:left">
+              <div style="font-weight:800;color:#7030A0;margin-bottom:6px">💎 더 깊은 분석이 필요하다면 — 상세 컬러강점 리포트</div>
+              <div style="font-size:13px;color:var(--text-secondary);line-height:1.6;margin-bottom:12px">무료본은 핵심 요약이에요. 상세 리포트는 <b>12기어 심층 분석 · 엔진별 시간관리 루틴 · 직업 매칭 50선 · 90일 강점 활용 챌린지</b> 등 30+페이지로 "그래서 무엇을 할까"의 답을 담았습니다.</div>
+              <a href="https://smartstore.naver.com/dongnesujoggwan" target="_blank" rel="noopener" class="btn btn-primary" style="width:100%;justify-content:center">상세 리포트 신청하기 · 9,900원 →</a>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -7082,8 +7091,35 @@ function getConflictAdvice(engine) {
 }
 
 function downloadResult() {
-  alert('PDF 저장 방법:\n1. 아래 인쇄 대화상자가 열립니다\n2. 대상(프린터)에서 [PDF로 저장] 또는 [Microsoft Print to PDF] 선택\n3. [저장] 클릭\n\n※ 핵심 결과 요약본만 출력됩니다.');
-  setTimeout(() => window.print(), 300);
+  var r = (typeof STATE!=='undefined' && STATE.result) ? STATE.result : null;
+  var area = document.getElementById('pdf-print-area');
+  var E = r ? (typeof ENGINE_DATA!=='undefined' ? ENGINE_DATA[r.mainEngine] : null) : null;
+  if(!r || !area || !E){ setTimeout(function(){ window.print(); }, 200); return; }
+  var name = (typeof STATE!=='undefined' && STATE.user && STATE.user.name) ? STATE.user.name : '회원';
+  var esc = function(t){ return (t==null?'':String(t)).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); };
+  function pct(k){ try{ return Math.round(r.engineScores[k].percent); }catch(e){ return 0; } }
+  var order=['RED','YELLOW','GREEN','BLUE'];
+  var bars=order.map(function(k){ var pp=pct(k); var c=(ENGINE_DATA[k]||{}).color||'#7030A0'; var nm=(ENGINE_DATA[k]||{}).shortName||k; return '<div style="display:flex;align-items:center;gap:10px;margin:7px 0"><span style="width:54px;font-weight:700;color:'+c+'">'+esc(nm)+'</span><div style="flex:1;height:14px;background:#eee;border-radius:7px;overflow:hidden"><div style="height:100%;width:'+pp+'%;background:'+c+'"></div></div><span style="width:44px;text-align:right;font-weight:700">'+pp+'%</span></div>'; }).join('');
+  var li=function(arr){ return (arr||[]).map(function(x){ return '<li style="margin:4px 0">'+esc(x)+'</li>'; }).join(''); };
+  var growth=(E.growth||[]).map(function(g){ return '<li style="margin:8px 0"><b>'+esc(g.title)+'</b><br><span style="color:#555">'+esc(g.detail)+'</span></li>'; }).join('');
+  var H=function(t){ return '<h2 style="font-size:16px;margin:20px 0 8px;border-left:4px solid '+E.color+';padding-left:8px">'+t+'</h2>'; };
+  area.innerHTML =
+    '<div style="font-family:Pretendard,system-ui,sans-serif;color:#111;max-width:760px;margin:0 auto;padding:6px">'
+    +'<div style="border-bottom:3px solid '+E.color+';padding-bottom:12px;margin-bottom:8px">'
+      +'<div style="font-size:11px;letter-spacing:.12em;color:'+E.color+';font-weight:800">PBS 컬러강점 진단 결과지</div>'
+      +'<h1 style="margin:6px 0;font-size:25px">'+esc(name)+'님의 주 엔진 · <span style="color:'+E.color+'">'+esc(E.name)+'</span></h1>'
+      +'<div style="color:#555;font-size:13px">'+esc(E.subtitle)+'</div>'
+      +'<div style="margin-top:8px;font-style:italic;color:#333">“'+esc(E.quote)+'”</div>'
+    +'</div>'
+    +H('4가지 컬러 엔진 점수')+bars
+    +H('나의 핵심 강점')+'<ul style="line-height:1.6;padding-left:18px;margin:0">'+li(E.strengths)+'</ul>'
+    +H('추천 직업·분야')+'<ul style="line-height:1.6;padding-left:18px;margin:0">'+li(E.jobs)+'</ul>'
+    +H('소통·관계 스타일')+'<p style="line-height:1.65;margin:6px 0"><b>의사소통</b> · '+esc(E.communication)+'</p><p style="line-height:1.65;margin:6px 0"><b>연애</b> · '+esc(E.romance)+'</p><p style="line-height:1.65;margin:6px 0"><b>갈등 대처</b> · '+esc(E.conflict)+'</p>'
+    +H('성장 포인트')+'<ul style="line-height:1.6;padding-left:18px;margin:0">'+growth+'</ul>'
+    +'<div style="margin-top:24px;padding:14px 16px;border:1px dashed #7030A0;border-radius:10px;background:#faf7ff"><b style="color:#7030A0">＋ 상세 컬러강점 리포트(유료)</b><br><span style="font-size:12px;color:#444">12기어 심층 분석 · 엔진별 시간관리 루틴 · 직업 매칭 50선 · 90일 강점 활용 챌린지 등 30+페이지 상세본은 신청 페이지에서 받아보실 수 있습니다.</span></div>'
+    +'<div style="margin-top:16px;font-size:11px;color:#999;text-align:center">© PBS COLOR LAB · 본 결과지는 무료 진단 요약본입니다.</div>'
+    +'</div>';
+  setTimeout(function(){ window.print(); }, 220);
 }
 
 /* ============================================================
@@ -7448,6 +7484,8 @@ function submitFeedback() {
   // 2) 감사 메시지 표시
   const thanksEl = document.getElementById('feedback-thanks');
   if (thanksEl) thanksEl.classList.add('show');
+  const dlBlock = document.getElementById('result-download-block');
+  if (dlBlock) dlBlock.style.display = 'block';
 
   // 3) 제출 버튼 숨기기 + 입력 비활성화 (중복 제출 방지)
   const submitBtn = document.querySelector('.feedback-submit');
@@ -12905,5 +12943,6 @@ window.addEventListener('DOMContentLoaded', () => {
 console.log('[PBS] 관리자 콘솔 통합 완료. 진입: Ctrl+Shift+A | #admin | 우하단 ⚙️ Admin');
 </script>
 
+<div id="pdf-print-area" style="display:none"></div>
 </body>
 </html>
