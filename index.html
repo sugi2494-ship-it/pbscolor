@@ -142,6 +142,11 @@ input,textarea,select{font-family:inherit;font-size:inherit}
 
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:14px 28px;font-size:15px;font-weight:600;border-radius:var(--r-full);transition:all var(--t-base) var(--ease-out);position:relative;overflow:hidden;white-space:nowrap}
 .btn-primary{background:var(--brand-gradient);color:#fff;box-shadow:0 8px 24px rgba(82,47,151,0.32)}
+/* 진단 시작 CTA — 보라/남색 배경에 묻히지 않게 흰 배경 + 보라 글자로 가독성 강화 */
+.btn-primary.cta-start{background:#ffffff;color:#5A1E8C;border:2px solid #ffffff;box-shadow:0 8px 26px rgba(0,0,0,0.30);font-weight:800}
+.btn-primary.cta-start::before{display:none}
+.btn-primary.cta-start svg,.btn-primary.cta-start .btn-icon{color:#5A1E8C;fill:currentColor}
+.btn-primary.cta-start:hover{background:#F3ECFF;color:#4A1675;border-color:#F3ECFF;box-shadow:0 12px 34px rgba(0,0,0,0.38);transform:translateY(-2px)}
 .btn-primary::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,0.2),transparent 50%);opacity:0;transition:opacity var(--t-base)}
 .btn-primary:hover{transform:translateY(-2px);box-shadow:0 12px 32px rgba(82,47,151,0.42)}
 .btn-primary:hover::before{opacity:1}
@@ -1940,7 +1945,7 @@ button.basic-job-pill:hover::after{opacity:1}
         <svg class="icon-moon" width="18" height="18"><use href="#i-moon"/></svg>
         <svg class="icon-sun" width="18" height="18"><use href="#i-sun"/></svg>
       </button>
-      <button class="btn btn-primary btn-sm" onclick="startTest()" id="hdr-cta">
+      <button class="btn btn-primary btn-sm cta-start" onclick="startTest()" id="hdr-cta">
         <span>진단 시작</span>
         <svg class="btn-icon"><use href="#i-arrow"/></svg>
       </button>
@@ -1985,7 +1990,7 @@ button.basic-job-pill:hover::after{opacity:1}
       </div>
 
       <div class="hero-cta" style="justify-content:flex-start;margin-top:8px">
-        <button class="btn btn-primary btn-lg" onclick="startTest()">
+        <button class="btn btn-primary btn-lg cta-start" onclick="startTest()">
           <span>지금 진단 시작 →</span>
         </button>
         <button class="btn btn-ghost btn-lg" onclick="openLookupResult()" id="hero-lookup-btn">
@@ -2215,7 +2220,7 @@ button.basic-job-pill:hover::after{opacity:1}
       </div>
     </div>
     <div style="text-align:center;margin-top:64px">
-      <button class="btn btn-primary btn-lg" onclick="startTest()">
+      <button class="btn btn-primary btn-lg cta-start" onclick="startTest()">
         <span>지금 진단 시작</span>
         <svg class="btn-icon"><use href="#i-arrow"/></svg>
       </button>
