@@ -4410,7 +4410,7 @@ function renderIntro() {
             </div>
             <div class="form-field">
               <label for="u-email">이메일 주소</label>
-              <input id="u-email" type="email" placeholder="결과 안내를 받으실 이메일" value="${STATE.user.email||''}">
+              <input id="u-email" type="email" placeholder="이메일 주소 (선택)" value="${STATE.user.email||''}">
             </div>
           </div>
 
@@ -5050,16 +5050,24 @@ function renderBasicIntro() {
         </div>
         <div class="basic-form">
           <div class="basic-field basic-form-full">
-            <label>이름 / 닉네임</label>
-            <input type="text" id="basic-name" placeholder="예: 김민수 또는 별명도 OK!" maxlength="20">
+            <label>나라 이름 (선택)</label>
+            <input type="text" id="basic-country" placeholder="예: 한국, Korea, Japan" maxlength="30">
           </div>
           <div class="basic-field">
-            <label>나이 또는 학년</label>
-            <input type="text" id="basic-age" placeholder="예: 11살, 5학년" maxlength="10">
+            <label>선생님 이름 (선택)</label>
+            <input type="text" id="basic-teacher" placeholder="예: 홍길동 선생님" maxlength="20">
           </div>
           <div class="basic-field">
             <label>학교 / 소속 (선택)</label>
-            <input type="text" id="basic-org" placeholder="예: 행복초등학교" maxlength="30">
+            <input type="text" id="basic-teacher-org" placeholder="예: 행복초등학교" maxlength="30">
+          </div>
+          <div class="basic-field basic-form-full">
+            <label>이름 / 닉네임 ✱</label>
+            <input type="text" id="basic-name" placeholder="예: 김민수 또는 별명도 OK!" maxlength="20">
+          </div>
+          <div class="basic-field basic-form-full">
+            <label>학년 또는 나이</label>
+            <input type="text" id="basic-age" placeholder="예: 5학년, 11살" maxlength="10">
           </div>
         </div>
         <button class="basic-start-btn" onclick="basicBeginQuestions()">
@@ -5075,13 +5083,15 @@ function renderBasicIntro() {
 function basicBeginQuestions() {
   const name = document.getElementById('basic-name')?.value?.trim() || '';
   const age = document.getElementById('basic-age')?.value?.trim() || '';
-  const org = document.getElementById('basic-org')?.value?.trim() || '';
+  const country = document.getElementById('basic-country')?.value?.trim() || '';
+  const teacher = document.getElementById('basic-teacher')?.value?.trim() || '';
+  const teacherOrg = document.getElementById('basic-teacher-org')?.value?.trim() || '';
   if (!name) {
     alert('이름이나 닉네임을 입력해주세요! 😊');
     document.getElementById('basic-name')?.focus();
     return;
   }
-  BASIC_STATE.user = {name, age, org};
+  BASIC_STATE.user = {name, age, country, teacher, teacherOrg, org: teacherOrg};
   BASIC_STATE.currentQ = 0;
   BASIC_STATE.startTime = Date.now();
   renderBasicQuestion();
@@ -6504,28 +6514,28 @@ function renderResult(r) {
         </details>
       </section>
 
-      <!-- SECTION 2: 12기어 상세 점수 (사용자 요청: 레이더 위로) -->
+      <!-- SECTION 2: TOP 2 강점 기어 -->
       <section class="result-section">
         <div class="result-section-head">
           <div class="result-section-icon"><svg width="22" height="22"><use href="#i-puzzle"/></svg></div>
           <div>
-            <h2>12 기어 상세 점수</h2>
-            <p>각 강점 기어의 세부 점수</p>
+            <h2>나의 TOP 2 강점 기어</h2>
+            <p>가장 강하게 발현되는 2가지 기어</p>
           </div>
         </div>
-        <div class="gear-score-grid">
-          ${ALL_GEARS.map(g => {
-            const eng = gearToEngine(g);
-            const G = GEAR_DATA[g];
-            const isTop = (g === r.top1.gear || g === r.top2.gear);
-            return `
-              <div class="gear-score ${isTop ? 'top' : ''}" style="--engine-color:${ENGINE_DATA[eng].color}">
-                <div class="gear-score-circle">${g}</div>
-                <div class="gear-score-name">${G.name}</div>
-                <div class="gear-score-val">${r.gearScores[g].percent}<span class="max">%</span></div>
-              </div>`;
-          }).join('')}
-        </div>
+        ${[{rank:'★ TOP 1', info:r.top1},{rank:'★ TOP 2', info:r.top2}].map(({rank,info})=>{
+          if(!info) return '';
+          const eng = gearToEngine(info.gear);
+          const G = GEAR_DATA[info.gear];
+          const col = ENGINE_DATA[eng].color;
+          return `<div style="margin:12px 0;padding:16px 18px;border-left:4px solid ${col};background:var(--bg-card,#fafafa);border-radius:0 10px 10px 0">
+            <div style="font-size:11px;font-weight:800;color:${col};letter-spacing:.06em;margin-bottom:4px">${rank} 기어 · ${info.gear} · ${info.percent}%</div>
+            <div style="font-size:16px;font-weight:800;margin-bottom:2px">${G.name}</div>
+            <div style="font-size:13px;color:var(--text-sub,#666);margin-bottom:8px">${G.tagline}</div>
+            <div style="font-size:13px;line-height:1.75;color:var(--text,#333)">${G.desc}</div>
+            ${G.tags?`<div style="margin-top:8px">${G.tags.map(t=>`<span style="display:inline-block;margin:2px;padding:3px 9px;background:${col}22;color:${col};border-radius:20px;font-size:11px;font-weight:700">${t}</span>`).join('')}</div>`:''}
+          </div>`;
+        }).join('')}
       </section>
 
       <!-- SECTION 3: 12기어 레이더차트 -->
@@ -12889,29 +12899,4 @@ function importBackup(e){
           if(data.notice) NOTICE = {...NOTICE, ...data.notice};
           saveRecords(); saveReviews(); saveInquiries();
           if(data.content) localStorage.setItem(KEY_CONTENT, JSON.stringify(CONTENT));
-          saveSettings();
-          saveNotice();
-          refreshAll();
-          showToast('백업을 복원했습니다', 'success');
-        }
-      });
-    } catch(err){
-      showToast('잘못된 백업 파일입니다', 'danger');
-    }
-  };
-  reader.readAsText(file);
-  e.target.value = '';
-}
-
-function confirmReset(){
-  showConfirm({
-    title:'정말 모든 데이터를 삭제하시겠습니까?',
-    msg:'모든 진단 기록·후기·문의가 영구적으로 삭제됩니다. 이 작업은 되돌릴 수 없습니다!',
-    onOk: () => {
-      // 한 번 더 확인
-      showConfirm({
-        title:'마지막 확인',
-        msg:'정말로 모든 데이터를 삭제할까요? 백업을 받지 않으면 복구할 수 없습니다.',
-        onOk: () => {
-          RECORDS = []; REVIEWS = []; INQUIRIES = [];
-          saveRec                                                                                                                                                                                                                                                                                                                                                            
+          saveSetti
