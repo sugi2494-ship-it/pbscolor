@@ -8026,7 +8026,6 @@ window.PBS.saveReview = async function(review) {
   if (!window.pbsDBReady) return { ok:false };
   try {
     const { error } = await window.pbsDB.from('pbs_reviews').insert({
-      site: PBS_SITE_ID,
       name: review.name || '익명',
       stars: review.stars || 5,
       text: review.text || '',
@@ -8046,7 +8045,6 @@ window.PBS.saveInquiry = async function(inq) {
   if (!window.pbsDBReady) return { ok:false };
   try {
     const { error } = await window.pbsDB.from('pbs_inquiries').insert({
-      site: PBS_SITE_ID,
       inquiry_type: inq.type || 'other',
       name: inq.name || '',
       org: inq.org || null,
@@ -8211,7 +8209,7 @@ window.PBS.syncRecordsToLocal = async function() {
     for (const r of localOnlyRevs) {
       try {
         await window.pbsDB.from('pbs_reviews').insert({
-          site: PBS_SITE_ID, name: r.name || '익명', stars: r.stars || 5,
+          name: r.name || '익명', stars: r.stars || 5,
           text: r.text || '', record_id: null, is_visible: true, is_featured: !!r.featured
         });
         revUploaded++;
@@ -8248,7 +8246,7 @@ window.PBS.syncRecordsToLocal = async function() {
     for (const r of localOnlyInqs) {
       try {
         await window.pbsDB.from('pbs_inquiries').insert({
-          site: PBS_SITE_ID, inquiry_type: r.type || 'other',
+          inquiry_type: r.type || 'other',
           name: r.name || '', org: r.org || null, email: r.email || null,
           phone: r.phone || null, message: r.message || '', status: r.status || 'new'
         });
