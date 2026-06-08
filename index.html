@@ -10971,13 +10971,13 @@ function renderDashboard(){
 
   // ─── 엔진 분포 도넛 ───
   const engineCount = {RED:0,YELLOW:0,GREEN:0,BLUE:0};
-  RECORDS.forEach(r => engineCount[r.mainEngine] = (engineCount[r.mainEngine]||0)+1);
+  RECORDS.forEach(r => { if(r && engineCount.hasOwnProperty(r.mainEngine)) engineCount[r.mainEngine]++; });
   document.getElementById('chart-engines').innerHTML = renderDonut(engineCount);
 
   // ─── 12기어 막대 ───
   const gearCount = {};
   Object.keys(GEARS).forEach(g => gearCount[g] = 0);
-  RECORDS.forEach(r => gearCount[r.top1.gear] = (gearCount[r.top1.gear]||0)+1);
+  RECORDS.forEach(r => { const g = r && r.top1 && r.top1.gear; if(g && gearCount.hasOwnProperty(g)) gearCount[g]++; });
   const sortedGears = Object.entries(gearCount).sort((a,b) => b[1]-a[1]);
   document.getElementById('chart-gears').innerHTML = renderBarsByGear(sortedGears);
 
@@ -11047,7 +11047,7 @@ function renderDonut(counts){
       <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="var(--bg-card-2)" stroke-width="22"/>
       ${segs.map(s => `
         <circle cx="${cx}" cy="${cy}" r="${r}" fill="none"
-          stroke="${ENGINES[s.key].color}" stroke-width="22"
+          stroke="${(ENGINES[s.key]||{}).color||'#7030A0'}" stroke-width="22"
           stroke-dasharray="${s.len.toFixed(2)} ${(cf-s.len).toFixed(2)}"
           stroke-dashoffset="${-s.offset.toFixed(2)}"
           transform="rotate(-90 ${cx} ${cy})"
@@ -11061,8 +11061,8 @@ function renderDonut(counts){
     <div class="donut-legend">
       ${Object.entries(counts).map(([key, val]) => `
         <div class="legend-item">
-          <span class="legend-color" style="background:${ENGINES[key].color}"></span>
-          <span class="legend-label">${ENGINES[key].name}</span>
+          <span class="legend-color" style="background:${(ENGINES[key]||{}).color||'#7030A0'}"></span>
+          <span class="legend-label">${(ENGINES[key]||{}).name||key}</span>
           <span class="legend-value">${val} · ${total>0?Math.round(val/total*100):0}%</span>
         </div>
       `).join('')}
@@ -11076,14 +11076,14 @@ function renderBarsByGear(sorted){
   const max = Math.max(...sorted.map(s => s[1]), 1);
   return `<div class="bar-chart">
     ${sorted.map(([g, v], i) => {
-      const eng = GEARS[g].engine;
+      const eng = (GEARS[g]||{}).engine||'RED';
       const cls = i === 0 ? 'top1' : i === 1 ? 'top2' : i === 2 ? 'top3' : '';
       return `
         <div class="bar-row ${cls}">
           <span class="bar-rank">${i+1}</span>
-          <span class="bar-label">${g} ${GEARS[g].name}</span>
+          <span class="bar-label">${g} ${(GEARS[g]||{}).name||''}</span>
           <div class="bar-track">
-            <div class="bar-fill" style="width:${(v/max*100).toFixed(1)}%;--bar-color:${ENGINES[eng].color}"></div>
+            <div class="bar-fill" style="width:${(v/max*100).toFixed(1)}%;--bar-color:${(ENGINES[eng]||{}).color||'#7030A0'}"></div>
           </div>
           <span class="bar-value">${v}</span>
         </div>
@@ -11750,12 +11750,12 @@ function renderStats(){
   document.getElementById('stats-gear-bars').innerHTML = sortedAvg.every(([_,v])=>v===0)
     ? renderEmpty('데이터 없음','진단 데이터가 쌓이면 표시됩니다')
     : `<div class="bar-chart">${sortedAvg.map(([g, v], i) => {
-        const eng = GEARS[g].engine;
+        const eng = (GEARS[g]||{}).engine||'RED';
         return `
           <div class="bar-row ${i<3?'top'+(i+1):''}">
             <span class="bar-rank">${i+1}</span>
-            <span class="bar-label">${g} ${GEARS[g].name}</span>
-            <div class="bar-track"><div class="bar-fill" style="width:${v}%;--bar-color:${ENGINES[eng].color}"></div></div>
+            <span class="bar-label">${g} ${(GEARS[g]||{}).name||''}</span>
+            <div class="bar-track"><div class="bar-fill" style="width:${v}%;--bar-color:${(ENGINES[eng]||{}).color||'#7030A0'}"></div></div>
             <span class="bar-value">${v}%</span>
           </div>
         `;
