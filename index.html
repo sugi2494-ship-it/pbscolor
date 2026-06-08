@@ -6400,6 +6400,25 @@ function renderResult(r) {
       </div>
     </section>
 
+    <!-- INSTRUCTOR INFO BAR -->
+    <div id="instructor-info-bar" style="background:var(--bg-surface);border:1px solid rgba(112,48,160,0.18);border-radius:var(--r-lg);padding:14px 20px;margin:12px 0 0">
+      <div style="font-size:11px;font-weight:800;color:#7030A0;letter-spacing:0.08em;margin-bottom:10px">🎓 강사 정보 입력 <span style="font-weight:500;color:var(--text-muted)">(선택 · 입력 시 PDF에 포함됩니다)</span></div>
+      <div style="display:flex;gap:12px;flex-wrap:wrap">
+        <div style="flex:1;min-width:140px">
+          <label style="font-size:11px;color:var(--text-secondary);display:block;margin-bottom:4px">강사명</label>
+          <input id="inst-name" type="text" placeholder="예) 홍길동 강사"
+            style="width:100%;box-sizing:border-box;padding:8px 12px;border:1px solid var(--border-default);border-radius:8px;background:var(--bg-base);font-size:13px;color:var(--text-primary)"
+            oninput="if(!STATE.instructor)STATE.instructor={};STATE.instructor.name=this.value">
+        </div>
+        <div style="flex:1;min-width:140px">
+          <label style="font-size:11px;color:var(--text-secondary);display:block;margin-bottom:4px">소속·단체명</label>
+          <input id="inst-org" type="text" placeholder="예) 울산대학교"
+            style="width:100%;box-sizing:border-box;padding:8px 12px;border:1px solid var(--border-default);border-radius:8px;background:var(--bg-base);font-size:13px;color:var(--text-primary)"
+            oninput="if(!STATE.instructor)STATE.instructor={};STATE.instructor.org=this.value">
+        </div>
+      </div>
+    </div>
+
     <!-- BODY -->
     <div class="result-body">
 
@@ -7096,28 +7115,65 @@ function downloadResult() {
   var E = r ? (typeof ENGINE_DATA!=='undefined' ? ENGINE_DATA[r.mainEngine] : null) : null;
   if(!r || !area || !E){ setTimeout(function(){ window.print(); }, 200); return; }
   var name = (typeof STATE!=='undefined' && STATE.user && STATE.user.name) ? STATE.user.name : '회원';
+  var instName = (STATE.instructor && STATE.instructor.name) ? STATE.instructor.name : '';
+  var instOrg  = (STATE.instructor && STATE.instructor.org)  ? STATE.instructor.org  : '';
   var esc = function(t){ return (t==null?'':String(t)).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); };
   function pct(k){ try{ return Math.round(r.engineScores[k].percent); }catch(e){ return 0; } }
   var order=['RED','YELLOW','GREEN','BLUE'];
-  var bars=order.map(function(k){ var pp=pct(k); var c=(ENGINE_DATA[k]||{}).color||'#7030A0'; var nm=(ENGINE_DATA[k]||{}).shortName||k; return '<div style="display:flex;align-items:center;gap:10px;margin:7px 0"><span style="width:54px;font-weight:700;color:'+c+'">'+esc(nm)+'</span><div style="flex:1;height:14px;background:#eee;border-radius:7px;overflow:hidden"><div style="height:100%;width:'+pp+'%;background:'+c+'"></div></div><span style="width:44px;text-align:right;font-weight:700">'+pp+'%</span></div>'; }).join('');
-  var li=function(arr){ return (arr||[]).map(function(x){ return '<li style="margin:4px 0">'+esc(x)+'</li>'; }).join(''); };
-  var growth=(E.growth||[]).map(function(g){ return '<li style="margin:8px 0"><b>'+esc(g.title)+'</b><br><span style="color:#555">'+esc(g.detail)+'</span></li>'; }).join('');
-  var H=function(t){ return '<h2 style="font-size:16px;margin:20px 0 8px;border-left:4px solid '+E.color+';padding-left:8px">'+t+'</h2>'; };
+  var bars=order.map(function(k){ var pp=pct(k); var c=(ENGINE_DATA[k]||{}).color||'#7030A0'; var nm=(ENGINE_DATA[k]||{}).shortName||k; return '<div style=”display:flex;align-items:center;gap:10px;margin:7px 0”><span style=”width:54px;font-weight:700;color:'+c+'”>'+esc(nm)+'</span><div style=”flex:1;height:14px;background:#eee;border-radius:7px;overflow:hidden”><div style=”height:100%;width:'+pp+'%;background:'+c+'”></div></div><span style=”width:44px;text-align:right;font-weight:700”>'+pp+'%</span></div>'; }).join('');
+  var li=function(arr){ return (arr||[]).map(function(x){ return '<li style=”margin:4px 0”>'+esc(x)+'</li>'; }).join(''); };
+  var growth=(E.growth||[]).map(function(g){ return '<li style=”margin:8px 0”><b>'+esc(g.title)+'</b><br><span style=”color:#555”>'+esc(g.detail)+'</span></li>'; }).join('');
+  var H=function(t){ return '<h2 style=”font-size:16px;margin:20px 0 8px;border-left:4px solid '+E.color+';padding-left:8px”>'+t+'</h2>'; };
+
+  // Top 1 & Top 2 기어 설명
+  var G1 = (typeof GEAR_DATA!=='undefined' && r.top1) ? GEAR_DATA[r.top1.gear] : null;
+  var G2 = (typeof GEAR_DATA!=='undefined' && r.top2) ? GEAR_DATA[r.top2.gear] : null;
+  var top1Eng = (G1 && typeof ENGINE_DATA!=='undefined') ? ENGINE_DATA[gearToEngine(r.top1.gear)] : E;
+  var top2Eng = (G2 && typeof ENGINE_DATA!=='undefined') ? ENGINE_DATA[gearToEngine(r.top2.gear)] : E;
+  var gearBlock = '';
+  if(G1){
+    gearBlock += '<div style=”margin:10px 0;padding:14px 16px;border-left:4px solid '+esc(top1Eng.color)+';background:#fafafa;border-radius:0 8px 8px 0”>'
+      +'<div style=”font-size:11px;font-weight:800;color:'+esc(top1Eng.color)+';letter-spacing:0.06em;margin-bottom:4px”>★ TOP 1 기어 · '+esc(r.top1.gear)+' · '+esc(r.top1.percent)+'%</div>'
+      +'<div style=”font-size:15px;font-weight:800;margin-bottom:2px”>'+esc(G1.name)+'</div>'
+      +'<div style=”font-size:12px;color:#666;margin-bottom:6px”>'+esc(G1.tagline)+'</div>'
+      +'<div style=”font-size:13px;line-height:1.7;color:#333”>'+esc(G1.desc)+'</div>'
+      +'</div>';
+  }
+  if(G2){
+    gearBlock += '<div style=”margin:10px 0;padding:14px 16px;border-left:4px solid '+esc(top2Eng.color)+';background:#fafafa;border-radius:0 8px 8px 0”>'
+      +'<div style=”font-size:11px;font-weight:800;color:'+esc(top2Eng.color)+';letter-spacing:0.06em;margin-bottom:4px”>★ TOP 2 기어 · '+esc(r.top2.gear)+' · '+esc(r.top2.percent)+'%</div>'
+      +'<div style=”font-size:15px;font-weight:800;margin-bottom:2px”>'+esc(G2.name)+'</div>'
+      +'<div style=”font-size:12px;color:#666;margin-bottom:6px”>'+esc(G2.tagline)+'</div>'
+      +'<div style=”font-size:13px;line-height:1.7;color:#333”>'+esc(G2.desc)+'</div>'
+      +'</div>';
+  }
+
+  // 강사 정보 블록 (입력된 경우만)
+  var instBlock = '';
+  if(instName || instOrg){
+    instBlock = '<div style=”margin-bottom:12px;padding:8px 14px;background:#f5f0ff;border-radius:8px;font-size:12px;color:#444”>'
+      +(instName ? '<span style=”margin-right:16px”>🎓 강사: <b>'+esc(instName)+'</b></span>' : '')
+      +(instOrg  ? '<span>🏫 소속: <b>'+esc(instOrg)+'</b></span>' : '')
+      +'</div>';
+  }
+
   area.innerHTML =
-    '<div style="font-family:Pretendard,system-ui,sans-serif;color:#111;max-width:760px;margin:0 auto;padding:6px">'
-    +'<div style="border-bottom:3px solid '+E.color+';padding-bottom:12px;margin-bottom:8px">'
-      +'<div style="font-size:11px;letter-spacing:.12em;color:'+E.color+';font-weight:800">PBS 컬러강점 진단 결과지</div>'
-      +'<h1 style="margin:6px 0;font-size:25px">'+esc(name)+'님의 주 엔진 · <span style="color:'+E.color+'">'+esc(E.name)+'</span></h1>'
-      +'<div style="color:#555;font-size:13px">'+esc(E.subtitle)+'</div>'
-      +'<div style="margin-top:8px;font-style:italic;color:#333">“'+esc(E.quote)+'”</div>'
+    '<div style=”font-family:Pretendard,system-ui,sans-serif;color:#111;max-width:760px;margin:0 auto;padding:6px”>'
+    +instBlock
+    +'<div style=”border-bottom:3px solid '+E.color+';padding-bottom:12px;margin-bottom:8px”>'
+      +'<div style=”font-size:11px;letter-spacing:.12em;color:'+E.color+';font-weight:800”>PBS 컬러강점 진단 결과지</div>'
+      +'<h1 style=”margin:6px 0;font-size:25px”>'+esc(name)+'님의 주 엔진 · <span style=”color:'+E.color+'”>'+esc(E.name)+'</span></h1>'
+      +'<div style=”color:#555;font-size:13px”>'+esc(E.subtitle)+'</div>'
+      +'<div style=”margin-top:8px;font-style:italic;color:#333”>”'+esc(E.quote)+'”</div>'
     +'</div>'
     +H('4가지 컬러 엔진 점수')+bars
-    +H('나의 핵심 강점')+'<ul style="line-height:1.6;padding-left:18px;margin:0">'+li(E.strengths)+'</ul>'
-    +H('추천 직업·분야')+'<ul style="line-height:1.6;padding-left:18px;margin:0">'+li(E.jobs)+'</ul>'
-    +H('소통·관계 스타일')+'<p style="line-height:1.65;margin:6px 0"><b>의사소통</b> · '+esc(E.communication)+'</p><p style="line-height:1.65;margin:6px 0"><b>연애</b> · '+esc(E.romance)+'</p><p style="line-height:1.65;margin:6px 0"><b>갈등 대처</b> · '+esc(E.conflict)+'</p>'
-    +H('성장 포인트')+'<ul style="line-height:1.6;padding-left:18px;margin:0">'+growth+'</ul>'
-    +'<div style="margin-top:24px;padding:14px 16px;border:1px dashed #7030A0;border-radius:10px;background:#faf7ff"><b style="color:#7030A0">＋ 상세 컬러강점 리포트(유료)</b><br><span style="font-size:12px;color:#444">12기어 심층 분석 · 엔진별 시간관리 루틴 · 직업 매칭 50선 · 90일 강점 활용 챌린지 등 30+페이지 상세본은 신청 페이지에서 받아보실 수 있습니다.</span></div>'
-    +'<div style="margin-top:16px;font-size:11px;color:#999;text-align:center">© PBS COLOR LAB · 본 결과지는 무료 진단 요약본입니다.</div>'
+    +H('나의 핵심 강점')+'<ul style=”line-height:1.6;padding-left:18px;margin:0”>'+li(E.strengths)+'</ul>'
+    +H('추천 직업·분야')+'<ul style=”line-height:1.6;padding-left:18px;margin:0”>'+li(E.jobs)+'</ul>'
+    +H('소통·관계 스타일')+'<p style=”line-height:1.65;margin:6px 0”><b>의사소통</b> · '+esc(E.communication)+'</p><p style=”line-height:1.65;margin:6px 0”><b>연애</b> · '+esc(E.romance)+'</p><p style=”line-height:1.65;margin:6px 0”><b>갈등 대처</b> · '+esc(E.conflict)+'</p>'
+    +H('나의 TOP 2 강점 기어')+gearBlock
+    +H('성장 포인트')+'<ul style=”line-height:1.6;padding-left:18px;margin:0”>'+growth+'</ul>'
+    +'<div style=”margin-top:24px;padding:14px 16px;border:1px dashed #7030A0;border-radius:10px;background:#faf7ff”><b style=”color:#7030A0”>＋ 상세 컬러강점 리포트(유료)</b><br><span style=”font-size:12px;color:#444”>12기어 심층 분석 · 엔진별 시간관리 루틴 · 직업 매칭 50선 · 90일 강점 활용 챌린지 등 30+페이지 상세본은 신청 페이지에서 받아보실 수 있습니다.</span></div>'
+    +'<div style=”margin-top:16px;font-size:11px;color:#999;text-align:center”>© PBS COLOR LAB · 본 결과지는 무료 진단 요약본입니다.</div>'
     +'</div>';
   setTimeout(function(){ window.print(); }, 220);
 }
