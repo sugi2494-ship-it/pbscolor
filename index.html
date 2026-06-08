@@ -4187,12 +4187,13 @@ function getDailyDiagnosticPassword() {
 }
 
 function isPwRequired() {
-  // 관리자 시스템 설정 읽기 - 기본값 true (비번 적용)
+  // 기본값 false (비번 미적용) - 받은 링크로 들어온 방문자는 비번 없이 바로 진단 시작
+  // 관리자가 명시적으로 '비밀번호 적용'을 켠 경우에만 true
   try {
     const s = JSON.parse(localStorage.getItem('pbs-settings') || 'null');
-    if (s && s.pwRequired === false) return false;
+    if (s && s.pwRequired === true) return true;
   } catch(e) {}
-  return true;
+  return false;
 }
 
 // "진단 시작" 클릭 시 — Basic / Premium 선택 모달부터
@@ -4279,6 +4280,7 @@ function actuallyStartTest() {
   screen.classList.add('active');
   STATE.view = 'test';
   STATE.testStartTime = Date.now();  // 진단 시작 시간 기록 (관리자 소요시간 계산용)
+  STATE._recordSaved = false;  // 새 진단 시작 → 저장 가드 초기화
   history.pushState({ pbsView: 'test' }, '', location.pathname + '#test');
 
   const saved = loadState();
@@ -4440,6 +4442,7 @@ function beginQuestions() {
   STATE.currentQ = STATE.currentQ || 0;
   // 실제 답변 시작 시점을 기록 — intake 입력 시간 제외 정확한 소요시간 계산
   STATE.testStartTime = Date.now();
+  STATE._recordSaved = false;  // 새 진단 시작 → 저장 가드 초기화
   if (Object.keys(STATE.answers).length > 0 && STATE.currentQ === 0) {
     const maxAnswered = Math.max(...Object.keys(STATE.answers).map(Number));
     STATE.currentQ = Math.min(maxAnswered, 59);
@@ -4632,6 +4635,9 @@ function finishTest() {
    ADMIN 연동 - localStorage 자동 저장
    ============================================================ */
 function saveRecordToAdmin(result) {
+  // 중복 저장 방지 — finishTest가 빠르게 두 번 이상 실행돼도 1회만 저장
+  if (STATE._recordSaved) { console.warn('[PBS] 중복 저장 차단 (premium)'); return; }
+  STATE._recordSaved = true;
   try {
     const records = JSON.parse(localStorage.getItem('pbs-records') || '[]');
     // 진단 시작 시간이 있으면 소요시간 계산 (분 + 초)
@@ -5694,6 +5700,9 @@ function showBasicToast(msg) {
 }
 
 function saveBasicRecordToAdmin(result) {
+  // 중복 저장 방지 — finishBasicTest가 빠르게 두 번 이상 실행돼도 1회만 저장
+  if (BASIC_STATE._recordSaved) { console.warn('[PBS] 중복 저장 차단 (basic)'); return; }
+  BASIC_STATE._recordSaved = true;
   try {
     const records = JSON.parse(localStorage.getItem('pbs-records') || '[]');
     const sorted = result.sorted;
@@ -7582,7 +7591,10 @@ function resumeLastResult(type) {
 function applyDynamicContent() {
   let c = null;
   try { c = JSON.parse(localStorage.getItem('pbs-content') || 'null'); } catch(e) {}
-  if (!c) return;
+  if (!c) c = {};
+  // 기관 전용 배너 기본값 — 받은 링크로 들어온 방문자(localStorage 비어있음)에게도 항상 표시
+  if (!c.orgName || !c.orgName.trim()) c.orgName = '울산대학교';
+  if (!c.orgTagline || !c.orgTagline.trim()) c.orgTagline = '울산대학교 전용 진단';
 
   // 홍보 배지 문구
   if (c.heroBadge) {
