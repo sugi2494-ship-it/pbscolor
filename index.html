@@ -5648,11 +5648,27 @@ function shareBasicResult() {
   let shareText;
   if (r && r.top) {
     const colorMeta = (typeof BASIC_COLORS !== 'undefined' && BASIC_COLORS[r.top]) ? BASIC_COLORS[r.top] : null;
-    const topName = colorMeta ? (colorMeta.name || r.top.toUpperCase()) : r.top.toUpperCase();
-    const topEmoji = colorMeta?.emoji || '✨';
-    shareText = `🎁 PBS 컬러강점 진단 결과\n나의 컬러는 ${topEmoji} ${topName}이에요!\n\n나도 진단해보기 →\n${url}`;
+    const topName  = colorMeta ? (colorMeta.name || r.top.toUpperCase()) : r.top.toUpperCase();
+    const topEmoji = {red:'🔴',yellow:'🟡',green:'🟢',blue:'🔵',purple:'🟣'}[r.top] || '✨';
+    const goodAt   = (colorMeta?.goodAt || []).slice(0,4).map(s => '  · ' + s).join('\n');
+    const jobs     = (colorMeta?.jobs   || []).slice(0,5).join(', ');
+    shareText =
+`🎁 PBS 컬러강점 진단 결과 공유
+
+나는 ${topEmoji} ${topName} 강점이에요!
+"${colorMeta?.headline || ''}"
+
+🌟 이런 강점이 있대요:
+${goodAt}
+
+💼 이런 직업이 잘 어울린다고 추천해줬어요:
+  ${jobs}
+
+여러분도 컬러강점이 궁금하면 진단해보세요!
+어른용 · 어린이용 모두 있어요 👇
+${url}`;
   } else {
-    shareText = `🎁 PBS 컬러강점 진단 — 무료 체험\n나에게 어떤 컬러 강점이 있는지 확인해보세요!\n\n${url}`;
+    shareText = `🎁 PBS 컬러강점 진단 — 무료 체험\n나에게 어떤 컬러 강점이 있는지 확인해보세요!\n어른용 · 어린이용 모두 있어요 👇\n\n${url}`;
   }
 
   // ✨ 즉시 토스트 (사용자 체감 속도 ↑) — 클립보드 작업은 백그라운드
@@ -7573,15 +7589,49 @@ function submitFeedback() {
 function shareResult() {
   const r = STATE.result;
   if (!r) return;
-  const text = `[PBS 컬러강점 결과]\n${r.user.name}님의 주요 엔진: ${ENGINE_DATA[r.mainEngine].name} (${r.engineScores[r.mainEngine].percent}%)\n\nTop1: ${r.top1.gear} ${GEAR_DATA[r.top1.gear].name} (${r.top1.percent}%)\nTop2: ${r.top2.gear} ${GEAR_DATA[r.top2.gear].name} (${r.top2.percent}%)\n\n나도 진단하기 → ${location.href}`;
+  const E  = ENGINE_DATA[r.mainEngine] || {};
+  const G1 = GEAR_DATA[r.top1?.gear]  || {};
+  const G2 = GEAR_DATA[r.top2?.gear]  || {};
+  const engEmoji = {RED:'🔴',YELLOW:'🟡',GREEN:'🟢',BLUE:'🔵'}[r.mainEngine] || '✨';
+  const strengths = (E.strengths || []).slice(0,4).map(s => '  · ' + s).join('\n');
+  const jobs      = (E.jobs      || []).slice(0,5).join(', ');
+  const url = (typeof PBS_PUBLIC_URL !== 'undefined' && PBS_PUBLIC_URL)
+    ? PBS_PUBLIC_URL
+    : location.href.split('#')[0].split('?')[0];
+  const text =
+`🎁 PBS 컬러강점 진단 결과 공유
+
+나는 ${engEmoji} ${E.name||r.mainEngine} 강점이에요!
+"${E.subtitle || E.name || ''}"
+
+🏆 TOP 1 기어: ${r.top1?.gear} ${G1.name||''} (${r.top1?.percent}%)
+🥈 TOP 2 기어: ${r.top2?.gear} ${G2.name||''} (${r.top2?.percent}%)
+
+🌟 이런 강점이 있대요:
+${strengths}
+
+💼 추천 직업·분야:
+  ${jobs}
+
+여러분도 컬러강점이 궁금하면 진단해보세요!
+어른용 · 어린이용 모두 있어요 👇
+${url}`;
   if (navigator.share) {
-    navigator.share({title: 'PBS 컬러강점 결과', text});
-  } else if (navigator.clipboard) {
-    navigator.clipboard.writeText(text);
-    alert('결과가 클립보드에 복사되었습니다.');
+    navigator.share({title:'PBS 컬러강점 결과', text, url}).catch(() => fallbackCopy(text));
+  } else if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.writeText(text).then(() => showToast('✅ 복사 완료! 카톡·메시지에 붙여넣으면 친구가 같은 진단을 받을 수 있어요 🎁'));
   } else {
-    prompt('결과를 복사해서 공유하세요:', text);
+    fallbackCopy(text);
   }
+}
+function fallbackCopy(text) {
+  try {
+    const ta = document.createElement('textarea');
+    ta.value = text; ta.style.cssText = 'position:fixed;opacity:0;left:-9999px';
+    document.body.appendChild(ta); ta.select(); document.execCommand('copy');
+    document.body.removeChild(ta);
+    showToast('✅ 복사 완료! 카톡·메시지에 붙여넣으면 친구가 같은 진단을 받을 수 있어요 🎁');
+  } catch(e) { prompt('복사해서 공유하세요:', text); }
 }
 
 function restartTest() {
