@@ -8240,6 +8240,14 @@ window.PBS.syncRecordsToLocal = async function() {
       .filter(r => { const n = r.user_name || ''; return !SEED_NAMES.some(p => n.startsWith(p)); })
       .map(r => {
         const tg = r.top_gear || 'R1';
+        // 2순위 기어: scores에서 top1 기어 제외 후 가장 높은 기어 추출
+        const sg = (() => {
+          if (r.scores) {
+            const gKeys = Object.keys(r.scores).filter(k => /^[RYGB]\d/.test(k) && k !== tg);
+            if (gKeys.length) return gKeys.sort((a, b) => (r.scores[b] || 0) - (r.scores[a] || 0))[0];
+          }
+          return r.second_engine ? r.second_engine.charAt(0) + '1' : '';
+        })();
         return {
           id: r.id, _supabase_id: r.id, _from_supabase: true,
           timestamp: new Date(r.created_at).getTime(),
@@ -8253,7 +8261,7 @@ window.PBS.syncRecordsToLocal = async function() {
           secondColor: (r.second_engine || '').toLowerCase(),
           colorScores: r.scores || {},
           top1: { gear: tg, name: GEAR_NAMES[tg] || '', percent: (r.scores && r.scores[tg]) || 0 },
-          top2: { gear: r.second_engine ? r.second_engine.charAt(0) + '1' : '', name: '', percent: 0 },
+          top2: { gear: sg, name: GEAR_NAMES[sg] || '', percent: (r.scores && r.scores[sg]) || 0 },
           duration: Math.round((r.duration_sec || 300) / 60),
           duration_sec: r.duration_sec || null,
           feedback: null
