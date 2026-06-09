@@ -6,13 +6,13 @@
 <meta name="theme-color" content="#3D2F90">
 <title>PBS 컬러강점 — 나를 움직이는 4가지 엔진 | PBS COLOR LAB</title>
 
-<meta name="description" content="칼 융·괴테·막스 뤼셔·DISC 이론 기반 전문가용 컬러 퍼스널리티 진단. 4가지 컬러 엔진(RED·YELLOW·GREEN·BLUE)과 12가지 강점 기어로 나의 본질을 발견하세요. PBS COLOR LAB 최해숙 대표 — K-Color 776 마스터.">
+<meta name="description" content="칼 융·막스 뤼셔·DISC 이론 기반 전문가용 컬러 퍼스널리티 진단. 4가지 컬러 엔진(RED·YELLOW·GREEN·BLUE)과 12가지 강점 기어로 나의 본질을 발견하세요. PBS COLOR LAB 최해숙 대표 — K-Color 776 마스터.">
 <meta name="keywords" content="PBS컬러랩, 컬러강점테스트, 퍼스널컬러, 컬러심리, 강점진단, 최해숙, K-Color, 컬러테라피, 색채심리, 이미지컨설팅">
 <meta name="author" content="주식회사 커넥트온브릿지 · PBS COLOR LAB">
 
 <meta property="og:type" content="website">
 <meta property="og:title" content="PBS 컬러강점 — 나를 움직이는 4가지 엔진">
-<meta property="og:description" content="칼 융·괴테·막스 뤼셔·DISC 통합 전문 진단. 4엔진 12기어로 나의 강점 컬러 코드를 발견하세요.">
+<meta property="og:description" content="칼 융·막스 뤼셔·DISC 통합 전문 진단. 4엔진 12기어로 나의 강점 컬러 코드를 발견하세요.">
 <meta property="og:site_name" content="PBS COLOR LAB">
 <meta property="og:locale" content="ko_KR">
 
@@ -372,6 +372,24 @@ input,textarea,select{font-family:inherit;font-size:inherit}
 
 /* Service */
 .service-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px}
+.service-accordion{display:flex;flex-direction:column;gap:10px;max-width:720px;margin:0 auto}
+.sacc-item{background:var(--bg-surface);border:1px solid var(--border-default);border-radius:var(--r-xl);overflow:hidden;transition:box-shadow var(--t-base)}
+.sacc-item:hover{box-shadow:0 4px 24px rgba(112,48,160,0.10)}
+.sacc-item.open{border-color:rgba(112,48,160,0.35)}
+.sacc-header{width:100%;background:none;border:none;padding:22px 24px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;gap:12px;text-align:left}
+.sacc-header-inner{display:flex;flex-direction:column;gap:4px;flex:1}
+.sacc-header .service-tag{margin-bottom:0}
+.sacc-header h3{margin:0;font-size:17px;font-weight:700;color:var(--text-primary)}
+.sacc-arrow{flex-shrink:0;color:var(--text-secondary);transition:transform 0.3s}
+.sacc-item.open .sacc-arrow{transform:rotate(180deg)}
+.sacc-body{max-height:0;overflow:hidden;transition:max-height 0.4s ease,padding 0.3s}
+.sacc-item.open .sacc-body{max-height:400px}
+.sacc-body>*:first-child{padding-top:0}
+.sacc-body{padding:0 24px}
+.sacc-item.open .sacc-body{padding:0 24px 22px}
+.sacc-body p{font-size:13.5px;line-height:1.7;color:var(--text-secondary);margin-bottom:12px}
+.sacc-tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:18px}
+.sacc-tags span{font-size:12px;font-weight:600;color:var(--text-secondary);background:var(--bg-card-2,rgba(112,48,160,0.06));border:1px solid var(--border-subtle,rgba(112,48,160,0.12));border-radius:20px;padding:3px 12px}
 .service-card{padding:36px 32px;background:var(--bg-surface);border:1px solid var(--border-default);border-radius:var(--r-xl);transition:all var(--t-base) var(--ease-out);position:relative;overflow:hidden;display:flex;flex-direction:column}
 .service-card:hover{transform:translateY(-6px);border-color:var(--brand-purple);box-shadow:var(--shadow-lg)}
 .service-card ul{flex:1}
@@ -1977,7 +1995,7 @@ button.basic-job-pill:hover::after{opacity:1}
       <p class="hero-sub" style="word-break:keep-all;line-break:strict">
         매일 비슷한 일상이지만, 마음 한 구석에서는 자꾸 이런 질문이 떠오릅니다.<br>
         <strong style="color:#fff">"나는 어떤 사람일까?", "내 진짜 강점은 뭘까?", "왜 저 사람과는 자꾸 부딪힐까?"</strong><br><br>
-        PBS 컬러강점 진단은 칼 융의 분석심리학, 괴테의 색채론, 막스 뤼셔의 컬러 테스트, 그리고 DISC 행동 이론을 하나로 통합한 <strong style="color:#FFD166">전문가용 60문항 검증 진단</strong>입니다.
+        PBS 컬러강점 진단은 칼 융의 분석심리학, 막스 뤼셔의 컬러 테스트, DISC 행동 이론을 하나로 통합한 <strong style="color:#FFD166">전문가용 60문항 검증 진단</strong>입니다.
         단 10분 만에 당신을 움직이는 4가지 컬러 엔진과 12가지 강점 기어를 발견하고,
         <strong style="color:#fff">진로 방향, 인간관계 패턴, 스트레스 회복법, 자기사랑 가이드까지</strong> 한 번에 받아보실 수 있습니다.<br><br>
         200곳 이상의 기관에서 검증되었고, 두바이 왕실까지 인정한 정밀 진단을 지금 경험하세요.
@@ -2540,7 +2558,7 @@ button.basic-job-pill:hover::after{opacity:1}
       <div style="display:grid;gap:14px" id="coach-curriculum">
         <div style="display:grid;grid-template-columns:60px 1fr;gap:16px;align-items:flex-start;padding-bottom:14px;border-bottom:1px solid var(--border-subtle)">
           <div style="background:#FF3366;color:#fff;border-radius:10px;padding:8px 0;text-align:center;font-size:11px;font-weight:800;letter-spacing:0.04em">1주차</div>
-          <div><strong>컬러강점 시스템의 학문적 기반</strong><div style="font-size:13px;color:var(--text-secondary);margin-top:4px;line-height:1.6">칼 융·괴테·뤼셔·DISC·강점심리학 통합 이론</div></div>
+          <div><strong>컬러강점 시스템의 학문적 기반</strong><div style="font-size:13px;color:var(--text-secondary);margin-top:4px;line-height:1.6">칼 융·뤼셔·DISC·강점심리학 통합 이론</div></div>
         </div>
         <div style="display:grid;grid-template-columns:60px 1fr;gap:16px;align-items:flex-start;padding-bottom:14px;border-bottom:1px solid var(--border-subtle)">
           <div style="background:#F5A623;color:#fff;border-radius:10px;padding:8px 0;text-align:center;font-size:11px;font-weight:800;letter-spacing:0.04em">2주차</div>
@@ -2603,66 +2621,74 @@ button.basic-job-pill:hover::after{opacity:1}
       <h2 class="h2">기관·기업·개인을 위한<br>4가지 핵심 솔루션</h2>
       <p>구조화된 시스템 기반 접근법으로 전문 교육과 임원급 컨설팅, 진단 도구를 제공합니다.</p>
     </div>
-    <div class="service-grid">
-      <article class="service-card">
-        <span class="service-tag">PROGRAM 01 · B2B</span>
-        <h3>기업·기관 단체 교육</h3>
-        <p>컬러강점 기반 조직활성화·소통·스트레스 관리 프로그램. 대형 강의식부터 그룹 컨설팅까지 맞춤형 운영.</p>
-        <ul>
-          <li>대형 인원 특강 (자가진단지 활용)</li>
-          <li>워크숍형 그룹 컨설팅 (8~12인)</li>
-          <li>퇴직예정자 생애설계·이미지 컨설팅</li>
-          <li>교사·공무원·학부모 연수 프로그램</li>
-        </ul>
-        <button type="button" class="btn btn-primary service-cta" onclick="goToContact('강의')">
-          <span>신청 바로하기</span>
-          <svg class="btn-icon"><use href="#i-arrow"/></svg>
+    <div class="service-accordion">
+      <article class="sacc-item">
+        <button class="sacc-header" onclick="toggleAcc(this)" aria-expanded="false">
+          <div class="sacc-header-inner">
+            <span class="service-tag">PROGRAM 01 · B2B</span>
+            <h3>기업·기관 단체 교육</h3>
+          </div>
+          <svg class="sacc-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
         </button>
+        <div class="sacc-body">
+          <p>컬러강점 기반 조직활성화·소통·스트레스 관리 프로그램. 대형 강의식부터 그룹 컨설팅까지 맞춤형 운영.</p>
+          <div class="sacc-tags"><span>특강</span><span>워크숍 (8~12인)</span><span>퇴직예정자 컨설팅</span><span>교사·공무원 연수</span></div>
+          <button type="button" class="btn btn-primary service-cta" onclick="goToContact('강의')">
+            <span>신청 바로하기</span>
+            <svg class="btn-icon"><use href="#i-arrow"/></svg>
+          </button>
+        </div>
       </article>
-      <article class="service-card">
-        <span class="service-tag">PROGRAM 02 · 1:1 VIP</span>
-        <h3>VIP 1:1 퍼스널 컨설팅</h3>
-        <p>현대·롯데백화점 우수고객 및 브랜드 프리미엄 고객 대상 7단계 퍼스널 컬러 + 골격 진단 통합 컨설팅.</p>
-        <ul>
-          <li>웜톤·쿨톤 베이스 진단 + 4계절 매칭</li>
-          <li>베스트·워스트 컬러 가이드</li>
-          <li>메이크업·액세서리·향수 토탈 코칭</li>
-          <li>퍼스널 쇼핑 동행 (선택)</li>
-        </ul>
-        <a href="https://map.naver.com/p/entry/place/1098831707?placePath=%252Fhome%253Fentry%253Dpll&searchType=place&lng=129.3106404&lat=35.5633205" target="_blank" rel="noopener" class="btn btn-primary service-cta">
-          <span>신청 바로하기</span>
-          <svg class="btn-icon"><use href="#i-arrow"/></svg>
-        </a>
-      </article>
-      <article class="service-card">
-        <span class="service-tag">PROGRAM 03 · 자격 과정</span>
-        <h3>전문가 자격증 교육</h3>
-        <p>PBS 컬러강점 시스템 기반 공인 강사 자격 과정. 색채심리·퍼스널컬러·골격 통합 전문가 양성.</p>
-        <ul>
-          <li>컬러강점전문가 자격 과정</li>
-          <li>퍼스널컬러 스타일리스트 트레이닝</li>
-          <li>휴먼컬러 카운슬러 마스터 과정</li>
-          <li>골격분석 이미지 컨설턴트</li>
-        </ul>
-        <button type="button" class="btn btn-primary service-cta" onclick="goToContact('인증과정')">
-          <span>신청 바로하기</span>
-          <svg class="btn-icon"><use href="#i-arrow"/></svg>
+      <article class="sacc-item">
+        <button class="sacc-header" onclick="toggleAcc(this)" aria-expanded="false">
+          <div class="sacc-header-inner">
+            <span class="service-tag">PROGRAM 02 · 1:1 VIP</span>
+            <h3>VIP 1:1 퍼스널 컨설팅</h3>
+          </div>
+          <svg class="sacc-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
         </button>
+        <div class="sacc-body">
+          <p>현대·롯데백화점 우수고객 및 브랜드 프리미엄 고객 대상 7단계 퍼스널 컬러 + 골격 진단 통합 컨설팅.</p>
+          <div class="sacc-tags"><span>웜톤·쿨톤 진단</span><span>4계절 매칭</span><span>메이크업·향수 코칭</span><span>쇼핑 동행</span></div>
+          <a href="https://map.naver.com/p/entry/place/1098831707?placePath=%252Fhome%253Fentry%253Dpll&searchType=place&lng=129.3106404&lat=35.5633205" target="_blank" rel="noopener" class="btn btn-primary service-cta">
+            <span>신청 바로하기</span>
+            <svg class="btn-icon"><use href="#i-arrow"/></svg>
+          </a>
+        </div>
       </article>
-      <article class="service-card">
-        <span class="service-tag">PROGRAM 04 · 도구</span>
-        <h3>색채교육 도구·진단지 판매</h3>
-        <p>K-Color 776 기반 정밀 진단 도구 자체 개발. 8종 교구로 전문가·개인이 즉시 진단·컨설팅 가능.</p>
-        <ul>
-          <li>퍼스널컬러 종이보드 10색 (33,000원)</li>
-          <li>스킨톤 가이드 진단보드 5종 (28,000원)</li>
-          <li>퍼스널컬러 천 드레이프 6종 세트</li>
-          <li>립컬러 가이드 / KS 톤표 / 화이트 드레이프</li>
-        </ul>
-        <button type="button" class="btn btn-primary service-cta" onclick="goToContact('도구구매')">
-          <span>신청 바로하기</span>
-          <svg class="btn-icon"><use href="#i-arrow"/></svg>
+      <article class="sacc-item">
+        <button class="sacc-header" onclick="toggleAcc(this)" aria-expanded="false">
+          <div class="sacc-header-inner">
+            <span class="service-tag">PROGRAM 03 · 자격 과정</span>
+            <h3>전문가 자격증 교육</h3>
+          </div>
+          <svg class="sacc-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
         </button>
+        <div class="sacc-body">
+          <p>PBS 컬러강점 시스템 기반 공인 강사 자격 과정. 색채심리·퍼스널컬러·골격 통합 전문가 양성.</p>
+          <div class="sacc-tags"><span>컬러강점전문가</span><span>퍼스널컬러 스타일리스트</span><span>휴먼컬러 카운슬러</span><span>골격분석 컨설턴트</span></div>
+          <button type="button" class="btn btn-primary service-cta" onclick="goToContact('인증과정')">
+            <span>신청 바로하기</span>
+            <svg class="btn-icon"><use href="#i-arrow"/></svg>
+          </button>
+        </div>
+      </article>
+      <article class="sacc-item">
+        <button class="sacc-header" onclick="toggleAcc(this)" aria-expanded="false">
+          <div class="sacc-header-inner">
+            <span class="service-tag">PROGRAM 04 · 도구</span>
+            <h3>색채교육 도구·진단지 판매</h3>
+          </div>
+          <svg class="sacc-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="sacc-body">
+          <p>K-Color 776 기반 정밀 진단 도구 자체 개발. 8종 교구로 전문가·개인이 즉시 진단·컨설팅 가능.</p>
+          <div class="sacc-tags"><span>종이보드 10색</span><span>스킨톤 진단보드</span><span>천 드레이프</span><span>립컬러·톤표</span></div>
+          <button type="button" class="btn btn-primary service-cta" onclick="goToContact('도구구매')">
+            <span>신청 바로하기</span>
+            <svg class="btn-icon"><use href="#i-arrow"/></svg>
+          </button>
+        </div>
       </article>
     </div>
   </div>
@@ -2780,7 +2806,7 @@ button.basic-job-pill:hover::after{opacity:1}
             <span>by 커넥트온브릿지</span>
           </span>
         </a>
-        <p>나를 움직이는 컬러를 발견하다. 칼 융·괴테·막스 뤼셔·DISC 이론을 통합한 K-Beauty 기반 컬러 퍼스널리티 진단 시스템.</p>
+        <p>나를 움직이는 컬러를 발견하다. 칼 융·막스 뤼셔·DISC 이론을 통합한 K-Beauty 기반 컬러 퍼스널리티 진단 시스템.</p>
         <p style="font-size:11px;color:var(--n-500);letter-spacing:0.02em">
           You Are Already Special.
         </p>
@@ -4063,6 +4089,14 @@ function initFormTypes() {
 /* ============================================================
    서비스 카드 → 문의 섹션 자동 스크롤 + 카테고리 자동 선택
    ============================================================ */
+function toggleAcc(btn) {
+  const item = btn.closest('.sacc-item');
+  const isOpen = item.classList.contains('open');
+  // 다른 항목 닫기
+  document.querySelectorAll('.sacc-item.open').forEach(el => el.classList.remove('open'));
+  if (!isOpen) item.classList.add('open');
+}
+
 function goToContact(type) {
   // 카테고리 자동 선택
   STATE.formType = type;
@@ -6501,11 +6535,6 @@ function renderResult(r) {
               <p style="font-size:12.5px;line-height:1.6;color:var(--text-secondary)">"사람은 사고·감정·감각·직관 4가지 심리 기능으로 세상을 인식한다." 4엔진의 이론적 토대.</p>
             </div>
             <div style="padding:16px;background:var(--bg-surface);border-radius:var(--r-md);border:1px solid var(--border-default)">
-              <div style="font-size:11px;font-weight:800;color:#F5A623;letter-spacing:0.08em;margin-bottom:6px">🎨 COLOR THEORY</div>
-              <strong style="font-size:14px;display:block;margin-bottom:6px;color:var(--text-primary)">괴테 — 색채론</strong>
-              <p style="font-size:12.5px;line-height:1.6;color:var(--text-secondary)">"색은 시각이 아니라 심리와 본질을 드러내는 언어." 색-성격 연결의 철학적 기반.</p>
-            </div>
-            <div style="padding:16px;background:var(--bg-surface);border-radius:var(--r-md);border:1px solid var(--border-default)">
               <div style="font-size:11px;font-weight:800;color:#FF3366;letter-spacing:0.08em;margin-bottom:6px">⚡ COLOR PSYCHOLOGY</div>
               <strong style="font-size:14px;display:block;margin-bottom:6px;color:var(--text-primary)">막스 뤼셔 — 컬러 테스트</strong>
               <p style="font-size:12.5px;line-height:1.6;color:var(--text-secondary)">"색 선호도는 무의식의 감정·욕구를 반영한다." 60문항 색-반응 매핑의 임상 근거.</p>
@@ -7639,9 +7668,7 @@ function applyDynamicContent() {
   let c = null;
   try { c = JSON.parse(localStorage.getItem('pbs-content') || 'null'); } catch(e) {}
   if (!c) c = {};
-  // 기관 전용 배너 기본값 — 받은 링크로 들어온 방문자(localStorage 비어있음)에게도 항상 표시
-  if (!c.orgName || !c.orgName.trim()) c.orgName = '울산대학교';
-  if (!c.orgTagline || !c.orgTagline.trim()) c.orgTagline = '울산대학교 전용 진단';
+  // 기관 전용 배너 기본값 — 관리자가 설정한 값이 없으면 표시 안 함
 
   // 홍보 배지 문구
   if (c.heroBadge) {
@@ -9906,7 +9933,7 @@ tbody tr:last-child td{border-bottom:none}
               <textarea id="ce-hero-sub" rows="6">매일 비슷한 일상이지만, 마음 한 구석에서는 자꾸 이런 질문이 떠오릅니다.
 "나는 어떤 사람일까?", "내 진짜 강점은 뭘까?", "왜 저 사람과는 자꾸 부딪힐까?"
 
-PBS 컬러강점 진단은 칼 융의 분석심리학, 괴테의 색채론, 막스 뤼셔의 컬러 테스트, 그리고 DISC 행동 이론을 하나로 통합한 전문가용 60문항 검증 진단입니다.
+PBS 컬러강점 진단은 칼 융의 분석심리학, 막스 뤼셔의 컬러 테스트, DISC 행동 이론을 하나로 통합한 전문가용 60문항 검증 진단입니다.
 
 200곳 이상의 기관에서 검증되었고, 두바이 왕실까지 인정한 정밀 진단을 지금 경험하세요.</textarea>
               <p style="font-size:11px;color:var(--text-muted);margin-top:4px">엔터로 문단을 나눕니다. 빈 줄은 문단 간격이 됩니다.</p>
@@ -11650,7 +11677,7 @@ function _buildResultSheetHtml(r){
       ${scoreBlocks}
 
       <div style="margin-top:30px;padding-top:14px;border-top:1px solid #E5E3EE;font-size:11px;color:#9A97AD;text-align:center">
-        PBS COLOR LAB · 칼 융·괴테·막스 뤼셔·DISC 통합 컬러 강점 진단 · pbscolor.vercel.app
+        PBS COLOR LAB · 칼 융·막스 뤼셔·DISC 통합 컬러 강점 진단 · pbscolor.vercel.app
       </div>
     </div>`;
 }
@@ -12508,7 +12535,7 @@ function renderCareerEditor(){
 }
 
 const DEFAULT_CURRICULUM = [
-  {title:'컬러강점 시스템의 학문적 기반', desc:'칼 융·괴테·뤼셔·DISC·강점심리학 통합 이론'},
+  {title:'컬러강점 시스템의 학문적 기반', desc:'칼 융·뤼셔·DISC·강점심리학 통합 이론'},
   {title:'4엔진·12기어 진단 도구 마스터', desc:'K-Color 776 진단 시스템 실습 · 결과 해석법'},
   {title:'1:1 컨설팅 실전 시뮬레이션', desc:'실제 응시자와 함께하는 사례 연구 · 피드백 세션'},
   {title:'그룹 워크숍 운영법', desc:'기업·교육기관 대상 강의·워크숍 설계'},
