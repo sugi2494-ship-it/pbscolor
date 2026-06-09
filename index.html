@@ -2009,18 +2009,6 @@ button.basic-job-pill:hover::after{opacity:1}
         </div>
       </div>
 
-      <div class="hero-cta" style="justify-content:flex-start;margin-top:20px">
-        <button class="btn btn-primary btn-lg cta-start" onclick="startTest()">
-          <span>지금 진단 시작 →</span>
-        </button>
-        <button class="btn btn-ghost btn-lg" onclick="openLookupResult()" id="hero-lookup-btn">
-          <svg width="16" height="16" style="margin-right:6px"><use href="#i-clock"/></svg>
-          <span>이전 검사 결과 다시 보기</span>
-        </button>
-      </div>
-      <p style="margin-top:14px;font-size:13px;color:rgba(255,255,255,0.6);line-height:1.5">
-        이미 검사하신 분은 <strong style="color:rgba(255,255,255,0.9)">이름과 전화번호</strong>로 결과를 다시 확인하실 수 있습니다.
-      </p>
     </div>
 
     <!-- 오른쪽 — 컬러 휠 + 신뢰 카드 스택 -->
@@ -2220,10 +2208,17 @@ button.basic-job-pill:hover::after{opacity:1}
       </div>
     </div>
     <div style="text-align:center;margin-top:64px">
-      <button class="btn btn-primary btn-lg cta-start" onclick="startTest()">
-        <span>지금 진단 시작</span>
-        <svg class="btn-icon"><use href="#i-arrow"/></svg>
-      </button>
+      <div style="display:inline-flex;gap:12px;flex-wrap:wrap;justify-content:center;align-items:center">
+        <button class="btn btn-primary btn-lg cta-start" onclick="startTest()">
+          <span>지금 진단 시작</span>
+          <svg class="btn-icon"><use href="#i-arrow"/></svg>
+        </button>
+        <button class="btn btn-ghost btn-lg" onclick="openLookupResult()">
+          <svg width="16" height="16" style="margin-right:6px"><use href="#i-clock"/></svg>
+          <span>이전 검사 결과 다시 보기</span>
+        </button>
+      </div>
+      <p style="margin-top:12px;font-size:13px;color:var(--text-muted)">이미 검사하신 분은 <strong>이름과 전화번호</strong>로 결과를 다시 확인하실 수 있습니다.</p>
     </div>
   </div>
 </section>
@@ -12897,4 +12892,126 @@ function importBackup(e){
           RECORDS = data.records || [];
           REVIEWS = data.reviews || [];
           INQUIRIES = data.inquiries || [];
-   
+          CONTENT = data.content || {};
+          if(data.settings) SETTINGS = {...SETTINGS, ...data.settings};
+          if(data.notice) NOTICE = {...NOTICE, ...data.notice};
+          saveRecords(); saveReviews(); saveInquiries();
+          if(data.content) localStorage.setItem(KEY_CONTENT, JSON.stringify(CONTENT));
+          saveSettings();
+          saveNotice();
+          refreshAll();
+          showToast('백업을 복원했습니다', 'success');
+        }
+      });
+    } catch(err){
+      showToast('잘못된 백업 파일입니다', 'danger');
+    }
+  };
+  reader.readAsText(file);
+  e.target.value = '';
+}
+
+function confirmReset(){
+  showConfirm({
+    title:'정말 모든 데이터를 삭제하시겠습니까?',
+    msg:'모든 진단 기록·후기·문의가 영구적으로 삭제됩니다. 이 작업은 되돌릴 수 없습니다!',
+    onOk: () => {
+      // 한 번 더 확인
+      showConfirm({
+        title:'마지막 확인',
+        msg:'정말로 모든 데이터를 삭제할까요? 백업을 받지 않으면 복구할 수 없습니다.',
+        onOk: () => {
+          RECORDS = []; REVIEWS = []; INQUIRIES = [];
+          saveRecords(); saveReviews(); saveInquiries();
+          refreshAll();
+          showToast('모든 데이터를 삭제했습니다', 'success');
+        }
+      });
+    }
+  });
+}
+
+// ────────────────────────────────────────────────────────────
+// 사이드바 클릭 라우팅 보정 (initApp에서 호출하는 dataset.page)
+// ────────────────────────────────────────────────────────────
+document.addEventListener('click', (e) => {
+  const item = e.target.closest('.nav-item[data-page]');
+  if(item){
+    const page = item.getAttribute('data-page');
+    if(page) navigateTo(page);
+  }
+});
+
+</script>
+
+</body>
+</html>
+</template>
+
+<div id="pbs-admin-overlay" style="display:none;position:fixed;inset:0;z-index:99999;background:#0D0B1A">
+  <iframe id="pbs-admin-iframe" style="width:100%;height:100%;border:0;display:block;background:#0D0B1A" title="PBS 관리자 콘솔"></iframe>
+  <button onclick="closeAdminMode()" aria-label="관리자 닫기"
+    style="position:fixed;top:14px;right:14px;z-index:100000;background:rgba(255,255,255,0.95);color:#1C1A2E;border:0;padding:10px 18px;border-radius:8px;cursor:pointer;font-weight:700;font-family:Pretendard,sans-serif;font-size:13px;box-shadow:0 4px 12px rgba(0,0,0,0.4)">
+    ← 메인 사이트로
+  </button>
+</div>
+
+<a href="#admin" onclick="event.preventDefault();openAdminMode()"
+  title="관리자 페이지 (또는 Ctrl+Shift+A)" aria-label="관리자 페이지"
+  style="position:fixed;bottom:16px;right:16px;font-size:13px;font-weight:700;color:#fff;text-decoration:none;opacity:0.92;z-index:9990;background:linear-gradient(135deg,#3D2F90 0%,#7030A0 100%);padding:10px 16px;border-radius:10px;font-family:Pretendard,sans-serif;transition:all 0.2s;box-shadow:0 4px 14px rgba(112,48,160,0.35);display:inline-flex;align-items:center;gap:6px;letter-spacing:-0.01em"
+  onmouseover="this.style.opacity=1;this.style.transform='translateY(-2px)';this.style.boxShadow='0 8px 22px rgba(112,48,160,0.5)'" onmouseout="this.style.opacity=0.92;this.style.transform='translateY(0)';this.style.boxShadow='0 4px 14px rgba(112,48,160,0.35)'">⚙️ 관리자</a>
+
+<script>
+// ===== 관리자 모드 진입/이탈 =====
+async function openAdminMode() {
+  // ✨ 관리자 진입 시 Supabase에서 최신 결과 동기화
+  if (window.PBS && window.PBS.syncRecordsToLocal) {
+    try {
+      const r = await window.PBS.syncRecordsToLocal();
+      if (r?.ok) console.log('[PBS] 관리자 진입 동기화 완료:', r.addedRecords + '건');
+    } catch(e) { console.warn('[PBS] 동기화 중 오류:', e); }
+  }
+  const tpl = document.getElementById('pbs-admin-template');
+  const iframe = document.getElementById('pbs-admin-iframe');
+  // 동기화 후 로드 (또는 새로고침)
+  iframe.srcdoc = tpl.innerHTML;
+  document.getElementById('pbs-admin-overlay').style.display = 'block';
+  document.body.style.overflow = 'hidden';
+  console.log('[PBS] 관리자 모드 진입');
+}
+function closeAdminMode() {
+  document.getElementById('pbs-admin-overlay').style.display = 'none';
+  document.body.style.overflow = '';
+  // 해시 정리
+  if (window.location.hash === '#admin') {
+    history.replaceState(null, '', window.location.pathname);
+  }
+}
+
+// ===== 진입 트리거 =====
+document.addEventListener('keydown', e => {
+  // Ctrl+Shift+A → 진입
+  if (e.ctrlKey && e.shiftKey && (e.key === 'A' || e.key === 'a')) {
+    e.preventDefault();
+    openAdminMode();
+    return;
+  }
+  // ESC → 닫기 (관리자 열려 있을 때만)
+  if (e.key === 'Escape' && document.getElementById('pbs-admin-overlay').style.display === 'block') {
+    closeAdminMode();
+  }
+});
+
+// URL 해시 #admin → 자동 진입
+window.addEventListener('DOMContentLoaded', () => {
+  if (window.location.hash === '#admin') {
+    setTimeout(openAdminMode, 300);
+  }
+});
+
+console.log('[PBS] 관리자 콘솔 통합 완료. 진입: Ctrl+Shift+A | #admin | 우하단 ⚙️ Admin');
+</script>
+
+</body>
+</html>
+                                                                                                                                                                                                             
