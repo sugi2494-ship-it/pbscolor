@@ -3985,68 +3985,9 @@ function showEngineDetail(engineKey) {
         <h4><svg width="13" height="13"><use href="#i-graph"/></svg> 성장 포인트</h4>
         <ul>${E.growth.map(g => `<li><b>${g.title}</b> — ${g.detail}</li>`).join('')}</ul>
       </section>
-
-      <!-- ══ PREMIUM TEASER SECTIONS ══ -->
-      <section class="result-section" style="margin-top:40px">
-        <div style="text-align:center;margin-bottom:20px">
-          <div style="display:inline-block;background:linear-gradient(135deg,#7030A0,#FF3366);color:#fff;font-size:11px;font-weight:800;letter-spacing:0.12em;padding:5px 16px;border-radius:20px;margin-bottom:8px">✨ 심층 분석 미리보기</div>
-          <p style="font-size:13px;color:var(--text-muted)">아래 3가지 분석은 유료 상세 리포트에 포함됩니다</p>
-        </div>
-
-        <!-- 티저 1: 나의 조합 아키타입 -->
-        <div style="position:relative;margin-bottom:16px;border-radius:14px;overflow:hidden;border:1px solid var(--border-default)">
-          <div style="padding:20px 22px;background:var(--bg-card)">
-            <div style="font-size:11px;font-weight:800;color:#7030A0;letter-spacing:0.1em;margin-bottom:8px">🧬 나의 조합 아키타입</div>
-            <div style="font-size:18px;font-weight:900;margin-bottom:4px">${r.combo?.name || ''} 타입</div>
-            <div style="font-size:13px;color:var(--text-sub);margin-bottom:10px">${r.combo?.desc || ''}</div>
-            <div style="filter:blur(5px);user-select:none;pointer-events:none;font-size:13px;line-height:1.8;color:var(--text)">
-              이 조합의 사람들은 독보적인 강점 패턴을 가지고 있습니다. 엔진 시너지 분석, 약점 보완 전략, 최적의 협업 파트너 유형 등 심층 아키타입 분석이 포함됩니다. 나만의 독특한 강점 조합이 실생활에서 어떻게 발현되는지 30페이지 분량으로 상세하게 안내합니다.
-            </div>
-          </div>
-          <div style="position:absolute;bottom:0;left:0;right:0;height:120px;background:linear-gradient(transparent,rgba(255,255,255,0.97));display:flex;align-items:flex-end;justify-content:center;padding-bottom:16px">
-            <button onclick="openPremiumModal()" class="btn btn-primary" style="font-size:13px;padding:10px 24px">🔓 전체 내용 보기 (유료)</button>
-          </div>
-        </div>
-
-        <!-- 티저 2: 시간관리 루틴 가이드 -->
-        <div style="position:relative;margin-bottom:16px;border-radius:14px;overflow:hidden;border:1px solid var(--border-default)">
-          <div style="padding:20px 22px;background:var(--bg-card)">
-            <div style="font-size:11px;font-weight:800;color:${E.color};letter-spacing:0.1em;margin-bottom:8px">⏰ 시간관리 루틴 가이드</div>
-            <div style="font-size:16px;font-weight:800;margin-bottom:8px">${E.shortName||r.mainEngine} 엔진을 위한 맞춤 루틴</div>
-            <div style="filter:blur(5px);user-select:none;pointer-events:none;font-size:13px;line-height:1.8;color:var(--text)">
-              오전 에너지 활용법, 집중력 최고조 시간대, 회복 루틴, 업무 환경 세팅법이 포함됩니다. ${E.shortName||r.mainEngine} 엔진 특성에 맞는 하루 24시간 에너지 관리 방법과 번아웃 예방 전략을 상세히 안내합니다. 주간·월간 루틴 플래너도 포함됩니다.
-            </div>
-          </div>
-          <div style="position:absolute;bottom:0;left:0;right:0;height:100px;background:linear-gradient(transparent,rgba(255,255,255,0.97));display:flex;align-items:flex-end;justify-content:center;padding-bottom:14px">
-            <button onclick="openPremiumModal()" class="btn btn-primary" style="font-size:13px;padding:10px 24px">🔓 전체 루틴 보기 (유료)</button>
-          </div>
-        </div>
-
-        <!-- 티저 3: 관계 시너지 가이드 -->
-        <div style="position:relative;margin-bottom:16px;border-radius:14px;overflow:hidden;border:1px solid var(--border-default)">
-          <div style="padding:20px 22px;background:var(--bg-card)">
-            <div style="font-size:11px;font-weight:800;color:${top2Eng.color};letter-spacing:0.1em;margin-bottom:8px">💬 관계 시너지 가이드</div>
-            <div style="font-size:16px;font-weight:800;margin-bottom:8px">4가지 엔진과의 관계 전략</div>
-            <div style="filter:blur(5px);user-select:none;pointer-events:none;font-size:13px;line-height:1.8;color:var(--text)">
-              RED·YELLOW·GREEN·BLUE 각 엔진 유형과의 갈등 해결법, 협업 극대화 전략, 리더십 발휘 방법이 포함됩니다. 직장·연애·가족 관계에서 컬러 강점을 활용하는 구체적 시나리오 20가지가 수록되어 있습니다.
-            </div>
-          </div>
-          <div style="position:absolute;bottom:0;left:0;right:0;height:100px;background:linear-gradient(transparent,rgba(255,255,255,0.97));display:flex;align-items:flex-end;justify-content:center;padding-bottom:14px">
-            <button onclick="openPremiumModal()" class="btn btn-primary" style="font-size:13px;padding:10px 24px">🔓 관계 가이드 보기 (유료)</button>
-          </div>
-        </div>
-      </section>
-
-      <!-- 결과 공유 버튼 (하단 눈에 띄게) -->
-      <section class="result-section" style="margin-top:8px;text-align:center">
-        <button onclick="shareResult()" class="btn btn-ghost btn-lg" style="gap:8px">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
-          <span>결과 공유하기</span>
-        </button>
-        <p style="font-size:12px;color:var(--text-muted);margin-top:8px">카카오톡·문자로 친구에게 공유해 보세요</p>
-      </section>
     </div>
   `;
+  ensureTranslated(overlay);
 }
 
 /* ============================================================
@@ -6792,8 +6733,8 @@ function renderResult(r) {
         </div>
       </section>
 
-      <!-- SECTION 7: Top1+Top2 조합 아키타입 -->
-      <section class="result-section">
+      <!-- SECTION 7: 조합 아키타입 — 프리미엄 티저 -->
+      <section class="result-section" style="position:relative;overflow:hidden">
         <div class="result-section-head">
           <div class="result-section-icon"><svg width="22" height="22"><use href="#i-target"/></svg></div>
           <div>
@@ -6801,153 +6742,52 @@ function renderResult(r) {
             <p>1순위와 2순위 기어가 만나 형성하는 고유한 강점 패턴</p>
           </div>
         </div>
-        ${(function(){
-          const arch = getArchetype(r.combo.eng1, r.combo.eng2);
-          return `
-          <div class="archetype-card" style="background:linear-gradient(135deg,color-mix(in srgb,${arch.color} 10%,var(--bg-surface)),var(--bg-surface));border:1px solid color-mix(in srgb,${arch.color} 28%,var(--border-default));border-radius:var(--r-xl);overflow:hidden">
-            <!-- 헤더 -->
-            <div style="padding:28px 32px;background:linear-gradient(135deg,color-mix(in srgb,${arch.color} 18%,transparent),transparent);border-bottom:1px solid color-mix(in srgb,${arch.color} 18%,transparent);display:flex;align-items:center;gap:20px;flex-wrap:wrap">
-              <div style="font-size:54px;line-height:1">${arch.emoji}</div>
-              <div style="flex:1;min-width:240px">
-                <div style="display:inline-block;font-size:11px;font-weight:800;letter-spacing:0.1em;color:${arch.color};margin-bottom:6px;text-transform:uppercase">${r.top1.gear} ${G1.name} + ${r.top2.gear} ${G2.name}</div>
-                <h3 style="font-size:24px;font-weight:800;letter-spacing:-0.02em;color:var(--text-primary);margin-bottom:6px">${arch.name}</h3>
-                <p style="font-size:14.5px;color:var(--text-secondary);line-height:1.55;font-weight:500">${arch.headline}</p>
-              </div>
+        <div style="position:relative;border-radius:14px;overflow:hidden;border:1px solid var(--border-default)">
+          <div style="padding:22px 24px 16px;background:var(--bg-card)">
+            <div style="display:inline-block;background:linear-gradient(135deg,#7030A0,#FF3366);color:#fff;font-size:11px;font-weight:800;letter-spacing:0.12em;padding:4px 14px;border-radius:20px;margin-bottom:14px">🧬 나의 고유 아키타입</div>
+            <div style="font-size:20px;font-weight:900;margin-bottom:6px">${r.top1.gear} + ${r.top2.gear} 조합 분석 결과</div>
+            <div style="font-size:14px;color:var(--text-secondary);margin-bottom:14px">${r.top1.gear} ${(GEAR_DATA[r.top1.gear]||{}).name||''} × ${r.top2.gear} ${(GEAR_DATA[r.top2.gear]||{}).name||''}</div>
+            <div style="filter:blur(5px);user-select:none;pointer-events:none;font-size:13.5px;line-height:1.85;color:var(--text-primary)">
+              이 조합의 사람은 독보적인 강점 패턴을 가집니다. 두 엔진의 시너지 분석, 약점 보완 전략, 최적 협업 파트너 유형, 실전 활용 시나리오 20가지가 포함됩니다. 나만의 아키타입이 직장·연애·창업에서 어떻게 발현되는지 상세히 안내합니다. 핵심 강점 조합 지도와 함께 30페이지 분량의 심층 해설이 포함됩니다.
             </div>
-
-            <!-- 본문 -->
-            <div style="padding:24px 32px">
-              <p style="font-size:15px;line-height:1.8;color:var(--text-primary);margin-bottom:24px">${arch.description}</p>
-
-              <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:20px" class="archetype-grid">
-                <div style="padding:18px 20px;background:color-mix(in srgb,${arch.color} 6%,transparent);border-radius:var(--r-md);border-left:3px solid ${arch.color}">
-                  <h4 style="font-size:13px;font-weight:800;color:${arch.color};margin-bottom:10px;display:flex;align-items:center;gap:6px">💪 핵심 강점</h4>
-                  <ul style="list-style:none;padding:0;margin:0">
-                    ${arch.strengths.map(s => `<li style="padding:5px 0;font-size:13.5px;color:var(--text-primary);position:relative;padding-left:14px"><span style="position:absolute;left:0;color:${arch.color};font-weight:800">·</span>${s}</li>`).join('')}
-                  </ul>
-                </div>
-                <div style="padding:18px 20px;background:rgba(245,166,35,0.08);border-radius:var(--r-md);border-left:3px solid #F5A623">
-                  <h4 style="font-size:13px;font-weight:800;color:#D4870D;margin-bottom:10px;display:flex;align-items:center;gap:6px">⚠️ 의식할 점</h4>
-                  <ul style="list-style:none;padding:0;margin:0">
-                    ${arch.cautions.map(s => `<li style="padding:5px 0;font-size:13.5px;color:var(--text-primary);position:relative;padding-left:14px"><span style="position:absolute;left:0;color:#D4870D;font-weight:800">·</span>${s}</li>`).join('')}
-                  </ul>
-                </div>
-              </div>
-
-              <div style="padding:16px 20px;background:var(--bg-page);border-radius:var(--r-md);border:1px solid var(--border-default);margin-bottom:14px">
-                <div style="font-size:11px;font-weight:800;color:var(--text-muted);letter-spacing:0.1em;margin-bottom:6px">🎯 가장 잘 맞는 분야</div>
-                <div style="font-size:14px;line-height:1.7;color:var(--text-primary);font-weight:600">${arch.careers}</div>
-              </div>
-
-              <div style="padding:18px 22px;background:linear-gradient(135deg,${arch.color}1A,${arch.color}08);border-radius:var(--r-md);border-left:4px solid ${arch.color}">
-                <div style="font-size:11px;font-weight:800;color:${arch.color};letter-spacing:0.1em;margin-bottom:8px">💡 ${r.user.name}님을 위한 성공 전략</div>
-                <p style="font-size:14.5px;line-height:1.75;color:var(--text-primary);margin:0">${arch.strategy}</p>
-              </div>
-
-              <!-- 기어 플레이버 -->
-              <div style="margin-top:16px;padding:14px 18px;background:var(--bg-muted);border-radius:var(--r-md);font-size:12.5px;color:var(--text-secondary);line-height:1.7">
-                <strong style="color:var(--text-primary)">🔍 두 기어 결합의 미세 특성</strong><br>
-                <strong style="color:${top1Eng.color}">${r.top1.gear} ${G1.name}</strong> (${G1.tagline}) +
-                <strong style="color:${top2Eng.color}">${r.top2.gear} ${G2.name}</strong> (${G2.tagline})의 결합.
-                ${r.combo.eng1 === r.combo.eng2
-                  ? `같은 ${ENGINE_DATA[r.combo.eng1].shortName} 엔진 내에서 두 가지 다른 발현 방식이 함께 작동해, 한 분야의 깊은 전문성으로 이어집니다.`
-                  : `${ENGINE_DATA[r.combo.eng1].shortName}의 ${G1.tagline.split('·')[0]||'특성'}과 ${ENGINE_DATA[r.combo.eng2].shortName}의 ${G2.tagline.split('·')[0]||'특성'}이 서로 다른 차원에서 시너지를 만듭니다.`}
-              </div>
-            </div>
-          </div>`;
-        })()}
+          </div>
+          <div style="position:absolute;bottom:0;left:0;right:0;height:130px;background:linear-gradient(transparent,rgba(255,255,255,0.97) 60%);display:flex;align-items:flex-end;justify-content:center;padding-bottom:18px">
+            <button onclick="openPremiumModal()" class="btn btn-primary" style="font-size:13px;padding:10px 28px;gap:6px">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              🔓 전체 분석 보기 (프리미엄)
+            </button>
+          </div>
+        </div>
       </section>
 
-      <!-- SECTION 8: 관계 · 시너지 가이드 (2축 분리) -->
-      <section class="result-section">
+      <!-- SECTION 8: 관계 시너지 가이드 — 프리미엄 티저 -->
+      <section class="result-section" style="position:relative;overflow:hidden">
         <div class="result-section-head">
           <div class="result-section-icon"><svg width="22" height="22"><use href="#i-users"/></svg></div>
           <div>
             <h2>관계 · 시너지 가이드</h2>
-            <p>업무에서의 보완과 일상에서의 편안함은 다른 차원입니다. 두 축으로 나눠 봅니다.</p>
+            <p>4가지 엔진 유형과의 관계 전략 · 협업 극대화 방법</p>
           </div>
         </div>
-
-        ${(function(){
-          const axis = getSynergyByAxis(r.mainEngine);
-          const ENG = (e) => ENGINE_DATA[e];
-          return `
-          <!-- 업무 시너지 (반대 엔진 = 보완) -->
-          <div class="synergy-axis-card" style="background:linear-gradient(135deg,color-mix(in srgb,${ENG(axis.work.partner).color} 12%,var(--bg-surface)),var(--bg-surface));border:1px solid color-mix(in srgb,${ENG(axis.work.partner).color} 25%,var(--border-default));border-radius:var(--r-xl);padding:24px 28px;margin-bottom:16px;position:relative;overflow:hidden">
-            <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
-              <span style="background:#0D0B1A;color:#FFD166;font-size:11px;font-weight:800;letter-spacing:0.08em;padding:5px 12px;border-radius:var(--r-full)">💼 업무 시너지</span>
-              <span style="font-size:11px;color:var(--text-muted);font-weight:600">분야: 일·성과·전문성</span>
-            </div>
-            <h3 style="font-size:19px;font-weight:800;letter-spacing:-0.01em;margin-bottom:10px;color:var(--text-primary)">
-              <span style="color:${ENG(axis.work.partner).color}">${ENG(axis.work.partner).shortName}</span>
-              <span style="color:var(--text-muted)">와의 조합이 가장 강력</span>
-            </h3>
-            <p style="font-size:15px;line-height:1.75;color:var(--text-primary);margin-bottom:14px">${axis.work.desc}</p>
-            <div style="padding:12px 16px;background:color-mix(in srgb,${ENG(axis.work.partner).color} 8%,transparent);border-left:3px solid ${ENG(axis.work.partner).color};border-radius:6px;font-size:13.5px;line-height:1.65">
-              <strong style="color:${ENG(axis.work.partner).color}">💡 활용 팁:</strong> ${axis.work.tip}
+        <div style="position:relative;border-radius:14px;overflow:hidden;border:1px solid var(--border-default)">
+          <div style="padding:22px 24px 16px;background:var(--bg-card)">
+            <div style="display:inline-block;background:linear-gradient(135deg,#7030A0,#0077B6);color:#fff;font-size:11px;font-weight:800;letter-spacing:0.12em;padding:4px 14px;border-radius:20px;margin-bottom:14px">💬 관계 시너지 심층 분석</div>
+            <div style="font-size:16px;font-weight:800;margin-bottom:8px">RED · YELLOW · GREEN · BLUE 각 유형과의 전략</div>
+            <div style="filter:blur(5px);user-select:none;pointer-events:none;font-size:13.5px;line-height:1.85;color:var(--text-primary)">
+              RED·YELLOW·GREEN·BLUE 각 엔진 유형과의 갈등 해결법, 협업 극대화 전략, 리더십 발휘 방법이 포함됩니다. 직장·연애·가족 관계에서 컬러 강점을 활용하는 구체적 시나리오 20가지, 업무에서의 보완 관계와 일상에서의 편안한 관계 두 축으로 나눠 상세히 안내합니다.
             </div>
           </div>
-
-          <!-- 일상·관계 시너지 (같은 외향/내향 = 편안) -->
-          <div class="synergy-axis-card" style="background:linear-gradient(135deg,color-mix(in srgb,${ENG(axis.daily.partner).color} 10%,var(--bg-surface)),var(--bg-surface));border:1px solid color-mix(in srgb,${ENG(axis.daily.partner).color} 25%,var(--border-default));border-radius:var(--r-xl);padding:24px 28px;margin-bottom:16px;position:relative;overflow:hidden">
-            <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
-              <span style="background:#0D0B1A;color:#FFD166;font-size:11px;font-weight:800;letter-spacing:0.08em;padding:5px 12px;border-radius:var(--r-full)">☕ 일상·관계 시너지</span>
-              <span style="font-size:11px;color:var(--text-muted);font-weight:600">분야: 친구·연인·여가·편안함</span>
-            </div>
-            <h3 style="font-size:19px;font-weight:800;letter-spacing:-0.01em;margin-bottom:10px;color:var(--text-primary)">
-              <span style="color:${ENG(axis.daily.partner).color}">${ENG(axis.daily.partner).shortName}</span>
-              <span style="color:var(--text-muted)">와 함께 있을 때 가장 편안</span>
-            </h3>
-            <p style="font-size:15px;line-height:1.75;color:var(--text-primary);margin-bottom:14px">${axis.daily.desc}</p>
-            <div style="padding:12px 16px;background:color-mix(in srgb,${ENG(axis.daily.partner).color} 8%,transparent);border-left:3px solid ${ENG(axis.daily.partner).color};border-radius:6px;font-size:13.5px;line-height:1.65">
-              <strong style="color:${ENG(axis.daily.partner).color}">💡 활용 팁:</strong> ${axis.daily.tip}
-            </div>
+          <div style="position:absolute;bottom:0;left:0;right:0;height:110px;background:linear-gradient(transparent,rgba(255,255,255,0.97) 55%);display:flex;align-items:flex-end;justify-content:center;padding-bottom:18px">
+            <button onclick="openPremiumModal()" class="btn btn-primary" style="font-size:13px;padding:10px 28px;gap:6px">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              🔓 관계 가이드 전체 보기 (프리미엄)
+            </button>
           </div>
-
-          <!-- 주의: 조율 필요 -->
-          <div class="synergy-axis-card" style="background:linear-gradient(135deg,rgba(245,166,35,0.06),var(--bg-surface));border:1px dashed rgba(245,166,35,0.4);border-radius:var(--r-xl);padding:20px 24px">
-            <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
-              <span style="background:#F5A623;color:#fff;font-size:11px;font-weight:800;letter-spacing:0.08em;padding:5px 12px;border-radius:var(--r-full)">⚠️ 조율이 필요한 관계</span>
-            </div>
-            <p style="font-size:14px;line-height:1.7;color:var(--text-secondary);margin:0">${axis.caution.desc}</p>
-          </div>
-
-          <!-- 한 줄 정리 -->
-          <div style="margin-top:14px;padding:14px 18px;background:var(--bg-muted);border-radius:var(--r-md);font-size:12.5px;color:var(--text-muted);line-height:1.65">
-            <strong style="color:var(--text-primary)">💡 핵심 인사이트</strong> — "반대 엔진 = 무조건 베스트"가 아닙니다.
-            <strong>업무</strong>에서는 보완형(반대) 파트너가 결과를 만들고,
-            <strong>일상</strong>에서는 같은 외향성/내향성을 가진 파트너가 편안합니다.
-            많은 사람이 이 두 가지를 같은 관계 안에서 기대하다 실망하는데, 따로 다른 사람으로부터 채워도 됩니다.
-          </div>
-          `;
-        })()}
-
-        ${false && getSynergyDetail(r.mainEngine).map((s, idx) => {
-          const isStrongest = idx === 0;
-          return `
-          <div class="synergy-card ${isStrongest ? 'synergy-best' : ''}" style="border-left:${isStrongest ? '6px' : '4px'} solid ${s.color}${isStrongest ? ';background:linear-gradient(135deg,color-mix(in srgb,'+s.color+' 8%,var(--bg-surface)),var(--bg-surface));box-shadow:0 12px 36px color-mix(in srgb,'+s.color+' 14%,transparent),0 4px 12px rgba(0,0,0,0.06);position:relative;overflow:hidden;padding:32px' : ''}">
-            ${isStrongest ? `
-              <div style="position:absolute;top:0;right:0;background:${s.color};color:#fff;padding:6px 18px;border-radius:0 0 0 var(--r-md);font-size:11px;font-weight:800;letter-spacing:0.12em;display:flex;align-items:center;gap:6px;text-transform:uppercase">
-                <svg width="11" height="11" fill="currentColor"><use href="#i-star"/></svg> BEST MATCH
-              </div>
-              <div style="position:absolute;top:-40px;right:-40px;width:160px;height:160px;border-radius:50%;background:${s.color};opacity:0.06;pointer-events:none"></div>
-            ` : ''}
-            <div class="synergy-icon" style="background:${s.color}${isStrongest ? ';width:64px;height:64px;box-shadow:0 12px 28px color-mix(in srgb,'+s.color+' 35%,transparent)' : ''}">
-              <svg width="${isStrongest ? '28' : '22'}" height="${isStrongest ? '28' : '22'}"><use href="#${s.icon}"/></svg>
-            </div>
-            <div class="synergy-text">
-              <strong style="color:${s.color}${isStrongest ? ';font-size:18px;letter-spacing:-0.01em' : ''}">${s.title}</strong>
-              <p${isStrongest ? ' style="font-size:15px;line-height:1.7;color:var(--text-primary);font-weight:500"' : ''}>${s.desc}</p>
-              <div style="margin-top:10px;padding:${isStrongest ? '14px 18px' : '10px 14px'};background:color-mix(in srgb,${s.color} ${isStrongest ? '12' : '6'}%,transparent);border-radius:var(--r-md);font-size:${isStrongest ? '14' : '12'}px;color:var(--text-primary);line-height:1.65;font-weight:${isStrongest ? '600' : '500'}">
-                <strong style="color:${s.color}">▷ ${isStrongest ? '활용 팁 (★ 최우선 추천)' : '활용 팁'}:</strong> ${s.tip}
-              </div>
-            </div>
-          </div>`;
-        }).join('')}
+        </div>
       </section>
 
-      <!-- SECTION: 시간관리·루틴 가이드 -->
-      <section class="result-section">
+      <!-- SECTION: 시간관리 루틴 가이드 — 프리미엄 티저 -->
+      <section class="result-section" style="position:relative;overflow:hidden">
         <div class="result-section-head">
           <div class="result-section-icon"><svg width="22" height="22"><use href="#i-clock"/></svg></div>
           <div>
@@ -6955,81 +6795,19 @@ function renderResult(r) {
             <p>${E.shortName} 엔진에 맞는 목표 달성 전략과 주간 루틴</p>
           </div>
         </div>
-        ${(function(){
-          const tg = getTimeManagementGuide(r.mainEngine);
-          return `
-          <div style="background:linear-gradient(135deg,color-mix(in srgb,${E.color} 8%,var(--bg-surface)),var(--bg-surface));border:1px solid color-mix(in srgb,${E.color} 22%,var(--border-default));border-radius:var(--r-xl);padding:28px 32px">
-            <h3 style="font-size:19px;font-weight:800;color:${E.color};margin-bottom:18px;letter-spacing:-0.01em">${tg.title}</h3>
-
-            <div style="margin-bottom:20px">
-              <div style="font-size:13px;font-weight:800;color:var(--text-primary);margin-bottom:6px">🎯 목표 달성 전략</div>
-              <p style="font-size:14px;line-height:1.75;color:var(--text-secondary)">${tg.strategy}</p>
-            </div>
-
-            <div style="margin-bottom:20px">
-              <div style="font-size:13px;font-weight:800;color:var(--text-primary);margin-bottom:10px">📅 추천 주간 루틴</div>
-              <div style="display:grid;gap:8px">
-                ${tg.routine.map(([when, what]) => `
-                  <div style="display:grid;grid-template-columns:120px 1fr;gap:12px;align-items:start;padding:10px 14px;background:var(--bg-page);border-radius:var(--r-md)">
-                    <div style="font-size:12.5px;font-weight:700;color:${E.color}">${when}</div>
-                    <div style="font-size:13px;line-height:1.6;color:var(--text-primary)">${what}</div>
-                  </div>
-                `).join('')}
-              </div>
-            </div>
-
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:18px" class="time-grid">
-              <div style="padding:16px 18px;background:color-mix(in srgb,${E.color} 6%,transparent);border-radius:var(--r-md);border-left:3px solid ${E.color}">
-                <div style="font-size:12px;font-weight:800;color:${E.color};margin-bottom:6px">⚡ 집중력 관리</div>
-                <p style="font-size:13px;line-height:1.65;color:var(--text-primary)">${tg.focus}</p>
-              </div>
-              <div style="padding:16px 18px;background:rgba(0,168,120,0.07);border-radius:var(--r-md);border-left:3px solid #00A878">
-                <div style="font-size:12px;font-weight:800;color:#00875F;margin-bottom:6px">🌿 회복·충전</div>
-                <p style="font-size:13px;line-height:1.65;color:var(--text-primary)">${tg.recovery}</p>
-              </div>
-            </div>
-
-            <div style="padding:14px 18px;background:var(--bg-muted);border-radius:var(--r-md);font-size:12.5px;color:var(--text-secondary)">
-              <strong style="color:var(--text-primary)">🛠 추천 도구·습관</strong> &nbsp; ${tg.tools}
-            </div>
-          </div>`;
-        })()}
-      </section>
-
-      <!-- 연애 · 갈등 패턴 -->
-      <section class="result-section">
-        <div class="result-section-head">
-          <div class="result-section-icon"><svg width="22" height="22"><use href="#i-heart"/></svg></div>
-          <div>
-            <h2>관계 · 연애 패턴 분석</h2>
-            <p>${r.user.name}님이 가까운 관계에서 어떻게 작동하는지 솔직하게 풀어볼게요</p>
-          </div>
-        </div>
-
-        <!-- 친근한 톤의 자기 패턴 카드 -->
-        <div style="padding:32px;background:linear-gradient(135deg,color-mix(in srgb,${E.color} 10%,var(--bg-surface)),var(--bg-surface));border-radius:var(--r-xl);border:1px solid color-mix(in srgb,${E.color} 18%,var(--border-default));margin-bottom:24px;position:relative;overflow:hidden">
-          <div style="position:absolute;top:-30px;right:-30px;width:140px;height:140px;border-radius:50%;background:${E.color};opacity:0.08;pointer-events:none"></div>
-          <div style="display:inline-block;padding:6px 14px;background:${E.color};color:#fff;border-radius:var(--r-full);font-size:11px;font-weight:700;letter-spacing:0.1em;margin-bottom:14px;position:relative;z-index:1">${r.user.name}님의 관계 패턴 진단</div>
-          <h3 style="font-size:22px;font-weight:800;letter-spacing:-0.02em;margin-bottom:14px;color:var(--text-primary)">${getRelationPatternHook(r.mainEngine, r.user.name)}</h3>
-          <p style="font-size:15px;line-height:1.85;color:var(--text-primary);font-weight:500;position:relative;z-index:1">${getRelationPatternDetail(r.mainEngine, r.user.name)}</p>
-        </div>
-
-        <div class="career-grid" style="--engine-color:${E.color}">
-          <div class="career-block">
-            <h4><svg width="14" height="14"><use href="#i-heart"/></svg> 연애 스타일 — 이런 식으로 사랑해요</h4>
-            <p style="font-size:14px;color:var(--text-secondary);line-height:1.75;margin-bottom:12px">${E.romance}</p>
-            <div style="margin-top:14px;padding:14px 16px;background:color-mix(in srgb,${E.color} 6%,transparent);border-radius:var(--r-md);font-size:13px;line-height:1.65;color:var(--text-primary)">
-              <strong style="color:${E.color}">💡 ${r.user.name}님께 드리는 한 마디:</strong><br>
-              ${getRomanceAdvice(r.mainEngine)}
+        <div style="position:relative;border-radius:14px;overflow:hidden;border:1px solid var(--border-default)">
+          <div style="padding:22px 24px 16px;background:var(--bg-card)">
+            <div style="display:inline-block;background:linear-gradient(135deg,#7030A0,#00A878);color:#fff;font-size:11px;font-weight:800;letter-spacing:0.12em;padding:4px 14px;border-radius:20px;margin-bottom:14px">⏰ 에너지 관리 맞춤 루틴</div>
+            <div style="font-size:16px;font-weight:800;margin-bottom:8px">${E.shortName} 엔진을 위한 하루 24시간 전략</div>
+            <div style="filter:blur(5px);user-select:none;pointer-events:none;font-size:13.5px;line-height:1.85;color:var(--text-primary)">
+              오전 에너지 활용법, 집중력 최고조 시간대, 회복 루틴, 업무 환경 세팅법이 포함됩니다. 엔진 특성에 맞는 번아웃 예방 전략과 주간·월간 루틴 플래너, 90일 강점 활용 챌린지도 함께 수록되어 있습니다.
             </div>
           </div>
-          <div class="career-block">
-            <h4><svg width="14" height="14"><use href="#i-flame"/></svg> 갈등 대처 방식 — 이렇게 풀어가요</h4>
-            <p style="font-size:14px;color:var(--text-secondary);line-height:1.75;margin-bottom:12px">${E.conflict}</p>
-            <div style="margin-top:14px;padding:14px 16px;background:color-mix(in srgb,${E.color} 6%,transparent);border-radius:var(--r-md);font-size:13px;line-height:1.65;color:var(--text-primary)">
-              <strong style="color:${E.color}">💡 ${r.user.name}님께 드리는 한 마디:</strong><br>
-              ${getConflictAdvice(r.mainEngine)}
-            </div>
+          <div style="position:absolute;bottom:0;left:0;right:0;height:110px;background:linear-gradient(transparent,rgba(255,255,255,0.97) 55%);display:flex;align-items:flex-end;justify-content:center;padding-bottom:18px">
+            <button onclick="openPremiumModal()" class="btn btn-primary" style="font-size:13px;padding:10px 28px;gap:6px">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              🔓 루틴 가이드 전체 보기 (프리미엄)
+            </button>
           </div>
         </div>
       </section>
@@ -7117,6 +6895,15 @@ function renderResult(r) {
             <svg class="btn-icon"><use href="#i-arrow"/></svg>
           </button>
         </div>
+      </div>
+
+      <!-- 결과 공유 버튼 -->
+      <div style="text-align:center;margin-top:32px;margin-bottom:8px">
+        <button onclick="shareResult()" class="btn btn-ghost btn-lg" style="gap:8px;font-size:14px">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+          <span>결과 공유하기</span>
+        </button>
+        <p style="font-size:12px;color:var(--text-muted);margin-top:6px">카카오톡·문자로 친구에게 공유해 보세요 📲</p>
       </div>
 
       <div style="text-align:center;margin-top:48px">
@@ -7260,6 +7047,9 @@ function downloadResult() {
     +H('추천 직업·분야')+'<ul style=”line-height:1.6;padding-left:18px;margin:0”>'+li(E.jobs)+'</ul>'
     +H('소통·관계 스타일')+'<p style=”line-height:1.65;margin:6px 0”><b>의사소통</b> · '+esc(E.communication)+'</p><p style=”line-height:1.65;margin:6px 0”><b>연애</b> · '+esc(E.romance)+'</p><p style=”line-height:1.65;margin:6px 0”><b>갈등 대처</b> · '+esc(E.conflict)+'</p>'
     +H('나의 TOP 2 강점 기어')+gearBlock
+    +H('엔진 상세 해설')+'<div>'+(E.values||[]).map(function(v){ return '<div style="margin:10px 0;padding:12px 14px;background:#f9f7ff;border-left:3px solid '+E.color+';border-radius:0 8px 8px 0"><b style="color:'+E.color+'">'+esc(v.title)+'</b><br><span style="font-size:13px;color:#444;line-height:1.65">'+esc(v.detail)+'</span></div>'; }).join('')+'</div>'
+    +H('힐링 활동')+'<div style="display:flex;flex-wrap:wrap;gap:8px;margin:6px 0">'+(E.healing||[]).map(function(h){ return '<div style="padding:10px 14px;background:#f5f0ff;border-radius:8px;min-width:140px"><span style="font-size:18px">'+esc(h.emoji)+'</span> <b style="font-size:13px">'+esc(h.label)+'</b><br><span style="font-size:12px;color:#555">'+esc(h.desc)+'</span></div>'; }).join('')+'</div>'
+    +H('자기사랑 확언')+'<div>'+(E.affirmations||[]).map(function(a,i){ return '<div style="margin:8px 0;padding:14px 16px;background:linear-gradient(135deg,#f5f0ff,#fff0f5);border-radius:10px;font-size:'+(i===0?'15':'13')+'px;line-height:1.6;font-weight:'+(i===0?'700':'500')+';color:#2d1b4e">'+(i===0?'<div style="font-size:10px;letter-spacing:.1em;color:#7030A0;margin-bottom:4px">DAILY AFFIRMATION</div>':'')+esc(a)+'</div>'; }).join('')+'</div>'
     +H('성장 포인트')+'<ul style=”line-height:1.6;padding-left:18px;margin:0”>'+growth+'</ul>'
     +'<div style=”margin-top:24px;padding:14px 16px;border:1px dashed #7030A0;border-radius:10px;background:#faf7ff”><b style=”color:#7030A0”>＋ 상세 컬러강점 리포트(유료)</b><br><span style=”font-size:12px;color:#444”>12기어 심층 분석 · 엔진별 시간관리 루틴 · 직업 매칭 50선 · 90일 강점 활용 챌린지 등 30+페이지 상세본은 신청 페이지에서 받아보실 수 있습니다.</span></div>'
     +'<div style=”margin-top:16px;font-size:11px;color:#999;text-align:center”>© PBS COLOR LAB · 본 결과지는 무료 진단 요약본입니다.</div>'
