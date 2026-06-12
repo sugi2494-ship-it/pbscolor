@@ -7,6 +7,7 @@
 <meta http-equiv="Expires" content="0">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
 <meta name="theme-color" content="#3D2F90">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" defer></script>
 <title>PBS 컬러강점 — 나를 움직이는 4가지 엔진 | PBS COLOR LAB</title>
 
 <meta name="description" content="칼 융·막스 뤼셔·DISC 이론 기반 전문가용 컬러 퍼스널리티 진단. 4가지 컬러 엔진(RED·YELLOW·GREEN·BLUE)과 12가지 강점 기어로 나의 본질을 발견하세요. PBS COLOR LAB 최해숙 대표 — K-Color 776 마스터.">
@@ -6928,25 +6929,7 @@ function renderResult(r) {
               <div style="font-size:12px;font-weight:800;color:#7030A0;letter-spacing:0.06em;margin-bottom:4px">🎁 후기 감사합니다!</div>
               <div style="font-size:13px;color:var(--text-secondary);line-height:1.55">무료 결과지 PDF가 열렸어요. 아래 버튼으로 바로 저장하실 수 있습니다.</div>
             </div>
-            <button class="btn btn-primary" onclick="downloadResult()" style="margin-bottom:18px;font-size:15px;padding:14px 28px">📄 무료 결과지 PDF 다운로드</button>
-            <div style="max-width:480px;margin:0 auto;padding:18px;border:1.5px solid #7030A0;border-radius:14px;background:linear-gradient(135deg,rgba(112,48,160,0.06),rgba(255,51,102,0.05));text-align:left">
-              <div style="font-size:11px;font-weight:800;color:#7030A0;letter-spacing:0.1em;margin-bottom:6px">💎 더 깊은 분석이 필요하다면</div>
-              <div style="font-weight:900;font-size:16px;color:var(--text-primary);margin-bottom:8px">상세 컬러강점 리포트 — 4가지 심층 분석 전부 포함</div>
-              <ul style="list-style:none;padding:0;margin:0 0 12px;display:flex;flex-direction:column;gap:6px">
-                <li style="font-size:12.5px;display:flex;gap:8px;align-items:flex-start"><span>🧬</span><span><b>나의 조합 아키타입</b> — Top1+2 기어 시너지, 핵심 강점 지도, 성공 전략</span></li>
-                <li style="font-size:12.5px;display:flex;gap:8px;align-items:flex-start"><span>⏰</span><span><b>시간관리·루틴 가이드</b> — 엔진별 24시간 에너지 관리, 주간 루틴 플래너</span></li>
-                <li style="font-size:12.5px;display:flex;gap:8px;align-items:flex-start"><span>💬</span><span><b>관계 시너지 가이드</b> — 4가지 엔진 유형별 관계 전략·갈등 해결법 20가지</span></li>
-                <li style="font-size:12.5px;display:flex;gap:8px;align-items:flex-start"><span>🎯</span><span><b>나만의 강점 실행 플랜</b> — 직업·직무별 맞춤 강점 활용법</span></li>
-              </ul>
-              <div style="font-size:13px;color:var(--text-secondary);line-height:1.6;margin-bottom:12px">무료본은 핵심 요약이에요. 상세 리포트는 <b>12기어 심층 분석 · 엔진별 시간관리 루틴 · 직업 매칭 50선 · 90일 강점 활용 챌린지</b> 등 30+페이지로 "그래서 무엇을 할까"의 답을 담았습니다.</div>
-              <div style="background:rgba(112,48,160,0.08);border-radius:10px;padding:10px 14px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap">
-                <div>
-                  <div style="font-size:20px;font-weight:900;color:#7030A0"><span class="js-report-price">9,900원</span></div>
-                  <div style="font-size:11px;color:var(--text-muted)">4가지 분석 모두 포함 · PDF 즉시 발송</div>
-                </div>
-              </div>
-              <a href="https://smartstore.naver.com/dongnesujoggwan" target="_blank" rel="noopener" class="btn btn-primary" style="width:100%;justify-content:center">💳 상세 리포트 신청하기 →</a>
-            </div>
+            <button class="btn btn-primary" onclick="downloadResult()" style="font-size:15px;padding:14px 28px">📄 무료 결과지 PDF 다운로드</button>
           </div>
         </div>
       </div>
@@ -7123,7 +7106,41 @@ function downloadResult() {
     +'<div style="margin-top:24px;padding:14px 16px;border:1px dashed #7030A0;border-radius:10px;background:#faf7ff"><b style="color:#7030A0">＋ 상세 컬러강점 리포트(유료) · 9,900원</b><br><span style="font-size:12px;color:#444">12기어 심층 분석 · 엔진별 시간관리 루틴 · 직업 매칭 50선 · 90일 강점 활용 챌린지 등 30+페이지 상세본은 신청 페이지에서 받아보실 수 있습니다.</span></div>'+'<div style="margin-top:20px;padding:14px 16px;background:linear-gradient(135deg,#7030A0,#5a2580);color:#fff;border-radius:10px"><div style="font-size:11px;letter-spacing:.12em;font-weight:800;margin-bottom:8px;opacity:0.85">CONTACT · 문의처</div><div style="font-size:13px;line-height:1.7"><b>PBS COLOR LAB</b> · 주식회사 커넥트온브릿지<br>📧 pbscolor77@naver.com<br>📞 010-4285-7997<br>📍 울산광역시 중구 종가6길 8-18 럭키빌딩 704호<br>🌐 pbscolor-6.vercel.app</div></div>'
     +'<div style="margin-top:14px;font-size:11px;color:#999;text-align:center">© PBS COLOR LAB · 본 결과지는 무료 진단 요약본입니다. · 칼 융·막스 뤼셔·DISC 통합 검증 진단</div>'
     +'</div>';
-  setTimeout(function(){ window.print(); }, 220);
+  // html2pdf로 직접 다운로드 (모바일/캐시 우회) + 실패 시 window.print 폴백
+  var fileName = 'PBS_컬러강점_' + name + '_결과지.pdf';
+  function _doPrintFallback(){ setTimeout(function(){ try{ window.print(); }catch(e){} }, 200); }
+  try {
+    if (typeof html2pdf !== 'undefined') {
+      // area를 화면 밖에 잠시 보이게 두고 캡쳐
+      var prev = { display:area.style.display, position:area.style.position, left:area.style.left, top:area.style.top, width:area.style.width, background:area.style.background, zIndex:area.style.zIndex };
+      area.style.display = 'block';
+      area.style.position = 'fixed';
+      area.style.left = '-99999px';
+      area.style.top = '0';
+      area.style.width = '780px';
+      area.style.background = '#fff';
+      area.style.zIndex = '0';
+      var opt = {
+        margin: [10,8,10,8],
+        filename: fileName,
+        image: { type: 'jpeg', quality: 0.96 },
+        html2canvas: { scale: 2, useCORS: true, allowTaint: true, backgroundColor: '#ffffff', windowWidth: 780 },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait', compress: true },
+        pagebreak: { mode: ['css', 'legacy', 'avoid-all'] }
+      };
+      html2pdf().set(opt).from(area).save().then(function(){
+        for (var k in prev) { area.style[k] = prev[k]; }
+      }).catch(function(err){
+        for (var k in prev) { area.style[k] = prev[k]; }
+        console && console.error && console.error('html2pdf failed, fallback to print:', err);
+        _doPrintFallback();
+      });
+    } else {
+      _doPrintFallback();
+    }
+  } catch(err) {
+    _doPrintFallback();
+  }
 }
 
 /* ============================================================
