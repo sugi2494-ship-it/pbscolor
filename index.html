@@ -2,6 +2,9 @@
 <html lang="ko" data-theme="light">
 <head>
 <meta charset="UTF-8">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
 <meta name="theme-color" content="#3D2F90">
 <title>PBS 컬러강점 — 나를 움직이는 4가지 엔진 | PBS COLOR LAB</title>
@@ -4114,6 +4117,8 @@ function goToContact(type) {
     }, 800);
   }
 }
+// 운영자 즉시 알림 (Web3Forms access_key 발급 후 아래 KEY만 교체하세요 — https://web3forms.com)
+const PBS_NOTIFY_KEY = '';  // 예: 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx'
 function submitContact(e) {
   e.preventDefault();
   const f = e.target;
@@ -4127,6 +4132,28 @@ function submitContact(e) {
   };
   // 관리자 페이지로 문의 자동 저장
   saveInquiryToAdmin(data.type, data.name, data.org, data.email, data.phone, data.message);
+
+  // 운영자(pbscolor77@naver.com)에게 즉시 자동 메일 (Web3Forms 키가 있을 때만)
+  if (PBS_NOTIFY_KEY) {
+    try {
+      fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify({
+          access_key: PBS_NOTIFY_KEY,
+          subject: `[PBS · ${data.type} 문의] ${data.name}` + (data.org ? ` (${data.org})` : ''),
+          from_name: 'PBS COLOR LAB 사이트',
+          name: data.name,
+          email: data.email,
+          phone: data.phone || '',
+          org: data.org || '',
+          type: data.type,
+          message: data.message,
+          replyto: data.email
+        })
+      }).catch(()=>{});
+    } catch(err) {}
+  }
 
   const subject = `[PBS COLOR LAB · ${data.type} 문의] ${data.name}` + (data.org ? ` (${data.org})` : '');
   const body =
