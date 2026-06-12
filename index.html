@@ -6893,6 +6893,7 @@ function renderResult(r) {
             ${[1,2,3,4,5].map(i => `<button class="star-btn" data-star="${i}" onclick="setStar(${i})" aria-label="별점 ${i}점"><svg><use href="#i-star"/></svg></button>`).join('')}
           </div>
           <textarea class="feedback-textarea" id="feedback-text" placeholder="예) 평소 막연하게 느꼈던 강점이 명확해졌어요. 진로 가이드가 특히 도움이 되었습니다." style="text-align:left"></textarea>
+          <div style="margin-top:14px;padding:10px 14px;background:rgba(112,48,160,0.06);border:1px dashed rgba(112,48,160,0.35);border-radius:10px;font-size:12.5px;color:#7030A0;font-weight:700">📝 후기를 남겨주시면 무료 결과지 PDF 다운로드가 열립니다</div>
           <button class="btn btn-primary feedback-submit" onclick="submitFeedback()" style="margin-top:14px">
             <span>소감 보내기</span>
           </button>
@@ -6900,31 +6901,30 @@ function renderResult(r) {
             <strong style="display:block;font-size:16px;margin-bottom:6px">후기 감사합니다!</strong>
             <span style="font-size:14px">당신만의 컬러로, 빛나시기를 바랍니다 ✨</span>
           </div>
-          <div id="post-feedback-upsell" style="display:none;margin-top:20px;padding:20px 18px;background:linear-gradient(135deg,rgba(112,48,160,0.09),rgba(255,51,102,0.05));border:1.5px solid rgba(112,48,160,0.22);border-radius:16px">
-            <div style="font-size:11px;font-weight:800;color:#7030A0;letter-spacing:0.1em;margin-bottom:8px">💎 지금 블러된 내용, <span style="color:var(--engine-red)">단 1회 결제로 전부</span> 확인하세요</div>
-            <h4 style="font-size:15px;font-weight:900;margin:0 0 6px;color:var(--text-primary)">상세 리포트 1개에 <span style="color:#7030A0">4가지 심층 분석</span> 전부 포함</h4>
-            <p style="font-size:12px;color:var(--text-muted);margin:0 0 14px">조합 아키타입 · 루틴 · 관계 가이드 · 시간관리 — 따로 구매하는 게 아니에요</p>
-            <ul style="list-style:none;padding:0;margin:0 0 16px;display:flex;flex-direction:column;gap:7px">
-              <li style="font-size:12px;display:flex;gap:8px;align-items:flex-start"><span>🧬</span><span><strong>나의 조합 아키타입</strong> — Top1+2 기어 시너지, 핵심 강점 지도, 성공 전략</span></li>
-              <li style="font-size:12px;display:flex;gap:8px;align-items:flex-start"><span>⏰</span><span><strong>시간관리 · 루틴 가이드</strong> — 엔진별 24시간 에너지 관리, 주간 루틴 플래너</span></li>
-              <li style="font-size:12px;display:flex;gap:8px;align-items:flex-start"><span>💬</span><span><strong>관계 시너지 가이드</strong> — 4가지 엔진 유형별 관계 전략 · 갈등 해결법 20가지</span></li>
-              <li style="font-size:12px;display:flex;gap:8px;align-items:flex-start"><span>🎯</span><span><strong>나만의 강점 실행 플랜</strong> — 직업·직무별 맞춤 강점 활용법</span></li>
-            </ul>
-            <div style="background:rgba(112,48,160,0.06);border-radius:10px;padding:12px 14px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">
-              <div>
-                <div style="font-size:22px;font-weight:900;color:#7030A0"><span id="upsell-price-display">9,900원</span></div>
-                <div style="font-size:11px;color:var(--text-muted)">4가지 분석 모두 포함 · PDF 즉시 발송</div>
-              </div>
-              <a href="https://smartstore.naver.com/dongnesujoggwan" target="_blank" rel="noopener" class="btn btn-primary" style="font-size:13px;padding:11px 20px">💳 상세 리포트 받기</a>
-            </div>
-          </div>
 
           <div id="result-download-block" style="display:none;margin-top:22px;text-align:center">
-            <button class="btn btn-primary" onclick="downloadResult()" style="margin-bottom:14px">📄 무료 결과지 PDF 다운로드</button>
+            <div style="max-width:480px;margin:0 auto 14px;padding:12px 16px;background:linear-gradient(135deg,rgba(112,48,160,0.08),rgba(255,51,102,0.05));border:1.5px solid rgba(112,48,160,0.25);border-radius:12px;text-align:left">
+              <div style="font-size:12px;font-weight:800;color:#7030A0;letter-spacing:0.06em;margin-bottom:4px">🎁 후기 감사합니다!</div>
+              <div style="font-size:13px;color:var(--text-secondary);line-height:1.55">무료 결과지 PDF가 열렸어요. 아래 버튼으로 바로 저장하실 수 있습니다.</div>
+            </div>
+            <button class="btn btn-primary" onclick="downloadResult()" style="margin-bottom:18px;font-size:15px;padding:14px 28px">📄 무료 결과지 PDF 다운로드</button>
             <div style="max-width:480px;margin:0 auto;padding:18px;border:1.5px solid #7030A0;border-radius:14px;background:linear-gradient(135deg,rgba(112,48,160,0.06),rgba(255,51,102,0.05));text-align:left">
-              <div style="font-weight:800;color:#7030A0;margin-bottom:6px">💎 더 깊은 분석이 필요하다면 — 상세 컬러강점 리포트</div>
+              <div style="font-size:11px;font-weight:800;color:#7030A0;letter-spacing:0.1em;margin-bottom:6px">💎 더 깊은 분석이 필요하다면</div>
+              <div style="font-weight:900;font-size:16px;color:var(--text-primary);margin-bottom:8px">상세 컬러강점 리포트 — 4가지 심층 분석 전부 포함</div>
+              <ul style="list-style:none;padding:0;margin:0 0 12px;display:flex;flex-direction:column;gap:6px">
+                <li style="font-size:12.5px;display:flex;gap:8px;align-items:flex-start"><span>🧬</span><span><b>나의 조합 아키타입</b> — Top1+2 기어 시너지, 핵심 강점 지도, 성공 전략</span></li>
+                <li style="font-size:12.5px;display:flex;gap:8px;align-items:flex-start"><span>⏰</span><span><b>시간관리·루틴 가이드</b> — 엔진별 24시간 에너지 관리, 주간 루틴 플래너</span></li>
+                <li style="font-size:12.5px;display:flex;gap:8px;align-items:flex-start"><span>💬</span><span><b>관계 시너지 가이드</b> — 4가지 엔진 유형별 관계 전략·갈등 해결법 20가지</span></li>
+                <li style="font-size:12.5px;display:flex;gap:8px;align-items:flex-start"><span>🎯</span><span><b>나만의 강점 실행 플랜</b> — 직업·직무별 맞춤 강점 활용법</span></li>
+              </ul>
               <div style="font-size:13px;color:var(--text-secondary);line-height:1.6;margin-bottom:12px">무료본은 핵심 요약이에요. 상세 리포트는 <b>12기어 심층 분석 · 엔진별 시간관리 루틴 · 직업 매칭 50선 · 90일 강점 활용 챌린지</b> 등 30+페이지로 "그래서 무엇을 할까"의 답을 담았습니다.</div>
-              <a href="https://smartstore.naver.com/dongnesujoggwan" target="_blank" rel="noopener" class="btn btn-primary" style="width:100%;justify-content:center">상세 리포트 신청하기 · <span class="js-report-price">9,900원</span> →</a>
+              <div style="background:rgba(112,48,160,0.08);border-radius:10px;padding:10px 14px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap">
+                <div>
+                  <div style="font-size:20px;font-weight:900;color:#7030A0"><span class="js-report-price">9,900원</span></div>
+                  <div style="font-size:11px;color:var(--text-muted)">4가지 분석 모두 포함 · PDF 즉시 발송</div>
+                </div>
+              </div>
+              <a href="https://smartstore.naver.com/dongnesujoggwan" target="_blank" rel="noopener" class="btn btn-primary" style="width:100%;justify-content:center">💳 상세 리포트 신청하기 →</a>
             </div>
           </div>
         </div>
@@ -7042,10 +7042,10 @@ function downloadResult() {
   var esc = function(t){ return (t==null?'':String(t)).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); };
   function pct(k){ try{ return Math.round(r.engineScores[k].percent); }catch(e){ return 0; } }
   var order=['RED','YELLOW','GREEN','BLUE'];
-  var bars=order.map(function(k){ var pp=pct(k); var c=(ENGINE_DATA[k]||{}).color||'#7030A0'; var nm=(ENGINE_DATA[k]||{}).shortName||k; return '<div style=”display:flex;align-items:center;gap:10px;margin:7px 0”><span style=”width:54px;font-weight:700;color:'+c+'”>'+esc(nm)+'</span><div style=”flex:1;height:14px;background:#eee;border-radius:7px;overflow:hidden”><div style=”height:100%;width:'+pp+'%;background:'+c+'”></div></div><span style=”width:44px;text-align:right;font-weight:700”>'+pp+'%</span></div>'; }).join('');
-  var li=function(arr){ return (arr||[]).map(function(x){ return '<li style=”margin:4px 0”>'+esc(x)+'</li>'; }).join(''); };
-  var growth=(E.growth||[]).map(function(g){ return '<li style=”margin:8px 0”><b>'+esc(g.title)+'</b><br><span style=”color:#555”>'+esc(g.detail)+'</span></li>'; }).join('');
-  var H=function(t){ return '<h2 style=”font-size:16px;margin:20px 0 8px;border-left:4px solid '+E.color+';padding-left:8px”>'+t+'</h2>'; };
+  var bars=order.map(function(k){ var pp=pct(k); var c=(ENGINE_DATA[k]||{}).color||'#7030A0'; var nm=(ENGINE_DATA[k]||{}).shortName||k; return '<div style="display:flex;align-items:center;gap:10px;margin:7px 0"><span style="width:54px;font-weight:700;color:'+c+'">'+esc(nm)+'</span><div style="flex:1;height:14px;background:#eee;border-radius:7px;overflow:hidden"><div style="height:100%;width:'+pp+'%;background:'+c+'"></div></div><span style="width:44px;text-align:right;font-weight:700">'+pp+'%</span></div>'; }).join('');
+  var li=function(arr){ return (arr||[]).map(function(x){ return '<li style="margin:4px 0">'+esc(x)+'</li>'; }).join(''); };
+  var growth=(E.growth||[]).map(function(g){ return '<li style="margin:8px 0"><b>'+esc(g.title)+'</b><br><span style="color:#555">'+esc(g.detail)+'</span></li>'; }).join('');
+  var H=function(t){ return '<h2 style="font-size:16px;margin:20px 0 8px;border-left:4px solid '+E.color+';padding-left:8px">'+t+'</h2>'; };
 
   // Top 1 & Top 2 기어 설명
   var G1 = (typeof GEAR_DATA!=='undefined' && r.top1) ? GEAR_DATA[r.top1.gear] : null;
@@ -7054,51 +7054,52 @@ function downloadResult() {
   var top2Eng = (G2 && typeof ENGINE_DATA!=='undefined') ? ENGINE_DATA[gearToEngine(r.top2.gear)] : E;
   var gearBlock = '';
   if(G1){
-    gearBlock += '<div style=”margin:10px 0;padding:14px 16px;border-left:4px solid '+esc(top1Eng.color)+';background:#fafafa;border-radius:0 8px 8px 0”>'
-      +'<div style=”font-size:11px;font-weight:800;color:'+esc(top1Eng.color)+';letter-spacing:0.06em;margin-bottom:4px”>★ TOP 1 기어 · '+esc(r.top1.gear)+' · '+esc(r.top1.percent)+'%</div>'
-      +'<div style=”font-size:15px;font-weight:800;margin-bottom:2px”>'+esc(G1.name)+'</div>'
-      +'<div style=”font-size:12px;color:#666;margin-bottom:6px”>'+esc(G1.tagline)+'</div>'
-      +'<div style=”font-size:13px;line-height:1.7;color:#333”>'+esc(G1.desc)+'</div>'
+    gearBlock += '<div style="margin:10px 0;padding:14px 16px;border-left:4px solid '+esc(top1Eng.color)+';background:#fafafa;border-radius:0 8px 8px 0">'
+      +'<div style="font-size:11px;font-weight:800;color:'+esc(top1Eng.color)+';letter-spacing:0.06em;margin-bottom:4px">★ TOP 1 기어 · '+esc(r.top1.gear)+' · '+esc(r.top1.percent)+'%</div>'
+      +'<div style="font-size:15px;font-weight:800;margin-bottom:2px">'+esc(G1.name)+'</div>'
+      +'<div style="font-size:12px;color:#666;margin-bottom:6px">'+esc(G1.tagline)+'</div>'
+      +'<div style="font-size:13px;line-height:1.7;color:#333">'+esc(G1.desc)+'</div>'
       +'</div>';
   }
   if(G2){
-    gearBlock += '<div style=”margin:10px 0;padding:14px 16px;border-left:4px solid '+esc(top2Eng.color)+';background:#fafafa;border-radius:0 8px 8px 0”>'
-      +'<div style=”font-size:11px;font-weight:800;color:'+esc(top2Eng.color)+';letter-spacing:0.06em;margin-bottom:4px”>★ TOP 2 기어 · '+esc(r.top2.gear)+' · '+esc(r.top2.percent)+'%</div>'
-      +'<div style=”font-size:15px;font-weight:800;margin-bottom:2px”>'+esc(G2.name)+'</div>'
-      +'<div style=”font-size:12px;color:#666;margin-bottom:6px”>'+esc(G2.tagline)+'</div>'
-      +'<div style=”font-size:13px;line-height:1.7;color:#333”>'+esc(G2.desc)+'</div>'
+    gearBlock += '<div style="margin:10px 0;padding:14px 16px;border-left:4px solid '+esc(top2Eng.color)+';background:#fafafa;border-radius:0 8px 8px 0">'
+      +'<div style="font-size:11px;font-weight:800;color:'+esc(top2Eng.color)+';letter-spacing:0.06em;margin-bottom:4px">★ TOP 2 기어 · '+esc(r.top2.gear)+' · '+esc(r.top2.percent)+'%</div>'
+      +'<div style="font-size:15px;font-weight:800;margin-bottom:2px">'+esc(G2.name)+'</div>'
+      +'<div style="font-size:12px;color:#666;margin-bottom:6px">'+esc(G2.tagline)+'</div>'
+      +'<div style="font-size:13px;line-height:1.7;color:#333">'+esc(G2.desc)+'</div>'
       +'</div>';
   }
 
   // 강사 정보 블록 (입력된 경우만)
   var instBlock = '';
   if(instName || instOrg){
-    instBlock = '<div style=”margin-bottom:12px;padding:8px 14px;background:#f5f0ff;border-radius:8px;font-size:12px;color:#444”>'
-      +(instName ? '<span style=”margin-right:16px”>🎓 강사: <b>'+esc(instName)+'</b></span>' : '')
+    instBlock = '<div style="margin-bottom:12px;padding:8px 14px;background:#f5f0ff;border-radius:8px;font-size:12px;color:#444">'
+      +(instName ? '<span style="margin-right:16px">🎓 강사: <b>'+esc(instName)+'</b></span>' : '')
       +(instOrg  ? '<span>🏫 소속: <b>'+esc(instOrg)+'</b></span>' : '')
       +'</div>';
   }
 
   area.innerHTML =
-    '<div style=”font-family:Pretendard,system-ui,sans-serif;color:#111;max-width:760px;margin:0 auto;padding:6px”>'
+    '<div style="font-family:Pretendard,system-ui,sans-serif;color:#111;max-width:760px;margin:0 auto;padding:6px">'
     +instBlock
-    +'<div style=”border-bottom:3px solid '+E.color+';padding-bottom:12px;margin-bottom:8px”>'
-      +'<div style=”font-size:11px;letter-spacing:.12em;color:'+E.color+';font-weight:800”>PBS 컬러강점 진단 결과지</div>'
-      +'<h1 style=”margin:6px 0;font-size:25px”>'+esc(name)+'님의 주 엔진 · <span style=”color:'+E.color+'”>'+esc(E.name)+'</span></h1>'
-      +'<div style=”color:#555;font-size:13px”>'+esc(E.subtitle)+'</div>'
-      +'<div style=”margin-top:8px;font-style:italic;color:#333”>”'+esc(E.quote)+'”</div>'
+    +'<div style="border-bottom:3px solid '+E.color+';padding-bottom:12px;margin-bottom:8px">'
+      +'<div style="font-size:11px;letter-spacing:.12em;color:'+E.color+';font-weight:800">PBS 컬러강점 진단 결과지</div>'
+      +'<h1 style="margin:6px 0;font-size:25px">'+esc(name)+'님의 주 엔진 · <span style="color:'+E.color+'">'+esc(E.name)+'</span></h1>'
+      +'<div style="color:#555;font-size:13px">'+esc(E.subtitle)+'</div>'
+      +'<div style="margin-top:8px;font-style:italic;color:#333">"'+esc(E.quote)+'"</div>'
     +'</div>'
+    +(function(){ try{ var mp=pct(r.mainEngine); var label=(typeof getEngineZoneLabel==='function')?getEngineZoneLabel(mp):''; var desc =(typeof getEngineZoneDesc==='function')?getEngineZoneDesc(r.mainEngine,mp):''; if(!label && !desc) return ''; return H('주 엔진 강도 구간')+'<div style="margin:6px 0 4px;padding:12px 14px;background:#faf7ff;border-left:3px solid '+E.color+';border-radius:0 8px 8px 0">'+'<div style="font-size:13px;font-weight:800;color:'+E.color+';margin-bottom:4px">'+esc(label)+' · '+mp+'%</div>'+'<div style="font-size:12.5px;color:#444;line-height:1.65">'+esc(desc)+'</div></div>'; }catch(e){ return ''; } })()
     +H('4가지 컬러 엔진 점수')+bars
-    +H('나의 핵심 강점')+'<ul style=”line-height:1.6;padding-left:18px;margin:0”>'+li(E.strengths)+'</ul>'
-    +H('추천 직업·분야')+'<ul style=”line-height:1.6;padding-left:18px;margin:0”>'+li(E.jobs)+'</ul>'
-    +H('소통·관계 스타일')+'<p style=”line-height:1.65;margin:6px 0”><b>의사소통</b> · '+esc(E.communication)+'</p><p style=”line-height:1.65;margin:6px 0”><b>연애</b> · '+esc(E.romance)+'</p><p style=”line-height:1.65;margin:6px 0”><b>갈등 대처</b> · '+esc(E.conflict)+'</p>'
+    +H('나의 핵심 강점')+'<ul style="line-height:1.6;padding-left:18px;margin:0">'+li(E.strengths)+'</ul>'
+    +H('추천 직업·분야')+(function(){ try{ var jobs=(typeof getJobsWithStrengths==='function')?getJobsWithStrengths(r.mainEngine):[]; if(jobs && jobs.length){ return jobs.map(function(j){ return '<div style="margin:8px 0;padding:11px 14px;background:#fafafa;border-left:3px solid '+E.color+';border-radius:0 8px 8px 0">'+'<div style="font-size:13.5px;font-weight:800;color:#1c1a2e;margin-bottom:3px">'+esc(j.title)+'</div>'+'<div style="font-size:12.5px;color:#444;line-height:1.65">'+esc(j.detail)+'</div></div>'; }).join(''); } }catch(e){} return '<ul style="line-height:1.6;padding-left:18px;margin:0">'+li(E.jobs)+'</ul>'; })()
+    +H('소통·관계 스타일')+'<p style="line-height:1.65;margin:6px 0"><b>의사소통</b> · '+esc(E.communication)+'</p><p style="line-height:1.65;margin:6px 0"><b>연애</b> · '+esc(E.romance)+'</p><p style="line-height:1.65;margin:6px 0"><b>갈등 대처</b> · '+esc(E.conflict)+'</p>'
     +H('나의 TOP 2 강점 기어')+gearBlock
     +H('엔진 상세 해설')+'<div>'+(E.values||[]).map(function(v){ return '<div style="margin:10px 0;padding:12px 14px;background:#f9f7ff;border-left:3px solid '+E.color+';border-radius:0 8px 8px 0"><b style="color:'+E.color+'">'+esc(v.title)+'</b><br><span style="font-size:13px;color:#444;line-height:1.65">'+esc(v.detail)+'</span></div>'; }).join('')+'</div>'
     +H('힐링 활동')+'<div style="display:flex;flex-wrap:wrap;gap:8px;margin:6px 0">'+(E.healing||[]).map(function(h){ return '<div style="padding:10px 14px;background:#f5f0ff;border-radius:8px;min-width:140px"><span style="font-size:18px">'+esc(h.emoji)+'</span> <b style="font-size:13px">'+esc(h.label)+'</b><br><span style="font-size:12px;color:#555">'+esc(h.desc)+'</span></div>'; }).join('')+'</div>'
     +H('자기사랑 확언')+'<div>'+(E.affirmations||[]).map(function(a,i){ return '<div style="margin:8px 0;padding:14px 16px;background:linear-gradient(135deg,#f5f0ff,#fff0f5);border-radius:10px;font-size:'+(i===0?'15':'13')+'px;line-height:1.6;font-weight:'+(i===0?'700':'500')+';color:#2d1b4e">'+(i===0?'<div style="font-size:10px;letter-spacing:.1em;color:#7030A0;margin-bottom:4px">DAILY AFFIRMATION</div>':'')+esc(a)+'</div>'; }).join('')+'</div>'
-    +H('성장 포인트')+'<ul style=”line-height:1.6;padding-left:18px;margin:0”>'+growth+'</ul>'
-    +'<div style=”margin-top:24px;padding:14px 16px;border:1px dashed #7030A0;border-radius:10px;background:#faf7ff”><b style=”color:#7030A0”>＋ 상세 컬러강점 리포트(유료)</b><br><span style=”font-size:12px;color:#444”>12기어 심층 분석 · 엔진별 시간관리 루틴 · 직업 매칭 50선 · 90일 강점 활용 챌린지 등 30+페이지 상세본은 신청 페이지에서 받아보실 수 있습니다.</span></div>'
-    +'<div style=”margin-top:16px;font-size:11px;color:#999;text-align:center”>© PBS COLOR LAB · 본 결과지는 무료 진단 요약본입니다.</div>'
+    +H('성장 포인트')+'<ul style="line-height:1.6;padding-left:18px;margin:0">'+growth+'</ul>'
+    +'<div style="margin-top:24px;padding:14px 16px;border:1px dashed #7030A0;border-radius:10px;background:#faf7ff"><b style="color:#7030A0">＋ 상세 컬러강점 리포트(유료)</b><br><span style="font-size:12px;color:#444">12기어 심층 분석 · 엔진별 시간관리 루틴 · 직업 매칭 50선 · 90일 강점 활용 챌린지 등 30+페이지 상세본은 신청 페이지에서 받아보실 수 있습니다.</span></div>'
+    +'<div style="margin-top:16px;font-size:11px;color:#999;text-align:center">© PBS COLOR LAB · 본 결과지는 무료 진단 요약본입니다.</div>'
     +'</div>';
   setTimeout(function(){ window.print(); }, 220);
 }
@@ -7498,8 +7499,6 @@ function submitFeedback() {
   if (thanksEl) thanksEl.classList.add('show');
   const dlBlock = document.getElementById('result-download-block');
   if (dlBlock) dlBlock.style.display = 'block';
-  const upsellBlock = document.getElementById('post-feedback-upsell');
-  if (upsellBlock) upsellBlock.style.display = 'block';
 
   // 3) 제출 버튼 숨기기 + 입력 비활성화 (중복 제출 방지)
   const submitBtn = document.querySelector('.feedback-submit');
