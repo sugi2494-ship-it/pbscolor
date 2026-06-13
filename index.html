@@ -2704,7 +2704,7 @@ button.basic-job-pill:hover::after{opacity:1}
 <section class="section contact-bg" id="contact">
   <div class="container">
     <div class="contact-grid">
-      <div class="contact-info">
+      <div class="contact-info" style="display:none">
         <div class="eyebrow">Contact</div>
         <h2 class="h2">함께 만들고 싶은<br>프로젝트가 있다면</h2>
         <p>강의·컨설팅·인증과정·도구 구매·협력 제안 등 어떤 문의든 환영합니다. 영업일 기준 1~2일 내 답변 드립니다.</p>
@@ -5687,21 +5687,17 @@ function shareBasicResult() {
     const topEmoji = {red:'🔴',yellow:'🟡',green:'🟢',blue:'🔵',purple:'🟣'}[r.top] || '✨';
     const goodAt   = (colorMeta?.goodAt || []).slice(0,4).map(s => '  · ' + s).join('\n');
     const jobs     = (colorMeta?.jobs   || []).slice(0,5).join(', ');
+    const goodAtShort = (colorMeta?.goodAt || []).slice(0,3).join(' · ');
+    const jobsShort = (colorMeta?.jobs || []).slice(0,3).join(' · ');
     shareText =
-`✨ 나의 컬러강점은 ${topEmoji} ${topName}!
+`✨ 나의 컬러강점 — ${topEmoji} ${topName}
 "${colorMeta?.headline || ''}"
 
-🌟 내 안에서 빛나는 강점
-${goodAt}
+🌟 ${goodAtShort}
+💼 ${jobsShort}
 
-💼 잘 어울리는 직업·분야
-  ${jobs}
-
-━━━━━━━━━━━━━━━━━━━━
-🎨 당신의 컬러는 무슨 색일까요?
-🔴 RED · 🟡 YELLOW · 🟢 GREEN · 🔵 BLUE · 🟣 PURPLE
-
-나의 컬러강점 짝을 찾아 보세요 👇
+🎨 당신의 컬러는?
+🔴🟡🟢🔵🟣 — 나의 짝을 찾아 보세요 👇
 ${url}`;
   } else {
     shareText = `🎁 PBS 컬러강점 진단 — 무료 체험\n나에게 어떤 컬러 강점이 있는지 확인해보세요!\n어른용 · 어린이용 모두 있어요 👇\n\n${url}`;
@@ -7092,41 +7088,47 @@ function downloadResult() {
     +'<div style="margin-top:24px;padding:14px 16px;border:1px dashed #7030A0;border-radius:10px;background:#faf7ff"><b style="color:#7030A0">＋ 상세 컬러강점 리포트(유료) · 9,900원</b><br><span style="font-size:12px;color:#444">12기어 심층 분석 · 엔진별 시간관리 루틴 · 직업 매칭 50선 · 90일 강점 활용 챌린지 등 30+페이지 상세본은 신청 페이지에서 받아보실 수 있습니다.</span></div>'+'<div style="margin-top:20px;padding:14px 16px;background:linear-gradient(135deg,#7030A0,#5a2580);color:#fff;border-radius:10px"><div style="font-size:11px;letter-spacing:.12em;font-weight:800;margin-bottom:8px;opacity:0.85">CONTACT · 문의처</div><div style="font-size:13px;line-height:1.7"><b>PBS COLOR LAB</b> · 주식회사 커넥트온브릿지<br>📧 pbscolor77@naver.com<br>📞 010-4285-7997<br>📍 울산광역시 중구 종가6길 8-18 럭키빌딩 704호<br>🌐 pbscolor-6.vercel.app</div></div>'
     +'<div style="margin-top:14px;font-size:11px;color:#999;text-align:center">© PBS COLOR LAB · 본 결과지는 무료 진단 요약본입니다. · 칼 융·막스 뤼셔·DISC 통합 검증 진단</div>'
     +'</div>';
-  // html2pdf로 직접 다운로드 (모바일/캐시 우회) + 실패 시 window.print 폴백
+  // PDF 다운로드 전략:
+  // 1) html2canvas → jsPDF 직접 (모바일/PC 동일하게 캡쳐형 PDF, 가장 안정적)
+  // 2) 실패 시 window.print() 폴백 (인쇄 메뉴에서 'PDF로 저장')
   var fileName = 'PBS_컬러강점_' + name + '_결과지.pdf';
-  function _doPrintFallback(){ setTimeout(function(){ try{ window.print(); }catch(e){} }, 200); }
-  try {
-    if (typeof html2pdf !== 'undefined') {
-      // area를 화면 밖에 잠시 보이게 두고 캡쳐
-      var prev = { display:area.style.display, position:area.style.position, left:area.style.left, top:area.style.top, width:area.style.width, background:area.style.background, zIndex:area.style.zIndex };
-      area.style.display = 'block';
-      area.style.position = 'fixed';
-      area.style.left = '-99999px';
-      area.style.top = '0';
-      area.style.width = '780px';
-      area.style.background = '#fff';
-      area.style.zIndex = '0';
+  var toast = function(msg){ try{ if(typeof showToast==='function') showToast({type:'success',title:msg,msg:''}); }catch(e){} };
+  function _doPrintFallback(){
+    toast('🖨️ 인쇄 메뉴에서 \'PDF로 저장\'을 선택해 주세요');
+    setTimeout(function(){ try{ window.print(); }catch(e){} }, 300);
+  }
+  // area를 화면 안에 잠시 보이게 두고 캡쳐 (off-screen은 일부 모바일에서 빈 캡쳐 발생)
+  var prevCss = area.getAttribute('style') || '';
+  area.setAttribute('style',
+    'display:block;position:fixed;left:0;top:0;width:780px;max-width:100vw;background:#fff;'+
+    'z-index:-1;opacity:0;pointer-events:none;overflow:visible;height:auto');
+  // 폰트/이미지 로딩 짧게 대기 후 시도
+  setTimeout(function(){
+    try {
+      if (typeof html2pdf === 'undefined') { area.setAttribute('style', prevCss); _doPrintFallback(); return; }
       var opt = {
-        margin: [10,8,10,8],
+        margin: [10, 8, 10, 8],
         filename: fileName,
-        image: { type: 'jpeg', quality: 0.96 },
-        html2canvas: { scale: 2, useCORS: true, allowTaint: true, backgroundColor: '#ffffff', windowWidth: 780 },
+        image: { type: 'jpeg', quality: 0.94 },
+        html2canvas: { scale: 1.5, useCORS: true, allowTaint: true, backgroundColor: '#ffffff', logging: false, windowWidth: 780, scrollY: 0 },
         jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait', compress: true },
-        pagebreak: { mode: ['css', 'legacy', 'avoid-all'] }
+        pagebreak: { mode: ['css', 'legacy'] }
       };
+      toast('📄 PDF 생성 중... 잠시만 기다려 주세요');
       html2pdf().set(opt).from(area).save().then(function(){
-        for (var k in prev) { area.style[k] = prev[k]; }
+        area.setAttribute('style', prevCss);
+        toast('✅ PDF 저장 완료!');
       }).catch(function(err){
-        for (var k in prev) { area.style[k] = prev[k]; }
-        console && console.error && console.error('html2pdf failed, fallback to print:', err);
+        area.setAttribute('style', prevCss);
+        if(window.console) console.error('html2pdf failed:', err);
         _doPrintFallback();
       });
-    } else {
+    } catch(err) {
+      area.setAttribute('style', prevCss);
+      if(window.console) console.error('PDF exception:', err);
       _doPrintFallback();
     }
-  } catch(err) {
-    _doPrintFallback();
-  }
+  }, 80);
 }
 
 /* ============================================================
@@ -7551,25 +7553,21 @@ function shareResult() {
   const url = (typeof PBS_PUBLIC_URL !== 'undefined' && PBS_PUBLIC_URL)
     ? PBS_PUBLIC_URL
     : location.href.split('#')[0].split('?')[0];
+  // 한 화면(카톡 접힘) 안에 들어가도록 컴팩트하게
+  const strengthsShort = (E.strengths || []).slice(0,3).map(s => s.replace(/·.*$/, '').trim()).join(' · ');
+  const jobsShort = (E.jobs || []).slice(0,3).map(j => j.split(/[,·]/)[0].trim()).join(' · ');
   const text =
-`✨ 나의 컬러강점 엔진은 ${engEmoji} ${E.name||r.mainEngine}!
+`✨ 나의 컬러강점 — ${engEmoji} ${E.name||r.mainEngine}
 "${E.subtitle || E.name || ''}"
 
-🏆 TOP 1 기어 · ${r.top1?.gear} ${G1.name||''} (${r.top1?.percent}%)
-🥈 TOP 2 기어 · ${r.top2?.gear} ${G2.name||''} (${r.top2?.percent}%)
+🏆 ${r.top1?.gear} ${G1.name||''}
+🥈 ${r.top2?.gear} ${G2.name||''}
 
-🌟 내 안에서 빛나는 강점
-${strengths}
+🌟 ${strengthsShort}
+💼 ${jobsShort}
 
-💼 업무에서 시너지 나는 분야
-  ${jobs}
-
-━━━━━━━━━━━━━━━━━━━━
-🎨 당신의 컬러는 무슨 색일까요?
-🔴 RED · 🟡 YELLOW · 🟢 GREEN · 🔵 BLUE
-
-업무에서 잘 맞는 컬러, 일상에서 잘 맞는 컬러 —
-나의 컬러강점 짝을 찾아 보세요 👇
+🎨 당신의 컬러는?
+🔴🟡🟢🔵 — 나의 짝을 찾아 보세요 👇
 ${url}`;
   if (navigator.share) {
     // url은 본문에 이미 포함됐으니 중복 방지로 share 호출엔 url 빼고 보냄
