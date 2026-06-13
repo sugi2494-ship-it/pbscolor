@@ -849,6 +849,8 @@ body.modal-open{overflow:hidden}
 .feedback-submit{margin-top:14px;width:100%}
 .feedback-thanks{display:none;text-align:center;padding:24px;background:linear-gradient(135deg,color-mix(in srgb,var(--brand-purple) 8%,transparent),color-mix(in srgb,var(--brand-purple) 4%,transparent));border-radius:var(--r-md);color:var(--brand-purple);font-weight:600;margin-top:16px}
 .feedback-thanks.show{display:block;animation:fadeIn 0.5s var(--ease-out)}
+.pulse-cta{ animation: pulseCta 1.8s ease-in-out infinite }
+@keyframes pulseCta{ 0%,100%{ transform:translateY(0); box-shadow:0 10px 24px rgba(112,48,160,0.35) } 50%{ transform:translateY(-2px); box-shadow:0 14px 30px rgba(112,48,160,0.5) } }
 
 /* ============================================================
    LANGUAGE TOGGLE (KR / EN / JP / CN)
@@ -6919,17 +6921,10 @@ function renderResult(r) {
           <button class="btn btn-primary feedback-submit" onclick="submitFeedback()" style="margin-top:14px">
             <span>소감 보내기</span>
           </button>
-          <div class="feedback-thanks" id="feedback-thanks">
-            <strong style="display:block;font-size:16px;margin-bottom:6px">후기 감사합니다!</strong>
-            <span style="font-size:14px">당신만의 컬러로, 빛나시기를 바랍니다 ✨</span>
-          </div>
-
-          <div id="result-download-block" style="display:none;margin-top:22px;text-align:center">
-            <div style="max-width:480px;margin:0 auto 14px;padding:12px 16px;background:linear-gradient(135deg,rgba(112,48,160,0.08),rgba(255,51,102,0.05));border:1.5px solid rgba(112,48,160,0.25);border-radius:12px;text-align:left">
-              <div style="font-size:12px;font-weight:800;color:#7030A0;letter-spacing:0.06em;margin-bottom:4px">🎁 후기 감사합니다!</div>
-              <div style="font-size:13px;color:var(--text-secondary);line-height:1.55">무료 결과지 PDF가 열렸어요. 아래 버튼으로 바로 저장하실 수 있습니다.</div>
-            </div>
-            <button class="btn btn-primary" onclick="downloadResult()" style="font-size:15px;padding:14px 28px">📄 무료 결과지 PDF 다운로드</button>
+          <div id="result-download-block" style="display:none;margin-top:24px;text-align:center">
+            <div style="font-size:13px;color:#7030A0;font-weight:700;margin-bottom:14px;letter-spacing:-0.01em">🎁 후기 감사합니다! 무료 결과지 PDF가 열렸어요</div>
+            <button class="btn btn-primary pulse-cta" onclick="downloadResult()" style="font-size:18px;padding:18px 36px;background:linear-gradient(135deg,#7030A0,#FF3366);box-shadow:0 10px 24px rgba(112,48,160,0.35);font-weight:900;letter-spacing:-0.01em;border-radius:14px">📄 무료 결과지 PDF 다운로드</button>
+            <div style="font-size:11px;color:var(--text-muted);margin-top:10px">파일이 자동으로 저장됩니다</div>
           </div>
         </div>
       </div>
@@ -7543,9 +7538,9 @@ function submitFeedback() {
   // 1) 관리자 페이지로 후기 자동 저장 (메인 노출 후보로 등록)
   saveReviewToAdmin(_feedbackStar, text);
 
-  // 2) 감사 메시지 표시
-  const thanksEl = document.getElementById('feedback-thanks');
-  if (thanksEl) thanksEl.classList.add('show');
+  // 2) PDF 다운로드 블록 표시 + 안내문 숨김
+  const hintEl = document.getElementById('review-pdf-hint');
+  if (hintEl) hintEl.style.display = 'none';
   const dlBlock = document.getElementById('result-download-block');
   if (dlBlock) dlBlock.style.display = 'block';
 
