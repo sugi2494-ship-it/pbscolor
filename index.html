@@ -7038,8 +7038,18 @@ function getConflictAdvice(engine) {
 function downloadResult() {
   var r = (typeof STATE!=='undefined' && STATE.result) ? STATE.result : null;
   var area = document.getElementById('pdf-print-area');
+  // pdf-print-area가 DOM에 없으면 동적 생성 (CSS는 이미 print/일반 둘 다 정의돼 있음)
+  if (!area) {
+    area = document.createElement('div');
+    area.id = 'pdf-print-area';
+    area.style.cssText = 'display:none;position:fixed;left:-99999px;top:0;width:780px;background:#fff;z-index:-1';
+    document.body.appendChild(area);
+  }
   var E = r ? (typeof ENGINE_DATA!=='undefined' ? ENGINE_DATA[r.mainEngine] : null) : null;
-  if(!r || !area || !E){ setTimeout(function(){ window.print(); }, 200); return; }
+  if(!r || !E){
+    alert('진단 결과 데이터를 찾을 수 없습니다. 다시 진단을 진행해 주세요.');
+    return;
+  }
   var name = (typeof STATE!=='undefined' && STATE.user && STATE.user.name) ? STATE.user.name : '회원';
   var instName = (STATE.instructor && STATE.instructor.name) ? STATE.instructor.name : '';
   var instOrg  = (STATE.instructor && STATE.instructor.org)  ? STATE.instructor.org  : '';
