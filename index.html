@@ -4693,12 +4693,17 @@ function saveRecordToAdmin(result) {
     const durationSec = Math.max(1, Math.round((Date.now() - startTs) / 1000));
     const duration = Math.max(1, Math.round(durationSec / 60));
 
-    // top1, top2 추출
-    const sortedGears = Object.entries(result.gearScores || {})
-      .map(([k, v]) => ({gear:k, percent: typeof v === 'object' ? v.percent : v}))
+    // top1, top2 추출 (일정 순서 R→Y→G→B 로 정렬하여 동점 tie-break 일관성 보장)
+    const _GEAR_ORDER = ['R1','R2','R3','Y1','Y2','Y3','G1','G2','G3','B1','B2','B3'];
+    const sortedGears = _GEAR_ORDER
+      .filter(k => (result.gearScores || {})[k] !== undefined)
+      .map(k => { const v = result.gearScores[k]; return {gear:k, percent: typeof v === 'object' ? v.percent : v}; })
       .sort((a,b) => b.percent - a.percent);
-    const top1 = sortedGears[0] || {gear:'R1', percent:0};
-    const top2 = sortedGears[1] || {gear:'R2', percent:0};
+    // top1 기어는 반드시 주 엔진(mainEngine) 내에서 가장 높은 기어로 선택
+    const _meChar = (result.mainEngine || '').charAt(0);
+    const _engGears = _meChar ? sortedGears.filter(g => g.gear.charAt(0) === _meChar) : [];
+    const top1 = _engGears[0] || sortedGears[0] || {gear:'R1', percent:0};
+    const top2 = sortedGears.filter(g => g.gear !== top1.gear)[0] || sortedGears[1] || {gear:'R2', percent:0};
 
     // 엔진 점수 (백분율로)
     const engineScores = {};
@@ -8292,10 +8297,11 @@ window.PBS.syncRecordsToLocal = async function() {
       .filter(r => { const n = r.user_name || ''; return !SEED_NAMES.some(p => n.startsWith(p)); })
       .map(r => {
         const tg = r.top_gear || 'R1';
-        // 2순위 기어: scores에서 top1 기어 제외 후 가장 높은 기어 추출
+        // 2순위 기어: 고정 순서(R→Y→G→B)로 동점 tie-break 일관성 보장
         const sg = (() => {
           if (r.scores) {
-            const gKeys = Object.keys(r.scores).filter(k => /^[RYGB]\d/.test(k) && k !== tg);
+            const _ORDER = ['R1','R2','R3','Y1','Y2','Y3','G1','G2','G3','B1','B2','B3'];
+            const gKeys = _ORDER.filter(k => r.scores[k] !== undefined && k !== tg);
             if (gKeys.length) return gKeys.sort((a, b) => (r.scores[b] || 0) - (r.scores[a] || 0))[0];
           }
           return r.second_engine ? r.second_engine.charAt(0) + '1' : '';
@@ -13178,4 +13184,3 @@ console.log('[PBS] 관리자 콘솔 통합 완료. 진입: Ctrl+Shift+A | #admin
 
 </body>
 </html>
-                                                                                                                                                                                                                       
