@@ -7083,8 +7083,23 @@ function downloadResult() {
     +H('4가지 컬러 엔진 점수')+bars
     +H('나의 핵심 강점')+'<ul style="line-height:1.6;padding-left:18px;margin:0">'+li(E.strengths)+'</ul>'
     +H('추천 직업·분야')+(function(){ try{ var jobs=(typeof getJobsWithStrengths==='function')?getJobsWithStrengths(r.mainEngine):[]; if(jobs && jobs.length){ return jobs.map(function(j){ return '<div style="margin:8px 0;padding:11px 14px;background:#fafafa;border-left:3px solid '+E.color+';border-radius:0 8px 8px 0">'+'<div style="font-size:13.5px;font-weight:800;color:#1c1a2e;margin-bottom:3px">'+esc(j.title)+'</div>'+'<div style="font-size:12.5px;color:#444;line-height:1.65">'+esc(j.detail)+'</div></div>'; }).join(''); } }catch(e){} return '<ul style="line-height:1.6;padding-left:18px;margin:0">'+li(E.jobs)+'</ul>'; })()
-    +H('소통·관계 스타일')+'<p style="line-height:1.65;margin:6px 0"><b>의사소통</b> · '+esc(E.communication)+'</p><p style="line-height:1.65;margin:6px 0"><b>연애</b> · '+esc(E.romance)+'</p><p style="line-height:1.65;margin:6px 0"><b>갈등 대처</b> · '+esc(E.conflict)+'</p>'
+    +H('소통·관계 스타일')
+    +'<p style="line-height:1.65;margin:6px 0"><b>의사소통</b> · '+esc(E.communication)+'</p>'
+    +'<h3 style="font-size:13px;font-weight:800;color:'+E.color+';margin:14px 0 6px">❤ 연애 패턴</h3>'
+    +(typeof getRelationPatternDetail==='function'
+      ? '<p style="font-size:13px;line-height:1.75;color:#333;margin:0 0 8px">'+getRelationPatternDetail(r.mainEngine,name)+'</p>'
+      : '<p style="line-height:1.65;margin:6px 0">'+esc(E.romance)+'</p>')
+    +(typeof getRomanceAdvice==='function'
+      ? '<div style="margin:8px 0;padding:11px 14px;background:#fdf7ff;border-left:3px solid '+E.color+';border-radius:0 8px 8px 0;font-size:12.5px;color:#444;line-height:1.65"><b style="color:'+E.color+'">💡 연애 조언  </b>'+esc(getRomanceAdvice(r.mainEngine))+'</div>'
+      : '')
+    +'<h3 style="font-size:13px;font-weight:800;color:'+E.color+';margin:14px 0 6px">⚡ 갈등 대처</h3>'
+    +'<p style="font-size:13px;line-height:1.75;color:#333;margin:0 0 8px">'+esc(E.conflict)+'</p>'
+    +(typeof getConflictAdvice==='function'
+      ? '<div style="margin:8px 0;padding:11px 14px;background:#fdf7ff;border-left:3px solid '+E.color+';border-radius:0 8px 8px 0;font-size:12.5px;color:#444;line-height:1.65"><b style="color:'+E.color+'">💡 갈등 조언  </b>'+esc(getConflictAdvice(r.mainEngine))+'</div>'
+      : '')
+    +H('스트레스 유발 요인')+'<ul style="line-height:1.6;padding-left:18px;margin:0">'+li(E.stress||[])+'</ul>'
     +H('나의 TOP 2 강점 기어')+gearBlock
+    +(function(){ if(!r||!r.combo) return ''; return H('나의 강점 조합 아키타입')+'<div style="margin:8px 0;padding:16px 18px;background:#faf7ff;border-left:4px solid '+E.color+';border-radius:0 8px 8px 0"><div style="font-size:11px;font-weight:800;letter-spacing:0.1em;color:'+E.color+';margin-bottom:6px">🧬 '+esc(r.combo.label)+'</div><div style="font-size:13.5px;line-height:1.75;color:#333">'+esc(r.combo.desc)+'</div></div>'; })()
     +(function(){ try{ var gs=(r.gearScores||{}); var order=['R1','R2','R3','Y1','Y2','Y3','G1','G2','G3','B1','B2','B3']; var rows=order.map(function(g){ var sc=gs[g]; var pp=(sc==null)?0:(typeof sc==='object'?Math.round(sc.percent||0):Math.round(sc)); var GG=(typeof GEAR_DATA!=='undefined'?GEAR_DATA[g]:null)||{}; var EG=(typeof ENGINE_DATA!=='undefined'?ENGINE_DATA[GG.engine||'RED']:null)||{color:'#7030A0',shortName:''}; var nm=GG.name||g; var isTop=(r.top1&&r.top1.gear===g)||(r.top2&&r.top2.gear===g); return '<div style="display:flex;align-items:center;gap:8px;margin:6px 0">'+'<span style="width:34px;font-size:11px;font-weight:800;color:'+EG.color+'">'+esc(g)+'</span>'+'<span style="flex:0 0 140px;font-size:11.5px;color:#333;'+(isTop?'font-weight:800':'')+'">'+esc(nm)+(isTop?' ★':'')+'</span>'+'<div style="flex:1;height:11px;background:#eee;border-radius:6px;overflow:hidden"><div style="height:100%;width:'+pp+'%;background:'+EG.color+'"></div></div>'+'<span style="width:38px;text-align:right;font-size:11.5px;font-weight:700">'+pp+'%</span></div>'; }).join(''); return H('12 컬러기어 전체 점수')+'<div style="font-size:11.5px;color:#777;margin:0 0 6px">★ 표시는 나의 TOP 2 강점 기어</div>'+rows; }catch(e){ return ''; } })()
     +H('엔진 상세 해설 · 학문적 근거')+'<div>'+(E.values||[]).map(function(v){ var basisHtml = v.basis ? '<div style="margin-top:8px;padding:8px 10px;background:rgba(112,48,160,0.06);border-radius:6px;font-size:11.5px;color:#555;line-height:1.6"><b style="color:#7030A0">📚 학문적 근거 · </b>'+v.basis+'</div>' : ''; return '<div style="margin:10px 0;padding:12px 14px;background:#f9f7ff;border-left:3px solid '+E.color+';border-radius:0 8px 8px 0"><b style="color:'+E.color+';font-size:14px">'+esc(v.title)+'</b><br><span style="font-size:13px;color:#444;line-height:1.65">'+esc(v.detail)+'</span>'+basisHtml+'</div>'; }).join('')+'</div>'
     +H('힐링 활동')+'<div style="display:flex;flex-wrap:wrap;gap:8px;margin:6px 0">'+(E.healing||[]).map(function(h){ return '<div style="padding:10px 14px;background:#f5f0ff;border-radius:8px;min-width:140px"><span style="font-size:18px">'+esc(h.emoji)+'</span> <b style="font-size:13px">'+esc(h.label)+'</b><br><span style="font-size:12px;color:#555">'+esc(h.desc)+'</span></div>'; }).join('')+'</div>'
@@ -11706,6 +11721,67 @@ function _buildResultSheetHtml(r){
       </div>
 
       ${scoreBlocks}
+
+      ${(()=>{
+        // ── 확장 섹션: window.parent.ENGINE_DATA 참조 ──
+        const _ED = (window.parent && window.parent.ENGINE_DATA) ? window.parent.ENGINE_DATA : null;
+        const _E  = _ED ? _ED[r.mainEngine] : null;
+        if (!_E) return '';
+        const _esc = s => (s==null?'':String(s)).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+        const _li  = arr => (arr||[]).map(x=>'<li style="margin:4px 0">'+_esc(x)+'</li>').join('');
+        const _H   = t => '<h2 style="font-size:14px;margin:20px 0 8px;border-left:4px solid '+mainColor+';padding-left:8px">'+t+'</h2>';
+        // 조합 아키타입 계산
+        const _eng1 = r.top1&&r.top1.gear ? (r.top1.gear[0]==='R'?'RED':r.top1.gear[0]==='Y'?'YELLOW':r.top1.gear[0]==='G'?'GREEN':'BLUE') : r.mainEngine;
+        const _eng2 = r.top2&&r.top2.gear ? (r.top2.gear[0]==='R'?'RED':r.top2.gear[0]==='Y'?'YELLOW':r.top2.gear[0]==='G'?'GREEN':'BLUE') : r.mainEngine;
+        let _comboLabel, _comboDesc;
+        if (_eng1===_eng2) {
+          _comboLabel='집중형 (동일 엔진)';
+          _comboDesc=(_ED[_eng1]||{}).name+'의 강점이 두 기어에 걸쳐 깊고 일관되게 발달한 집중형. 한 분야에서 압도적인 전문성을 발휘하는 패턴입니다.';
+        } else if (
+          (_eng1==='RED'&&_eng2==='YELLOW')||(_eng1==='YELLOW'&&_eng2==='RED')||
+          (_eng1==='YELLOW'&&_eng2==='GREEN')||(_eng1==='GREEN'&&_eng2==='YELLOW')||
+          (_eng1==='GREEN'&&_eng2==='BLUE')||(_eng1==='BLUE'&&_eng2==='GREEN')||
+          (_eng1==='BLUE'&&_eng2==='RED')||(_eng1==='RED'&&_eng2==='BLUE')
+        ) {
+          _comboLabel='조화형 (인접 엔진)';
+          _comboDesc=(_ED[_eng1]||{}).name+'과 '+(_ED[_eng2]||{}).name+'의 자연스러운 시너지. 서로 다른 특성이 부드럽게 조화를 이루는 균형잡힌 강점 패턴입니다.';
+        } else {
+          _comboLabel='다재형 (대각 엔진)';
+          _comboDesc=(_ED[_eng1]||{}).name+'과 '+(_ED[_eng2]||{}).name+'이라는 정반대 성향을 동시에 보유. 상황에 따라 양면을 자유롭게 활용하는 보기 드문 다재다능형 패턴입니다.';
+        }
+        // 상세 연애/갈등 헬퍼
+        const _getRelDetail = window.parent && window.parent.getRelationPatternDetail;
+        const _getRomAdv    = window.parent && window.parent.getRomanceAdvice;
+        const _getConAdv    = window.parent && window.parent.getConflictAdvice;
+        const _name = (r.user&&r.user.name) ? r.user.name : '고객';
+        return ''
+          +_H('소통·관계 스타일')
+          +'<p style="line-height:1.65;margin:6px 0"><b>의사소통</b> · '+_esc(_E.communication||'')+'</p>'
+          +'<h3 style="font-size:13px;font-weight:800;color:'+mainColor+';margin:14px 0 6px">❤ 연애 패턴</h3>'
+          +(_getRelDetail
+            ? '<p style="font-size:13px;line-height:1.75;color:#333;margin:0 0 8px">'+_getRelDetail(r.mainEngine,_name)+'</p>'
+            : '<p style="font-size:13px;line-height:1.75;color:#333;margin:0 0 8px">'+_esc(_E.romance||'')+'</p>')
+          +(_getRomAdv
+            ? '<div style="margin:8px 0;padding:11px 14px;background:#fdf7ff;border-left:3px solid '+mainColor+';border-radius:0 8px 8px 0;font-size:12.5px;color:#444;line-height:1.65"><b style="color:'+mainColor+'">💡 연애 조언  </b>'+_esc(_getRomAdv(r.mainEngine))+'</div>'
+            : '')
+          +'<h3 style="font-size:13px;font-weight:800;color:'+mainColor+';margin:14px 0 6px">⚡ 갈등 대처</h3>'
+          +'<p style="font-size:13px;line-height:1.75;color:#333;margin:0 0 8px">'+_esc(_E.conflict||'')+'</p>'
+          +(_getConAdv
+            ? '<div style="margin:8px 0;padding:11px 14px;background:#fdf7ff;border-left:3px solid '+mainColor+';border-radius:0 8px 8px 0;font-size:12.5px;color:#444;line-height:1.65"><b style="color:'+mainColor+'">💡 갈등 조언  </b>'+_esc(_getConAdv(r.mainEngine))+'</div>'
+            : '')
+          +_H('스트레스 유발 요인')+'<ul style="line-height:1.6;padding-left:18px;margin:0">'+_li(_E.stress||[])+'</ul>'
+          +_H('나의 강점 조합 아키타입')
+          +'<div style="margin:8px 0;padding:16px 18px;background:#faf7ff;border-left:4px solid '+mainColor+';border-radius:0 8px 8px 0">'
+          +'<div style="font-size:11px;font-weight:800;letter-spacing:0.1em;color:'+mainColor+';margin-bottom:6px">🧬 '+_esc(_comboLabel)+'</div>'
+          +'<div style="font-size:13.5px;line-height:1.75;color:#333">'+_esc(_comboDesc)+'</div></div>'
+          +_H('핵심 강점')+'<ul style="line-height:1.6;padding-left:18px;margin:0">'+_li(_E.strengths||[])+'</ul>'
+          +_H('힐링 활동')
+          +'<div style="display:flex;flex-wrap:wrap;gap:8px;margin:6px 0">'+(_E.healing||[]).map(h=>'<div style="padding:10px 14px;background:#f5f0ff;border-radius:8px;min-width:120px"><b style="font-size:13px">'+_esc(h.label)+'</b><br><span style="font-size:12px;color:#555">'+_esc(h.desc)+'</span></div>').join('')+'</div>'
+          +_H('자기사랑 확언')
+          +'<div>'+(_E.affirmations||[]).map((a,i)=>'<div style="margin:8px 0;padding:12px 14px;background:#faf7ff;border-radius:8px;font-size:'+(i===0?'14':'13')+'px;line-height:1.6;color:#2d1b4e">'+_esc(a)+'</div>').join('')+'</div>'
+          +_H('성장 포인트')
+          +'<ul style="line-height:1.6;padding-left:18px;margin:0">'+(_E.growth||[]).map(g=>'<li style="margin:8px 0"><b>'+_esc(g.title||g)+'</b>'+(g.detail?'<br><span style="color:#555">'+_esc(g.detail)+'</span>':'')+'</li>').join('')+'</ul>';
+      })()}
 
       <div style="margin-top:30px;padding-top:14px;border-top:1px solid #E5E3EE;font-size:11px;color:#9A97AD;text-align:center">
         PBS COLOR LAB · 칼 융·막스 뤼셔·DISC 통합 컬러 강점 진단 · pbscolor.vercel.app
