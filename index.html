@@ -8013,6 +8013,18 @@ window.pbsDBReady = false;
 // ============================================================
 window.PBS = window.PBS || {};
 
+// === 관리자 로그인 (본사 Supabase 계정) ===
+const PBS_HQ_EMAIL = 'sugi2494@gmail.com';
+window.PBS.adminLogin = async function(pw) {
+  if (!window.pbsDBReady || !pw) return false;
+  const { error } = await window.pbsDB.auth.signInWithPassword({ email: PBS_HQ_EMAIL, password: pw });
+  if (error) { console.warn('[PBS] 관리자 로그인 실패:', error.message); return false; }
+  return true;
+};
+window.PBS.adminLogout = async function() {
+  try { if (window.pbsDBReady) await window.pbsDB.auth.signOut(); } catch (e) {}
+};
+
 // ============================================================
 // 함수 1: 접근 코드 검증 (RPC 호출)
 // ============================================================
@@ -9425,7 +9437,7 @@ tbody tr:last-child td{border-bottom:none}
 </svg>
 
 <!-- ═══════════════════════════════════════════════════════════
-     LOCK SCREEN (비밀번호 8808)
+     LOCK SCREEN (본사 Supabase 계정 로그인)
      ═══════════════════════════════════════════════════════════ -->
 <div class="lock-screen" id="lock-screen">
   <div class="lock-card">
@@ -10278,13 +10290,12 @@ let REVIEWS_FILTER = {search:'', stars:'', featured:''};
 // ────────────────────────────────────────────────────────────
 // LOCK SCREEN
 // ────────────────────────────────────────────────────────────
-const ADMIN_PW = '8808';
+/* 🔒 본사는 Supabase 계정(이메일+비밀번호)으로 로그인 — 비밀번호는 코드에 넣지 않음 */
+const ADMIN_PW = '';  // 서버 함수가 로그인 계정으로 권한을 확인하므로 값은 쓰지 않음
 
 function checkSession(){
-  try{
-    const s = JSON.parse(localStorage.getItem(KEY_SESSION) || 'null');
-    if(s && s.expires > Date.now()) return true;
-  }catch(e){}
+  // 서버 로그인은 창을 닫으면 사라지므로 매번 다시 로그인
+  try{ localStorage.removeItem(KEY_SESSION); }catch(e){}
   return false;
 }
 function setSession(){
@@ -10320,8 +10331,10 @@ document.addEventListener('DOMContentLoaded', () => {
   const pwBtn = document.getElementById('lock-btn');
   const pwError = document.getElementById('lock-error');
   pwInput.focus();
-  const tryLogin = () => {
-    if(pwInput.value === ADMIN_PW){
+  const tryLogin = async () => {
+    const P = window.parent && window.parent.PBS;
+    if(P && P.adminLogin && pwInput.value && await P.adminLogin(pwInput.value)){
+      try{ if(P.syncRecordsToLocal) await P.syncRecordsToLocal(); }catch(e){ console.warn('로그인 후 동기화 실패', e); }
       setSession();
       unlockApp();
     }else{
@@ -13068,13 +13081,7 @@ document.addEventListener('click', (e) => {
 <script>
 // ===== 관리자 모드 진입/이탈 =====
 async function openAdminMode() {
-  // ✨ 관리자 진입 시 Supabase에서 최신 결과 동기화
-  if (window.PBS && window.PBS.syncRecordsToLocal) {
-    try {
-      const r = await window.PBS.syncRecordsToLocal();
-      if (r?.ok) console.log('[PBS] 관리자 진입 동기화 완료:', r.addedRecords + '건');
-    } catch(e) { console.warn('[PBS] 동기화 중 오류:', e); }
-  }
+  // ✨ Supabase 동기화는 관리자 로그인 성공 후(잠금 화면)에 실행됩니다.
   const tpl = document.getElementById('pbs-admin-template');
   const iframe = document.getElementById('pbs-admin-iframe');
   // 동기화 후 로드 (또는 새로고침)
@@ -13084,6 +13091,7 @@ async function openAdminMode() {
   console.log('[PBS] 관리자 모드 진입');
 }
 function closeAdminMode() {
+  try{ if(window.PBS && window.PBS.adminLogout) window.PBS.adminLogout(); }catch(e){}
   document.getElementById('pbs-admin-overlay').style.display = 'none';
   document.body.style.overflow = '';
   // 해시 정리
