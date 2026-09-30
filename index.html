@@ -4183,7 +4183,8 @@ function toggleGlobalFold(btn){
 
 // "진단 시작" 클릭 시 — Basic / Premium 선택 모달부터
 function startTest() {
-  openTestSelector();
+  // 학생용(BASIC) 진단은 제공하지 않음 — 바로 성인 60문항 진단으로
+  selectTestType('premium');
 }
 
 // 선택 모달 열기/닫기
@@ -4199,6 +4200,7 @@ function closeTestSelector() {
 // 사용자가 Basic / Premium 선택
 let _selectedTestType = 'premium';
 function selectTestType(type) {
+  if (type === 'basic') type = 'premium';
   _selectedTestType = type;
   closeTestSelector();
   // 비밀번호 필요 여부 확인
@@ -5659,10 +5661,10 @@ ${goodAt}
   ${jobs}
 
 여러분도 컬러강점이 궁금하면 진단해보세요!
-어른용 · 어린이용 모두 있어요 👇
+지금 바로 무료로 해볼 수 있어요 👇
 ${url}`;
   } else {
-    shareText = `🎁 PBS 컬러강점 진단 — 무료 체험\n나에게 어떤 컬러 강점이 있는지 확인해보세요!\n어른용 · 어린이용 모두 있어요 👇\n\n${url}`;
+    shareText = `🎁 PBS 컬러강점 진단 — 무료 체험\n나에게 어떤 컬러 강점이 있는지 확인해보세요!\n지금 바로 무료로 해볼 수 있어요 👇\n\n${url}`;
   }
 
   // ✨ 즉시 토스트 (사용자 체감 속도 ↑) — 클립보드 작업은 백그라운드
@@ -7584,7 +7586,7 @@ ${strengths}
   ${jobs}
 
 여러분도 컬러강점이 궁금하면 진단해보세요!
-어른용 · 어린이용 모두 있어요 👇
+지금 바로 무료로 해볼 수 있어요 👇
 ${url}`;
   if (navigator.share) {
     navigator.share({title:'PBS 컬러강점 결과', text, url}).catch(() => fallbackCopy(text));
@@ -7933,7 +7935,7 @@ window.addEventListener('popstate', function() {
     </p>
     <div class="test-selector-grid">
       <!-- BASIC -->
-      <button type="button" class="test-card test-card-basic" onclick="selectTestType('basic')">
+      <button type="button" class="test-card test-card-basic" onclick="selectTestType('basic')" style="display:none">
         <div class="test-card-emoji"><div class="basic-intro-rainbow" style="margin:0 auto 6px;width:60px;height:30px"><span></span><span></span><span></span><span></span><span></span></div></div>
         <div class="test-card-badge basic">BASIC · 학생용</div>
         <h4>나는 어떤 색깔일까요?</h4>
