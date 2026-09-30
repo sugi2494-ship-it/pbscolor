@@ -11202,7 +11202,7 @@ function renderDashboard(){
     document.getElementById('recent-records-table').innerHTML = `
       <div style="overflow-x:auto;-webkit-overflow-scrolling:touch"><table>
         <thead><tr>
-          <th>유형</th><th>이름</th><th>주 엔진</th><th>강점 1</th><th>강점 2</th><th>검사일</th>
+          <th>유형</th><th>이름</th><th>주 엔진</th><th>강점 1</th><th>강점 2</th><th>검사일</th><th>삭제</th>
         </tr></thead>
         <tbody>
           ${recent.map(r => {
@@ -11218,6 +11218,7 @@ function renderDashboard(){
               <td><span class="gear-pill ${GEARS[r.top1.gear]?.engine || r.mainEngine}" style="cursor:pointer" onclick="showGearInfo('${r.top1.gear}',event)">${r.top1.gear}</span></td>
               <td><span class="gear-pill ${GEARS[r.top2.gear]?.engine || r.mainEngine}" style="cursor:pointer" onclick="showGearInfo('${r.top2.gear}',event)">${r.top2.gear}</span></td>
               <td class="text-muted">${fmtRelative(r.timestamp)}</td>
+              <td><button type="button" class="btn-sm danger" title="이 기록 삭제" onclick="event.stopPropagation();confirmDeleteRecord('${r.id}')" style="padding:6px 10px;font-size:12px">🗑️ 삭제</button></td>
             </tr>
           `;
           }).join('')}
