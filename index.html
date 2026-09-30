@@ -2695,34 +2695,6 @@ button.basic-job-pill:hover::after{opacity:1}
       </div>
 
       <div class="contact-form">
-        <p style="font-size:13px;font-weight:600;color:var(--text-secondary);margin-bottom:12px;letter-spacing:0.04em">문의 유형 선택</p>
-        <div class="form-types" id="form-types">
-          <button type="button" class="form-type active" data-type="강의">
-            <span class="form-type-icon"><svg width="16" height="16"><use href="#i-academic"/></svg></span>
-            <span>강의 문의</span>
-          </button>
-          <button type="button" class="form-type" data-type="컨설팅">
-            <span class="form-type-icon"><svg width="16" height="16"><use href="#i-palette"/></svg></span>
-            <span>컨설팅 문의</span>
-          </button>
-          <button type="button" class="form-type" data-type="협력">
-            <span class="form-type-icon"><svg width="16" height="16"><use href="#i-share"/></svg></span>
-            <span>협력 제안</span>
-          </button>
-          <button type="button" class="form-type" data-type="인증과정">
-            <span class="form-type-icon"><svg width="16" height="16"><use href="#i-award"/></svg></span>
-            <span>인증과정</span>
-          </button>
-          <button type="button" class="form-type" data-type="도구구매">
-            <span class="form-type-icon"><svg width="16" height="16"><use href="#i-puzzle"/></svg></span>
-            <span>진단도구 구매</span>
-          </button>
-          <button type="button" class="form-type" data-type="기타">
-            <span class="form-type-icon"><svg width="16" height="16"><use href="#i-info"/></svg></span>
-            <span>기타 문의</span>
-          </button>
-        </div>
-
         <form id="contact-form" onsubmit="submitContact(event)">
           <div class="form-row">
             <div class="form-field">
@@ -3407,7 +3379,7 @@ const STATE = {
   answers: {},
   user: {name: '', job: '', org: '', age: '', email: ''},
   result: null,
-  formType: '강의'
+  formType: '일반 문의'
 };
 const STORAGE_KEY = 'pbs-color-state-v1';
 const THEME_KEY = 'pbs-color-theme';
