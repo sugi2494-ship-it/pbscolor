@@ -311,7 +311,19 @@ input,textarea,select{font-family:inherit;font-size:inherit}
   .coach-bottom-grid{grid-template-columns:1fr !important}
 }
 
-.time-grid{grid-template-columns:1fr !important}</style>
+.time-grid{grid-template-columns:1fr !important}
+/* 문의 섹션 바로가기 버튼 3개 */
+.quick-actions{display:flex;flex-direction:column;gap:14px}
+.quick-btn{display:flex;align-items:center;gap:14px;width:100%;padding:20px 22px;border-radius:18px;border:1.5px solid var(--border-default);background:var(--bg-surface);color:var(--text-primary);text-decoration:none;text-align:left;cursor:pointer;font-family:var(--font);transition:transform .15s,border-color .15s,box-shadow .15s}
+.quick-btn:hover,.quick-btn:active{transform:translateY(-1px);border-color:var(--brand-purple);box-shadow:0 8px 24px rgba(112,48,160,.14)}
+.quick-btn-primary{background:linear-gradient(135deg,#7030A0,#FF3366);border-color:transparent;color:#fff}
+.quick-btn-primary small{color:rgba(255,255,255,.85)!important}
+.quick-ico{font-size:26px;line-height:1;flex-shrink:0}
+.quick-txt{display:flex;flex-direction:column;gap:3px;flex:1;min-width:0}
+.quick-txt strong{font-size:17px;font-weight:800;letter-spacing:-0.01em}
+.quick-txt small{font-size:13px;color:var(--text-secondary)}
+.quick-arrow{font-size:20px;font-weight:800;opacity:.7}
+</style>
 <style>
 /* CEO Section */
 .ceo-bg{background:var(--bg-muted);position:relative;overflow:hidden}
@@ -2695,7 +2707,24 @@ button.basic-job-pill:hover::after{opacity:1}
       </div>
 
       <div class="contact-form">
-        <form id="contact-form" onsubmit="submitContact(event)">
+        <div class="quick-actions">
+          <button type="button" class="quick-btn quick-btn-primary" onclick="startTest()">
+            <span class="quick-ico">🎨</span>
+            <span class="quick-txt"><strong>검사 바로 가기</strong><small>컬러강점 60문항 진단 시작</small></span>
+            <span class="quick-arrow">→</span>
+          </button>
+          <a class="quick-btn" href="tel:+821042857997">
+            <span class="quick-ico">📞</span>
+            <span class="quick-txt"><strong>문의하기 (전화)</strong><small>010-4285-7997</small></span>
+            <span class="quick-arrow">→</span>
+          </a>
+          <a class="quick-btn" href="https://pbscolor.com" target="_blank" rel="noopener">
+            <span class="quick-ico">🏠</span>
+            <span class="quick-txt"><strong>PBS 컬러 홈페이지 바로 가기</strong><small>pbscolor.com</small></span>
+            <span class="quick-arrow">→</span>
+          </a>
+        </div>
+        <form id="contact-form" onsubmit="submitContact(event)" style="display:none">
           <div class="form-row">
             <div class="form-field">
               <label for="cname">성함 <span style="color:var(--engine-red)">*</span></label>
